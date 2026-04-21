@@ -1,0 +1,11 @@
+{
+    "name": "Tool",
+    "alias": "tool",
+    "description": "",
+    "keywords": [],
+    "priority": 90,
+    "providers": [
+        "Modules\\Tool\\Providers\\DeferredToolServiceProvider"
+    ],
+    "files": []
+}

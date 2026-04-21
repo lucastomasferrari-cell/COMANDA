@@ -1,0 +1,171 @@
+<?php
+
+return [
+    "pos_viewer" => "POS Viewer",
+    "customer_viewer" => "Customer Viewer",
+    "select_branch" => "Select Branch",
+    "select_menu" => "Select Menu",
+    "select_register" => "Select Register",
+
+    "configuration_errors" => [
+        "no_branches_found" => [
+            "title" => "No branches found",
+            "message" => "You haven’t created any branches yet.\n Please create a new branch to access the POS screen.",
+            "action_button" => "Create new branch",
+        ],
+        "no_menus_found" => [
+            "title" => "No Menu Found for This Branch",
+            "message" => "This branch doesn’t have any menus yet.\n Please create a menu to continue using the POS screen.",
+            "action_button" => "Create menu",
+        ],
+        "no_registers_found" => [
+            "title" => "No POS Registers Found",
+            "message" => "This branch doesn’t have any POS registers set up yet.\n Please create a register to start processing orders.",
+            "action_button" => "Create POS Register",
+        ],
+        "no_open_session" => [
+            "title" => "No Active Session for This Register",
+            "message" => "The selected POS register does not have an open session.\n Please open a session to start processing orders.",
+            "action_button" => "Open Session",
+        ]
+    ],
+
+    "menu_no_available" => [
+        "title" => "No Products in This Menu",
+        "message" => "This menu does not contain any products. Please choose another menu to continue."
+    ],
+    "all_categories" => "All Categories",
+    "new" => "New",
+    "search_products" => "Search Products...",
+    "add_to_cart" => "Add to Cart",
+    "select_customer" => "Select Customer",
+    "redeem_with_points" => "Redeem with Points",
+    "view_available_gifts" => "View Available Gifts",
+    "edit_customer" => "Edit Customer",
+    "add_customer" => "Add Customer",
+    "select_waiter" => "Select Waiter",
+    "subtotal" => "Subtotal",
+    "tax" => "Tax",
+    "total" => "Total",
+    "total_taxes" => "Total Taxes",
+    "item" => "Item",
+    "qty" => "Quantity",
+    "price" => "Price",
+    "apply" => "Apply",
+    "discount" => "Discount",
+    "apply_discount_message" => "Apply a discount or promo code to your order.",
+    "select_discount" => "Select Discount",
+    "voucher_code" => "Voucher Code",
+
+    "empty_no_gifts_available" => [
+        "title" => "No Available Gifts",
+        "message" => "There are currently no rewards available for this customer."
+    ],
+    "rewards_and_points_summary" => "Rewards & Points Summary",
+    "current_level" => "Current Level",
+    "points_balance" => "Points Balance",
+    "available_rewards" => "Available Rewards",
+    "redeem_now" => "Redeem Now",
+    "not_eligible" => "Not Eligible",
+    "redeem_confirmation" => [
+        "title" => "Confirm Reward Redemption",
+        "message" => "Are you sure you want to redeem this reward using your available points? This action will deduct {points_cost} points from your balance.",
+    ],
+    "empty_no_rewards_available" => [
+        "title" => "No Rewards Available",
+        "message" => "You don’t have any redeemable rewards at the moment. Keep earning points to unlock new offers and gifts"
+    ],
+    "loyalty_rewards" => "Loyalty Rewards",
+    "available_gifts" => "Available Gifts",
+    "apply_to_cart" => "Apply to Cart",
+    "apply_confirmation" => [
+        "title" => "Apply Reward to Cart",
+        "message" => "Are you sure you want to apply this reward to the customer’s cart?"
+    ],
+    "cancel_order" => "Cancel Order",
+    "cancel_edit" => "Cancel Edit",
+    "send_to_kitchen" => "Send to Kitchen",
+    "pay_and_fire" => "Pay & Fire",
+    "hold_order" => "Hold Order",
+    "save_changes" => "Save Changes",
+    "remove_item" => "Remove Item",
+
+    "actions" => [
+        "table_viewer" => "Table Viewer",
+        "manage_cash_movement" => "Cash Movement",
+        "orders" => "Orders",
+    ],
+    "active_orders" => "Active Orders",
+    "upcoming_orders" => "Upcoming Orders",
+    "no_cart_items" => [
+        "title" => "No Items in the Order",
+        "description" => "Select dishes from the menu to start your order",
+    ],
+    "order_management" => "Order Management",
+    "filters" => "Filters",
+    "order_types" => "Order Types",
+    "order_statuses" => "Order Statuses",
+    "payment_statuses" => "Payment Statuses",
+    "search_by_order_number" => "Search by order number..",
+    "count_of_items" => "{count} Items",
+    "scheduled_at" => "Scheduled At",
+    "order_actions" => [
+        "view" => "View",
+        "cancel" => "Cancel",
+        "refund" => "Refund",
+        "edit" => "Edit",
+        "print" => "Print",
+        "print_bill" => "Bill",
+        "print_invoice" => "Invoice",
+        "pay_now" => "Pay",
+        "complete_payment" => "Finalize",
+
+        "update_status" => [
+            "pending" => "Confirm",
+            "confirmed" => "Prepare",
+            "preparing" => "Ready",
+            "ready" => "Serve",
+            "served" => "Complete",
+            "completed" => "Closed",
+        ],
+    ],
+    "order_details" => "Order Details",
+    "enter_the_quantity_to_be_cancelled" => "Enter the quantity to be cancelled",
+    "enter_the_quantity_to_be_refunded" => "Enter the quantity to be refunded",
+    "quantity" => "Quantity",
+    "not_user_overpaid_amount" => "The customer has overpaid by {amount}. Please select how you’d like to refund this amount.",
+    "amount_due" => "Amount due",
+    "active_orders_empty_box" => [
+        "title" => "No Active Orders",
+        "description" => "There are no active orders at the moment. New orders will appear here once created or updated.",
+    ],
+    "upcoming_orders_empty_box" => [
+        "title" => "No Upcoming Orders",
+        "description" => "There are no scheduled or future orders. Upcoming orders will appear here when customers place scheduled orders.",
+    ],
+    "tables_empty_box" => [
+        "title" => "Your Table Area Is Empty",
+        "description" => "You don’t have any tables created yet. Start by adding tables so you can manage seating and dine-in service.",
+    ],
+    "cash_flow_management" => "Cash Flow Management",
+    "table_viewer" => "Table Viewer",
+    "floors" => "Floors",
+    "zones" => "Zones",
+    "table_statuses" => "Table Statuses",
+    "due_amount" => "Due Amount",
+    "order_type" => "Order Type",
+    "kitchen_viewer" => "Kitchen Viewer",
+    "select_order_type" => "Select Order Type",
+    "order" => "Order",
+    "kitchen_next_status" => [
+        "pending" => "Start Preparing",
+        "preparing" => "Mark as Ready",
+        "ready" => "Mark as Served",
+    ],
+
+    "items" => "Items",
+    "loyalty" => "Loyalty",
+    "no_items_added_yet" => "No Items Added Yet.",
+    "no_options_selected" => "No Options Selected",
+    "order_summary" => "Order Summary",
+];

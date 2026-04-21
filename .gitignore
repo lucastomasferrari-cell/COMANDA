@@ -1,0 +1,21 @@
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE/editor (root-level; per-subfolder gitignores cover their own trees)
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# Logs at root
+*.log
+
+# Env overrides at root only (backend/.env is ignored by backend/.gitignore;
+# frontend/.env is committed by the vendor as default config).
+/.env
+/.env.local
+
+# Claude local config
+.claude/

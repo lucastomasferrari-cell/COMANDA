@@ -1,0 +1,20 @@
+<?php
+return [
+    "insufficient_payment" => "Payment is insufficient. Paid :paid, but the amount to be paid is :total.",
+    "payment_overpaid" => "Payment exceeds the required amount. The total due is :total, but you paid :paid.",
+    "order_cannot_cancel" => "Cancellation is not allowed for this order at the :status",
+    "order_cannot_refund" => "Only completed or served orders can be refunded.",
+    'order_refunded' => 'Order have been refunded successfully.',
+    "order_paid_successfully" => "Order has been paid successfully.",
+    "order_payment_not_allowed" => "Payment not allowed for this order. Please check the status or call a manager.",
+    "order_update_status_to_successfully" => "Order updated to :status successfully.",
+    "could_not_update_order_status" => "Something went wrong. Order status could not be changed.",
+    "order_not_allow_print_receipt" => "Unable to print receipt — this order is still unpaid.",
+    "not_allow_print_receipt_on_order_merged" => "Cannot print merged receipt. One or more orders are not yet paid. Please settle all orders before printing a combined receipt.",
+    "table_already_have_active_order" => "Table already have active order.",
+    "amount_to_be_paid_is_not_valid" => "Amount to be paid is not valid.",
+    "order_must_contain_at_least_one_active_product" => "The order must contain at least one active product. You cannot cancel, refund, or delete all products from the order.",
+    "edit_not_allowed" => "Not allowed to edit this order.",
+    "table_cannot_be_changed_because_merge_request" => "Unfortunately, the table for this order cannot be changed because it has an active merge request.",
+    "print_has_been_successfully" => "Print has been successfully.",
+];

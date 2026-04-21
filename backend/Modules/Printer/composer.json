@@ -1,0 +1,15 @@
+{
+    "name": "forkiva/printer",
+    "description": "",
+    "authors": [
+        {
+            "name": "Tenvoro",
+            "email": "tenvoro@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Modules\\Printer\\": "app/"
+        }
+    }
+}

@@ -1,0 +1,56 @@
+body {
+  font-family: 'Cairo', sans-serif !important;
+}
+
+.v-data-table th {
+  text-transform: none !important;
+  font-weight: bold !important;
+}
+
+.layout-page-content {
+  padding-block: 0.5rem;
+}
+
+.v-card {
+  border-radius: 10px !important;
+}
+
+
+.pagination .v-btn {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  padding: 0;
+}
+
+.bordered-table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.bordered-table th,
+.bordered-table td {
+  border: 1px solid #E0E0E0;
+  padding: 8px;
+}
+
+/* nicer drag states */
+.drag-ghost {
+  opacity: 0.5;
+}
+
+.drag-chosen {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.drag-dragging {
+  cursor: grabbing !important;
+}
+
+
+.border-b-dashed {
+  border-block-end-width: thin !important;
+  border-block-end-style: dashed !important;
+  border-block-end-color: rgba(var(--v-border-color), var(--v-border-opacity)) !important;
+}

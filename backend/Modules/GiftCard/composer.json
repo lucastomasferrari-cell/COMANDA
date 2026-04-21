@@ -1,0 +1,22 @@
+{
+    "name": "forkiva/gift-card",
+    "description": "",
+    "authors": [
+        {
+            "name": "Tenvoro",
+            "email": "info@tenvoro.dev"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Modules\\GiftCard\\": "app/",
+            "Modules\\GiftCard\\Database\\Factories\\": "database/factories/",
+            "Modules\\GiftCard\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\GiftCard\\Tests\\": "tests/"
+        }
+    }
+}
