@@ -5,8 +5,8 @@ import { useAppStore } from '@/modules/core/stores/appStore.ts'
 const i18n = createI18n({
   legacy: false,
   globalInjection: true,
-  locale: 'en',
-  fallbackLocale: 'en',
+  locale: 'es_AR',
+  fallbackLocale: 'es_AR',
   messages: {},
 })
 

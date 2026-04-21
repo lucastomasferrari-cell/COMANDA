@@ -1,5 +1,12 @@
+import { useAppStore } from '@/modules/core/stores/appStore.ts'
+
+function intlLocale (locale?: string): string {
+  return (locale || 'es_AR').replace('_', '-')
+}
+
 export function formatPrice (amount: number | string, currency: string, precision = 3) {
-  const formatted = new Intl.NumberFormat('en-US', {
+  const appStore = useAppStore()
+  const formatted = new Intl.NumberFormat(intlLocale(appStore.appCurrentLocale), {
     style: 'currency',
     currency,
     maximumFractionDigits: precision,

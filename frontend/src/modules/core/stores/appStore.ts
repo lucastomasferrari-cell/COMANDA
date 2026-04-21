@@ -9,18 +9,18 @@ const LOGO_URL_STORAGE_KEY = 'logo_url'
 export const useAppStore = defineStore('app', {
   state: (): AppState => ({
     settings: {
-      supported_locales: ['en'],
+      supported_locales: ['es_AR', 'en'],
       supported_languages: [{
-        id: 'en',
-        name: 'English',
+        id: 'es_AR',
+        name: 'Español (Argentina)',
       }],
-      locale: 'en',
-      fallback_locale: 'en',
-      start_of_week: 'sunday',
-      end_of_week: 'saturday',
-      timezone: 'Asia/Amman',
-      default_time_format: 'h:i A',
-      currency: 'JOD',
+      locale: 'es_AR',
+      fallback_locale: 'es_AR',
+      start_of_week: 'monday',
+      end_of_week: 'sunday',
+      timezone: 'America/Argentina/Buenos_Aires',
+      default_time_format: 'H:i',
+      currency: 'ARS',
       is_rtl: false,
       app_name: 'Comanda',
       logo: null,
@@ -43,7 +43,7 @@ export const useAppStore = defineStore('app', {
     },
     translations: {},
     themeMode: 'light',
-    currentLocale: 'en',
+    currentLocale: 'es_AR',
   }),
   getters: {
     supportedLocales: state => state.settings.supported_locales,
@@ -63,7 +63,7 @@ export const useAppStore = defineStore('app', {
       return state.settings.supported_languages.find(lang => lang.id === state.settings.locale) as SupportedLanguages
     },
     isRtl: (state): boolean => {
-      const locale = state.currentLocale || state.settings.locale || 'en'
+      const locale = state.currentLocale || state.settings.locale || 'es_AR'
 
       return state.settings.is_rtl || locale === 'ar' || locale.startsWith('ar-')
     },
@@ -77,7 +77,7 @@ export const useAppStore = defineStore('app', {
         return
       }
 
-      const resolvedLocale = locale || this.currentLocale || this.settings.locale || 'en'
+      const resolvedLocale = locale || this.currentLocale || this.settings.locale || 'es_AR'
       const isRtl = this.settings.is_rtl || resolvedLocale === 'ar' || resolvedLocale.startsWith('ar-')
 
       document.documentElement.setAttribute('lang', resolvedLocale)
@@ -92,7 +92,7 @@ export const useAppStore = defineStore('app', {
       const currentLocale = appValues[CURRENT_LOCALE_STORAGE_KEY]
 
       this.themeMode = mode === 'dark' || mode === 'light' ? mode : 'light'
-      this.currentLocale = currentLocale || 'en'
+      this.currentLocale = currentLocale || 'es_AR'
       this.syncDocumentLanguageDirection(this.currentLocale)
     },
     setSettings (settings: AppSettings) {

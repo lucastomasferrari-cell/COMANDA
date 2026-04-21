@@ -1,7 +1,7 @@
 import type {App} from 'vue'
 import {createVuetify} from 'vuetify'
 import {VBtn} from 'vuetify/components/VBtn'
-import {ar, en} from 'vuetify/locale'
+import {ar, en, es} from 'vuetify/locale'
 import defaults from './defaults.ts'
 
 import {icons} from './icons.ts'
@@ -17,9 +17,9 @@ const vuetify = createVuetify({
     IconBtn: VBtn,
   },
   locale: {
-    locale: 'en',
-    fallback: 'en',
-    messages: {en, ar},
+    locale: 'es_AR',
+    fallback: 'es_AR',
+    messages: {en, ar, es, es_AR: es},
   },
   theme: {
     defaultTheme: 'light',
