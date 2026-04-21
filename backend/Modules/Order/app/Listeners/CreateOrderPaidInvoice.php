@@ -2,16 +2,26 @@
 
 namespace Modules\Order\Listeners;
 
+use Illuminate\Contracts\Queue\ShouldQueueAfterCommit;
+use Illuminate\Queue\InteractsWithQueue;
 use Modules\Invoice\Services\CreateInvoice\CreateInvoiceServiceInterface;
 use Modules\Order\Events\OrderMergeBillingPaid;
 use Modules\Order\Events\OrderPaid;
 use Modules\Order\Models\Order;
 use Throwable;
 
-class CreateOrderPaidInvoice
+class CreateOrderPaidInvoice implements ShouldQueueAfterCommit
 {
+    use InteractsWithQueue;
+
+    public int $tries = 3;
+
+    /** @var array<int> Backoff en segundos: 10s, 30s, 2min. */
+    public array $backoff = [10, 30, 120];
+
     /**
      * Handle the event.
+     *
      * @throws Throwable
      */
     public function handle(OrderPaid|OrderMergeBillingPaid $event): void

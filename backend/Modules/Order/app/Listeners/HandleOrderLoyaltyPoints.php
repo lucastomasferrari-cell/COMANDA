@@ -2,20 +2,24 @@
 
 namespace Modules\Order\Listeners;
 
-use Log;
+use Illuminate\Contracts\Queue\ShouldQueueAfterCommit;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Support\Facades\Log;
 use Modules\Loyalty\Services\Loyalty\LoyaltyService;
 use Modules\Loyalty\Services\Loyalty\LoyaltyServiceInterface;
 use Modules\Order\Enums\OrderStatus;
 use Modules\Order\Events\OrderUpdateStatus;
 use Throwable;
 
-class HandleOrderLoyaltyPoints
+class HandleOrderLoyaltyPoints implements ShouldQueueAfterCommit
 {
-    /**
-     * Handle the event.
-     *
-     * @param OrderUpdateStatus $event
-     */
+    use InteractsWithQueue;
+
+    public int $tries = 3;
+
+    /** @var array<int> Backoff en segundos: 10s, 30s, 2min. */
+    public array $backoff = [10, 30, 120];
+
     public function handle(OrderUpdateStatus $event): void
     {
         $order = $event->order;
@@ -36,11 +40,16 @@ class HandleOrderLoyaltyPoints
                 $loyalty->cancelForOrder($order, ['partial_amount' => $partialAmount]);
             }
         } catch (Throwable $e) {
-            Log::error('Loyalty points processing failed: ' . $e->getMessage(), [
+            // Log con contexto y re-throw para que Laravel retry (3 intentos
+            // con backoff). Si agotamos retries cae en failed_jobs.
+            Log::error('HandleOrderLoyaltyPoints failed', [
                 'order_id' => $order->id,
                 'status' => $status->value,
-                'trace' => $e->getTraceAsString(),
+                'exception' => $e::class,
+                'message' => $e->getMessage(),
+                'attempt' => $this->job?->attempts() ?? 0,
             ]);
+            throw $e;
         }
     }
 }
