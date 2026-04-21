@@ -4,7 +4,7 @@
     <div class="admin-container">
 
         <h2 class="title">Create Admin Account</h2>
-        <p class="subtitle">Set up the first super admin for Forkiva Restaurant POS.</p>
+        <p class="subtitle">Set up the first super admin for Comanda Restaurant POS.</p>
 
         <!-- Error Messages -->
         @if ($errors->any())

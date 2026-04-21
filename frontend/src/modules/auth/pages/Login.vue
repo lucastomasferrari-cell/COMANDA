@@ -91,7 +91,7 @@
                   :error="!!form.errors.value?.identifier"
                   :error-messages="form.errors.value?.identifier"
                   :label="t('user::attributes.auth.identifier')"
-                  placeholder="admin@forkiva.app"
+                  placeholder="admin@comanda.app"
                   type="email"
                 />
               </VCol>

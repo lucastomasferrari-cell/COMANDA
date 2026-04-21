@@ -8,7 +8,7 @@
         <!-- Title -->
         <h2 class="title">Installation Complete 🎉</h2>
         <p class="subtitle">
-            Forkiva Restaurant POS has been installed successfully.<br>
+            Comanda Restaurant POS has been installed successfully.<br>
             You can now log in with your admin account and start using the system.
         </p>
 
