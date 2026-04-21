@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(["checkInstalled"]);
         $middleware->append(\App\Http\Middleware\ReadOnlyBranchMutations::class);
         $middleware->append(\App\Http\Middleware\ValidateSingleBranchInvariant::class);
+        $middleware->append(\App\Http\Middleware\IdempotencyKey::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (NotFoundHttpException $exception, Request $request) {
