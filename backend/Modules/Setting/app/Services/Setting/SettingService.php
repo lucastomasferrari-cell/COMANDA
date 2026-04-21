@@ -77,8 +77,8 @@ class SettingService implements SettingServiceInterface
             "pwa_name" => (string)setting('pwa_name', setting('app_name', 'Comanda')),
             "pwa_short_name" => (string)setting('pwa_short_name', setting('app_name', 'Comanda')),
             "pwa_description" => (string)setting('pwa_description', 'Comanda — sistema POS y gestión para restaurantes.'),
-            "pwa_background_color" => (string)setting('pwa_background_color', '#ffffff'),
-            "pwa_theme_color" => (string)setting('pwa_theme_color', '#ffffff'),
+            "pwa_background_color" => (string)setting('pwa_background_color', '#FAF8F3'),
+            "pwa_theme_color" => (string)setting('pwa_theme_color', '#FAF8F3'),
             "pwa_icon" => Media::getCacheMedia(setting('pwa_icon'))?->url ?: (Media::getCacheMedia(setting('logo'))?->url ?: asset("logo.png")),
         ];
     }
@@ -188,11 +188,11 @@ class SettingService implements SettingServiceInterface
             ],
             SettingSection::Pwa => [
                 "pwa_enabled" => (bool)($settings['pwa_enabled'] ?? false),
-                "pwa_name" => $settings['pwa_name'] ?? 'Forkiva',
-                "pwa_short_name" => $settings['pwa_short_name'] ?? 'Forkiva',
+                "pwa_name" => $settings['pwa_name'] ?? 'Comanda',
+                "pwa_short_name" => $settings['pwa_short_name'] ?? 'Comanda',
                 "pwa_icon" => Media::getCacheMedia($settings['pwa_icon'] ?? null, true),
-                "pwa_background_color" => $settings['pwa_background_color'] ?? '#ffffff',
-                "pwa_theme_color" => $settings['pwa_theme_color'] ?? '#ffffff',
+                "pwa_background_color" => $settings['pwa_background_color'] ?? '#FAF8F3',
+                "pwa_theme_color" => $settings['pwa_theme_color'] ?? '#FAF8F3',
                 "pwa_description" => $settings['pwa_description'] ?? null,
             ]
         };
