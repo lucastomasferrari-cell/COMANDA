@@ -203,11 +203,18 @@ class Order extends Model
      */
     public static function generateOrderNumber(int $branchId): string
     {
-        $count = Order::where('branch_id', $branchId)
+        // lockForUpdate sobre el indice (order_date, order_number, branch_id)
+        // serializa el calculo + insert dentro de la transaccion exterior,
+        // evitando que dos ordenes concurrentes calculen el mismo numero.
+        // MAX(CAST AS UNSIGNED) porque order_number es string con padding
+        // ('01'..'99','100') — comparacion lexicografica daria '99' > '100'.
+        $lastNumber = (int) Order::where('branch_id', $branchId)
             ->whereDate('order_date', today())
-            ->count();
+            ->lockForUpdate()
+            ->max(DB::raw('CAST(order_number AS UNSIGNED)'));
 
-        return str_pad($count + 1, $count < 100 ? 2 : 3, '0', STR_PAD_LEFT);
+        $next = $lastNumber + 1;
+        return str_pad((string) $next, $next < 100 ? 2 : 3, '0', STR_PAD_LEFT);
     }
 
     /**
