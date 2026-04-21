@@ -8,6 +8,7 @@ use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
 use Modules\Branch\Models\Branch;
 use Modules\Pos\Enums\PosSessionStatus;
@@ -85,10 +86,14 @@ class PosSessionService implements PosSessionServiceInterface
                 ->whereBranch($data['branch_id'])
                 ->findOrFail($data['pos_register_id']);
 
+            // lockForUpdate toma gap-locks sobre el indice (branch, register, status)
+            // bloqueando inserciones concurrentes de otra sesion abierta en la
+            // misma caja hasta que termine esta transaccion.
             $existing = PosSession::query()
                 ->whereBranch($data['branch_id'])
                 ->where('pos_register_id', $register->id)
                 ->where('status', PosSessionStatus::Open)
+                ->lockForUpdate()
                 ->first();
 
             if ($existing) {
@@ -97,16 +102,28 @@ class PosSessionService implements PosSessionServiceInterface
                 ]);
             }
 
-            $session = PosSession::query()
-                ->create([
-                    'branch_id' => $data['branch_id'],
-                    'pos_register_id' => $register->id,
-                    'opened_by' => auth()->id(),
-                    'status' => PosSessionStatus::Open,
-                    'opened_at' => now(),
-                    'opening_float' => $data['opening_float'] ?? 0,
-                    'notes' => $data['notes'] ?? null,
-                ]);
+            try {
+                $session = PosSession::query()
+                    ->create([
+                        'branch_id' => $data['branch_id'],
+                        'pos_register_id' => $register->id,
+                        'opened_by' => auth()->id(),
+                        'status' => PosSessionStatus::Open,
+                        'opened_at' => now(),
+                        'opening_float' => $data['opening_float'] ?? 0,
+                        'notes' => $data['notes'] ?? null,
+                    ]);
+            } catch (QueryException $e) {
+                // Defense in depth: si el lockForUpdate no alcanzo (p.ej. isolation
+                // distinto), el unique index uniq_open_pos_session atrapa el
+                // duplicado. Traducimos el error 1062 al mismo mensaje amigable.
+                if (($e->errorInfo[1] ?? null) === 1062) {
+                    throw ValidationException::withMessages([
+                        'pos_register_id' => __('pos::messages.session_already_opened'),
+                    ]);
+                }
+                throw $e;
+            }
 
             event(new OpenPosSession($session));
             return $session;
