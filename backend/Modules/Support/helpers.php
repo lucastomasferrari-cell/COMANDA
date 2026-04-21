@@ -289,7 +289,7 @@ if (!function_exists('getLogoDataBase64')) {
             $logoBase64 = Storage::disk('local')->get('default-logo.base64');
         }
 
-        $logoMimeType = setting('logo_mime_type', 'image/svg+xml');
+        $logoMimeType = setting('logo_mime_type', 'image/png');
         return "data:" . $logoMimeType . ";base64," . $logoBase64;
     }
 }
