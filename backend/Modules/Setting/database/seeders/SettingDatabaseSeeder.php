@@ -42,8 +42,8 @@ class SettingDatabaseSeeder extends Seeder
             'pwa_name' => 'Forkiva',
             'pwa_short_name' => 'Forkiva',
             'pwa_icon' => null,
-            'pwa_background_color' => '#ffffff',
-            'pwa_theme_color' => '#ffffff',
+            'pwa_background_color' => '#FAF8F3',
+            'pwa_theme_color' => '#FAF8F3',
             'pwa_description' => 'Forkiva restaurant POS and management system.',
         ]);
     }
