@@ -19,15 +19,21 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => array_values(array_filter(array_map(
+        'trim',
+        explode(',', env('CORS_ALLOWED_ORIGINS', 'http://localhost:3101'))
+    ))),
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => array_values(array_filter(array_map(
+        'trim',
+        explode(',', env('CORS_ALLOWED_ORIGINS_PATTERNS', ''))
+    ))),
 
     'allowed_headers' => ['*'],
 
     'exposed_headers' => [],
 
-    'max_age' => 0,
+    'max_age' => 3600,
 
     'supports_credentials' => true,
 
