@@ -1,0 +1,171 @@
+<?php
+
+return [
+    "pos_viewer" => "Visor de POS",
+    "customer_viewer" => "Visor del cliente",
+    "select_branch" => "Seleccioná la sucursal",
+    "select_menu" => "Seleccioná el menú",
+    "select_register" => "Seleccioná la caja",
+
+    "configuration_errors" => [
+        "no_branches_found" => [
+            "title" => "No se encontraron sucursales",
+            "message" => "Todavía no creaste ninguna sucursal.\n Creá una nueva sucursal para acceder a la pantalla del POS.",
+            "action_button" => "Crear nueva sucursal",
+        ],
+        "no_menus_found" => [
+            "title" => "No se encontró ningún menú para esta sucursal",
+            "message" => "Esta sucursal todavía no tiene menús.\n Creá un menú para seguir usando la pantalla del POS.",
+            "action_button" => "Crear menú",
+        ],
+        "no_registers_found" => [
+            "title" => "No se encontraron cajas",
+            "message" => "Esta sucursal todavía no tiene cajas configuradas.\n Creá una caja para empezar a procesar pedidos.",
+            "action_button" => "Crear caja",
+        ],
+        "no_open_session" => [
+            "title" => "No hay sesión activa para esta caja",
+            "message" => "La caja seleccionada no tiene una sesión abierta.\n Abrí una sesión para empezar a procesar pedidos.",
+            "action_button" => "Abrir sesión",
+        ]
+    ],
+
+    "menu_no_available" => [
+        "title" => "No hay productos en este menú",
+        "message" => "Este menú no contiene productos. Elegí otro menú para continuar."
+    ],
+    "all_categories" => "Todas las categorías",
+    "new" => "Nuevo",
+    "search_products" => "Buscar productos...",
+    "add_to_cart" => "Agregar al carrito",
+    "select_customer" => "Seleccioná el cliente",
+    "redeem_with_points" => "Canjear con puntos",
+    "view_available_gifts" => "Ver regalos disponibles",
+    "edit_customer" => "Editar cliente",
+    "add_customer" => "Agregar cliente",
+    "select_waiter" => "Seleccioná el mozo",
+    "subtotal" => "Subtotal",
+    "tax" => "Impuesto",
+    "total" => "Total",
+    "total_taxes" => "Total de impuestos",
+    "item" => "Ítem",
+    "qty" => "Cantidad",
+    "price" => "Precio",
+    "apply" => "Aplicar",
+    "discount" => "Descuento",
+    "apply_discount_message" => "Aplicá un descuento o código promocional a tu pedido.",
+    "select_discount" => "Seleccioná el descuento",
+    "voucher_code" => "Código de cupón",
+
+    "empty_no_gifts_available" => [
+        "title" => "No hay regalos disponibles",
+        "message" => "Actualmente no hay recompensas disponibles para este cliente."
+    ],
+    "rewards_and_points_summary" => "Resumen de recompensas y puntos",
+    "current_level" => "Nivel actual",
+    "points_balance" => "Saldo de puntos",
+    "available_rewards" => "Recompensas disponibles",
+    "redeem_now" => "Canjear ahora",
+    "not_eligible" => "No elegible",
+    "redeem_confirmation" => [
+        "title" => "Confirmar canje de recompensa",
+        "message" => "¿Estás seguro de que querés canjear esta recompensa con tus puntos disponibles? Esta acción va a descontar {points_cost} puntos de tu saldo.",
+    ],
+    "empty_no_rewards_available" => [
+        "title" => "No hay recompensas disponibles",
+        "message" => "En este momento no tenés recompensas canjeables. Seguí acumulando puntos para desbloquear nuevas ofertas y regalos"
+    ],
+    "loyalty_rewards" => "Recompensas de fidelización",
+    "available_gifts" => "Regalos disponibles",
+    "apply_to_cart" => "Aplicar al carrito",
+    "apply_confirmation" => [
+        "title" => "Aplicar recompensa al carrito",
+        "message" => "¿Estás seguro de que querés aplicar esta recompensa al carrito del cliente?"
+    ],
+    "cancel_order" => "Cancelar pedido",
+    "cancel_edit" => "Cancelar edición",
+    "send_to_kitchen" => "Enviar a cocina",
+    "pay_and_fire" => "Cobrar y enviar",
+    "hold_order" => "Poner pedido en espera",
+    "save_changes" => "Guardar cambios",
+    "remove_item" => "Quitar ítem",
+
+    "actions" => [
+        "table_viewer" => "Visor de mesas",
+        "manage_cash_movement" => "Movimiento de efectivo",
+        "orders" => "Pedidos",
+    ],
+    "active_orders" => "Pedidos activos",
+    "upcoming_orders" => "Pedidos próximos",
+    "no_cart_items" => [
+        "title" => "No hay ítems en el pedido",
+        "description" => "Seleccioná platos del menú para comenzar el pedido",
+    ],
+    "order_management" => "Gestión de pedidos",
+    "filters" => "Filtros",
+    "order_types" => "Tipos de pedido",
+    "order_statuses" => "Estados de pedido",
+    "payment_statuses" => "Estados de pago",
+    "search_by_order_number" => "Buscar por número de pedido..",
+    "count_of_items" => "{count} ítems",
+    "scheduled_at" => "Programado para",
+    "order_actions" => [
+        "view" => "Ver",
+        "cancel" => "Cancelar",
+        "refund" => "Reembolsar",
+        "edit" => "Editar",
+        "print" => "Imprimir",
+        "print_bill" => "Cuenta",
+        "print_invoice" => "Factura",
+        "pay_now" => "Cobrar",
+        "complete_payment" => "Finalizar",
+
+        "update_status" => [
+            "pending" => "Confirmar",
+            "confirmed" => "Preparar",
+            "preparing" => "Listo",
+            "ready" => "Servir",
+            "served" => "Completar",
+            "completed" => "Cerrado",
+        ],
+    ],
+    "order_details" => "Detalles del pedido",
+    "enter_the_quantity_to_be_cancelled" => "Ingresá la cantidad a cancelar",
+    "enter_the_quantity_to_be_refunded" => "Ingresá la cantidad a reembolsar",
+    "quantity" => "Cantidad",
+    "not_user_overpaid_amount" => "El cliente pagó de más {amount}. Seleccioná cómo querés reembolsar este monto.",
+    "amount_due" => "Monto adeudado",
+    "active_orders_empty_box" => [
+        "title" => "No hay pedidos activos",
+        "description" => "En este momento no hay pedidos activos. Los nuevos pedidos van a aparecer acá cuando se creen o actualicen.",
+    ],
+    "upcoming_orders_empty_box" => [
+        "title" => "No hay pedidos próximos",
+        "description" => "No hay pedidos programados ni futuros. Los pedidos próximos van a aparecer acá cuando los clientes los realicen.",
+    ],
+    "tables_empty_box" => [
+        "title" => "Tu área de mesas está vacía",
+        "description" => "Todavía no tenés mesas creadas. Empezá agregando mesas para poder administrar la disposición y el servicio en salón.",
+    ],
+    "cash_flow_management" => "Gestión de flujo de efectivo",
+    "table_viewer" => "Visor de mesas",
+    "floors" => "Pisos",
+    "zones" => "Sectores",
+    "table_statuses" => "Estados de mesa",
+    "due_amount" => "Monto adeudado",
+    "order_type" => "Tipo de pedido",
+    "kitchen_viewer" => "Visor de cocina",
+    "select_order_type" => "Seleccioná el tipo de pedido",
+    "order" => "Pedido",
+    "kitchen_next_status" => [
+        "pending" => "Empezar a preparar",
+        "preparing" => "Marcar como listo",
+        "ready" => "Marcar como servido",
+    ],
+
+    "items" => "Ítems",
+    "loyalty" => "Fidelización",
+    "no_items_added_yet" => "Todavía no se agregaron ítems.",
+    "no_options_selected" => "No hay opciones seleccionadas",
+    "order_summary" => "Resumen del pedido",
+];

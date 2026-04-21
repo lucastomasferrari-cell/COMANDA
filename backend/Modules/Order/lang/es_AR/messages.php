@@ -1,0 +1,20 @@
+<?php
+return [
+    "insufficient_payment" => "El pago es insuficiente. Se pagaron :paid, pero el monto a pagar es :total.",
+    "payment_overpaid" => "El pago supera el monto requerido. El total adeudado es :total, pero pagaste :paid.",
+    "order_cannot_cancel" => "No se permite cancelar este pedido en el estado :status",
+    "order_cannot_refund" => "Solo se pueden reembolsar pedidos completados o servidos.",
+    'order_refunded' => 'El pedido se reembolsó correctamente.',
+    "order_paid_successfully" => "El pedido se pagó correctamente.",
+    "order_payment_not_allowed" => "No se permite el pago para este pedido. Verificá el estado o llamá al gerente.",
+    "order_update_status_to_successfully" => "Pedido actualizado a :status correctamente.",
+    "could_not_update_order_status" => "Algo salió mal. No se pudo cambiar el estado del pedido.",
+    "order_not_allow_print_receipt" => "No se puede imprimir el recibo — este pedido todavía está impago.",
+    "not_allow_print_receipt_on_order_merged" => "No se puede imprimir el recibo unificado. Uno o más pedidos todavía no fueron pagados. Liquidá todos los pedidos antes de imprimir un recibo combinado.",
+    "table_already_have_active_order" => "La mesa ya tiene un pedido activo.",
+    "amount_to_be_paid_is_not_valid" => "El monto a pagar no es válido.",
+    "order_must_contain_at_least_one_active_product" => "El pedido debe contener al menos un producto activo. No podés cancelar, reembolsar ni eliminar todos los productos del pedido.",
+    "edit_not_allowed" => "No está permitido editar este pedido.",
+    "table_cannot_be_changed_because_merge_request" => "Lamentablemente, la mesa de este pedido no se puede cambiar porque tiene una solicitud de unificación activa.",
+    "print_has_been_successfully" => "La impresión se realizó correctamente.",
+];
