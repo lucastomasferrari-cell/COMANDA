@@ -31,101 +31,108 @@ class OrderPaymentService implements OrderPaymentServiceInterface
     /** @inheritDoc */
     public function storePayment(int|string $id, array $data): void
     {
-        $order = app(OrderServiceInterface::class)->findOrFail($id);
-
-        if (!is_null($order->table_merge_id)) {
-            $orders = app(OrderServiceInterface::class)
-                ->getModel()
+        // Outer transaction + lockForUpdate sobre la Order: evita que dos
+        // pagos concurrentes lean la misma due_amount y ambos pasen la
+        // validacion de overpayment. El lock se mantiene hasta el commit final.
+        DB::transaction(function () use ($id, $data) {
+            $order = app(OrderServiceInterface::class)->getModel()
                 ->query()
-                ->activeOrders()
-                ->with("table")
-                ->where("table_merge_id", $order->table_merge_id)
-                ->get();
+                ->lockForUpdate()
+                ->findOrFail($id);
 
-            $this->storePaymentMerge($orders, $data);
-            return;
-        }
+            if (!is_null($order->table_merge_id)) {
+                $orders = app(OrderServiceInterface::class)
+                    ->getModel()
+                    ->query()
+                    ->activeOrders()
+                    ->with("table")
+                    ->where("table_merge_id", $order->table_merge_id)
+                    ->lockForUpdate()
+                    ->get();
 
-        if ($order->table_id) {
-            abort_if($order->next_status != OrderStatus::Completed || !$order->allowAddPayment(), 400, __("order::messages.order_payment_not_allowed"));
-        } else {
-            abort_unless($order->allowAddPayment(), 400, __("order::messages.order_payment_not_allowed"));
-        }
+                $this->storePaymentMerge($orders, $data);
+                return;
+            }
 
-        $user = auth()->user();
+            if ($order->table_id) {
+                abort_if($order->next_status != OrderStatus::Completed || !$order->allowAddPayment(), 400, __("order::messages.order_payment_not_allowed"));
+            } else {
+                abort_unless($order->allowAddPayment(), 400, __("order::messages.order_payment_not_allowed"));
+            }
 
-        $scale = Currency::subunit($order->currency);
-        $factor = 10 ** $scale;
+            $user = auth()->user();
 
-        $dueRounded = round($order->due_amount->amount(), $scale);
-        $dueMinor = (int)round($dueRounded * $factor);
+            $scale = Currency::subunit($order->currency);
+            $factor = 10 ** $scale;
 
-        $paymentMinorTotal = 0;
-        foreach ($data['payments'] as $p) {
-            $paymentMinorTotal += (int)round(($p['amount'] ?? 0) * $factor);
-        }
+            $dueRounded = round($order->due_amount->amount(), $scale);
+            $dueMinor = (int)round($dueRounded * $factor);
 
-        $dueAmount = $dueMinor / $factor;
-        $amountToBePaid = $paymentMinorTotal / $factor;
+            $paymentMinorTotal = 0;
+            foreach ($data['payments'] as $p) {
+                $paymentMinorTotal += (int)round(($p['amount'] ?? 0) * $factor);
+            }
 
-        abort_if(
-            $amountToBePaid > $dueAmount,
-            400,
-            __("order::messages.payment_overpaid", [
-                "paid" => number_format($amountToBePaid, $scale),
-                "total" => number_format($dueAmount, $scale)
-            ])
-        );
+            $dueAmount = $dueMinor / $factor;
+            $amountToBePaid = $paymentMinorTotal / $factor;
 
-        abort_if(
-            $data['payment_mode'] == PaymentMode::Full->value && $amountToBePaid < $dueAmount,
-            400,
-            __("order::messages.insufficient_payment", [
-                "paid" => number_format($amountToBePaid, $scale),
-                "total" => number_format($dueAmount, $scale)
-            ])
-        );
+            abort_if(
+                $amountToBePaid > $dueAmount,
+                400,
+                __("order::messages.payment_overpaid", [
+                    "paid" => number_format($amountToBePaid, $scale),
+                    "total" => number_format($dueAmount, $scale)
+                ])
+            );
 
-        $isOrderComplete = ($paymentMinorTotal === $dueMinor) && $order->next_status == OrderStatus::Completed;
+            abort_if(
+                $data['payment_mode'] == PaymentMode::Full->value && $amountToBePaid < $dueAmount,
+                400,
+                __("order::messages.insufficient_payment", [
+                    "paid" => number_format($amountToBePaid, $scale),
+                    "total" => number_format($dueAmount, $scale)
+                ])
+            );
 
-        $session = PosSession::query()->findOrFail($data['session_id']);
+            $isOrderComplete = ($paymentMinorTotal === $dueMinor) && $order->next_status == OrderStatus::Completed;
 
-        $payments = [];
-        $giftCardRedemptions = [];
-        foreach ($data['payments'] as $payment) {
-            $minor = (int)round($payment['amount'] * $factor);
-            $meta = null;
+            $session = PosSession::query()->findOrFail($data['session_id']);
 
-            if ($payment['method'] === PaymentMethod::GiftCard->value) {
-                $giftCard = app(GiftCardServiceInterface::class)->findOrFail($payment['gift_card_code']);
-                $giftCardAmount = app(GiftCardServiceInterface::class)->convertOrderAmountToGiftCardAmount(
-                    giftCard: $giftCard,
-                    amount: (float)$payment['amount'],
-                    orderCurrency: $order->currency,
-                    orderCurrencyRate: $payment['currency_rate'] ?? $order->currency_rate,
-                );
-                $meta = [
-                    'gift_card_code' => $giftCard->code,
-                    'gift_card_id' => $giftCard->id,
-                ];
-                $giftCardRedemptions[] = [
-                    'gift_card' => $giftCard,
-                    'amount' => $giftCardAmount->amount(),
-                    'order_amount' => (float)$payment['amount'],
+            $payments = [];
+            $giftCardRedemptions = [];
+            foreach ($data['payments'] as $payment) {
+                $minor = (int)round($payment['amount'] * $factor);
+                $meta = null;
+
+                if ($payment['method'] === PaymentMethod::GiftCard->value) {
+                    $giftCard = app(GiftCardServiceInterface::class)->findOrFail($payment['gift_card_code']);
+                    $giftCardAmount = app(GiftCardServiceInterface::class)->convertOrderAmountToGiftCardAmount(
+                        giftCard: $giftCard,
+                        amount: (float)$payment['amount'],
+                        orderCurrency: $order->currency,
+                        orderCurrencyRate: $payment['currency_rate'] ?? $order->currency_rate,
+                    );
+                    $meta = [
+                        'gift_card_code' => $giftCard->code,
+                        'gift_card_id' => $giftCard->id,
+                    ];
+                    $giftCardRedemptions[] = [
+                        'gift_card' => $giftCard,
+                        'amount' => $giftCardAmount->amount(),
+                        'order_amount' => (float)$payment['amount'],
+                    ];
+                }
+
+                $payments[] = [
+                    "cashier_id" => $user->id,
+                    "method" => $payment['method'],
+                    "amount" => $minor / $factor,
+                    "transaction_id" => $payment['transaction_id'] ?? null,
+                    "session" => $session,
+                    "meta" => $meta,
                 ];
             }
 
-            $payments[] = [
-                "cashier_id" => $user->id,
-                "method" => $payment['method'],
-                "amount" => $minor / $factor,
-                "transaction_id" => $payment['transaction_id'] ?? null,
-                "session" => $session,
-                "meta" => $meta,
-            ];
-        }
-
-        DB::transaction(function () use ($order, $data, $payments, $isOrderComplete, $user, $session, $giftCardRedemptions) {
             $order->storePayments($payments);
             $this->storeGiftCardRedemptions($order, $giftCardRedemptions);
             $updateData = [
