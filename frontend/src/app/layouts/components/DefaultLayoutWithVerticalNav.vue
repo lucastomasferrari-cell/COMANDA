@@ -64,12 +64,6 @@
         class="app-logo app-title-wrapper"
         to="/admin"
       >
-        <img
-          v-if="appStore.logo"
-          alt="logo"
-          :src="appStore.logo"
-          width="40px"
-        >
         <h1 class="app-logo-title">
           {{ appStore.appName }}
         </h1>
