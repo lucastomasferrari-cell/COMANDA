@@ -8,7 +8,7 @@ function buildPwaManifestUrl (appStore: Record<string, any>): string {
   const settings = appStore.settings
   const baseUrl = import.meta.env.BASE_URL || '/'
   const appUrl = new URL(baseUrl, window.location.origin)
-  const iconUrl = new URL(settings.pwa_icon || settings.logo || settings.favicon || `${baseUrl}logo.svg`, window.location.origin).href
+  const iconUrl = new URL(settings.pwa_icon || settings.logo || settings.favicon || `${baseUrl}logo.png`, window.location.origin).href
   const fallbackIconUrl = new URL(settings.favicon || settings.logo || iconUrl, window.location.origin).href
 
   const manifest = {

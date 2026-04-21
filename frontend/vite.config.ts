@@ -66,7 +66,7 @@ export default defineConfig(({ command }) => ({
       registerType: 'autoUpdate',
       injectRegister: false,
       manifest: false,
-      includeAssets: ['favicon.ico', 'logo.svg'],
+      includeAssets: ['favicon.ico', 'logo.png', 'apple-touch-icon.png', 'android-chrome-192x192.png', 'android-chrome-512x512.png'],
       workbox: {
         cleanupOutdatedCaches: true,
         clientsClaim: true,

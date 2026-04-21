@@ -5,7 +5,7 @@
 
         <!-- Logo -->
         <div class="logo-box">
-            <img src="{{ asset('assets/logo.svg') }}" alt="Forkiva Logo" class="logo">
+            <img src="{{ asset('assets/logo.png') }}" alt="Forkiva Logo" class="logo">
         </div>
 
         <!-- Headline -->

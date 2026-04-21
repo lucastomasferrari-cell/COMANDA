@@ -63,9 +63,9 @@ class SettingService implements SettingServiceInterface
             "timezone" => setting("default_timezone"),
             "currency" => setting("default_currency"),
             "app_name" => setting("app_name"),
-            "logo" => Media::getCacheMedia(setting('logo'))?->url ?: asset("logo.svg"),
+            "logo" => Media::getCacheMedia(setting('logo'))?->url ?: asset("logo.png"),
             "logo_data_base64" => getLogoBase64(),
-            "favicon" => Media::getCacheMedia(setting('favicon'))?->url ?: asset("logo.svg"),
+            "favicon" => Media::getCacheMedia(setting('favicon'))?->url ?: asset("logo.png"),
             "default_theme_mode" => (string)setting('default_theme_mode', 'light'),
             "theme_primary_color" => (string)setting('theme_primary_color', '#F57C00'),
             "theme_secondary_color" => (string)setting('theme_secondary_color', '#043A63'),
@@ -79,7 +79,7 @@ class SettingService implements SettingServiceInterface
             "pwa_description" => (string)setting('pwa_description', 'Forkiva restaurant POS and management system.'),
             "pwa_background_color" => (string)setting('pwa_background_color', '#ffffff'),
             "pwa_theme_color" => (string)setting('pwa_theme_color', '#ffffff'),
-            "pwa_icon" => Media::getCacheMedia(setting('pwa_icon'))?->url ?: (Media::getCacheMedia(setting('logo'))?->url ?: asset("logo.svg")),
+            "pwa_icon" => Media::getCacheMedia(setting('pwa_icon'))?->url ?: (Media::getCacheMedia(setting('logo'))?->url ?: asset("logo.png")),
         ];
     }
 
