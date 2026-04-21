@@ -32,7 +32,7 @@ export const themes: Record<string, ThemeDefinition> = {
       'on-error': '#fff',
       'error-darken-1': '#E6381A',
       'error-light': '#FF654A',
-      'background': '#f5f5f9',
+      'background': '#FAF8F3',
       'on-background': '#22303E',
       'surface': '#fff',
       'on-surface': '#22303E',
