@@ -92,7 +92,7 @@ return [
 
     "actions" => [
         "table_viewer" => "Table Viewer",
-        "manage_cash_movement" => "Cash Movement",
+        "manage_cash_movement" => "Cash Drawer",
         "orders" => "Orders",
     ],
     "no_active_order" => [
@@ -110,6 +110,28 @@ return [
         "empty_title" => "No tables yet",
         "empty_description" => "Create tables in Admin > Floor to see them on the plan.",
         "context_placeholder" => "Quick actions: coming soon",
+    ],
+    "caja" => [
+        "title" => "Cash drawer",
+        "session_active" => "Active shift",
+        "no_session" => "No open shift. Open one to operate.",
+        "opening_balance" => "Opening balance",
+        "expected_cash" => "Expected cash",
+        "total_in" => "Shift cash-in",
+        "total_out" => "Shift cash-out",
+        "new_movement" => "Register movement",
+        "register_movement" => "Register",
+        "movement_saved" => "Movement saved",
+        "movements_title" => "Shift movements",
+        "no_movements" => "No movements yet in this shift.",
+        "close_session" => "Close drawer",
+        "close_title" => "Cash count",
+        "close_subtitle" => "Count physical cash and enter the actual amount. Justify any difference.",
+        "cash_actual" => "Counted cash",
+        "difference" => "Difference",
+        "justification" => "Justification (required if difference != 0)",
+        "confirm_close" => "Close drawer",
+        "closed_ok" => "Drawer closed successfully.",
     ],
     "more_actions" => [
         "label" => "More actions",

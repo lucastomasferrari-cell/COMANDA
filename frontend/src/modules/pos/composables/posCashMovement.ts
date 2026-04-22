@@ -1,6 +1,6 @@
 import { useI18n } from 'vue-i18n'
 import { useToast } from 'vue-toastification'
-import { show, store } from '@/modules/pos/api/cashMovement.api.ts'
+import { index, show, store } from '@/modules/pos/api/cashMovement.api.ts'
 
 export function usePosCashMovement () {
   const toast = useToast()
@@ -17,5 +17,5 @@ export function usePosCashMovement () {
     }
   }
 
-  return { getShowData, store }
+  return { getShowData, store, index }
 }

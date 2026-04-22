@@ -16,7 +16,7 @@
   import OrderPrintDialog from './Dialogs/OrderPrint/Index.vue'
   import RefundCancelDialog from './Dialogs/RefundCancelDialog.vue'
   import ActiveOrdersPanel from './ActiveOrdersPanel/Index.vue'
-  import CashMovementDrawer from './Drawers/CashMovement/Index.vue'
+  import CajaDrawer from './Drawers/Caja/Index.vue'
   import TableViewerDrawer from './Drawers/TableViewer/Index.vue'
   import MenuPanel from './MenuPanel/Index.vue'
   import OrderPanel from './OrderPanel/Index.vue'
@@ -42,7 +42,7 @@
 
   const canOrders = can('admin.orders.upcoming') || can('admin.orders.active')
   const showOrdersDrawer = ref(false)
-  const showCashMovementDrawer = ref(false)
+  const showCajaDrawer = ref(false)
   const showTableViewerDrawer = ref(false)
   const showPlanoGuestCountDialog = ref(false)
   const pendingPlanoTable = ref<PlanoTable | null>(null)
@@ -67,7 +67,7 @@
     if (action == 'orders' && canOrders) {
       showOrdersDrawer.value = true
     } else if (action == 'manage_cash_movement' && can('admin.pos_cash_movements.create')) {
-      showCashMovementDrawer.value = true
+      showCajaDrawer.value = true
     } else if (action == 'table_viewer' && can('admin.tables.viewer')) {
       showTableViewerDrawer.value = true
     } else if (action == 'more_print' && can('admin.orders.print')) {
@@ -249,11 +249,13 @@
     v-model="viewOrderDetailsDialog.open"
     :order-id="viewOrderDetailsDialog.orderId"
   />
-  <CashMovementDrawer
+  <CajaDrawer
     v-if="can('admin.pos_cash_movements.create')"
-    v-model="showCashMovementDrawer"
+    v-model="showCajaDrawer"
     :meta="meta"
     :register-id="form.registerId"
+    :session-id="form.sessionId"
+    @session-closed="$emit('reset')"
   />
   <TableViewerDrawer
     v-if="can('admin.tables.viewer')"

@@ -7,3 +7,9 @@ export function show (id: number) {
 export function store (item: Record<string, any>) {
   return http.post(`/v1/pos/cash-movements`, item)
 }
+
+export function index (filters: Record<string, any> = {}) {
+  return http.get(`/v1/pos/cash-movements`, {
+    params: { filters, per_page: filters.per_page ?? 20 },
+  })
+}

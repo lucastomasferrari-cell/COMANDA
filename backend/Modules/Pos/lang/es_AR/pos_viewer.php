@@ -92,7 +92,7 @@ return [
 
     "actions" => [
         "table_viewer" => "Visor de mesas",
-        "manage_cash_movement" => "Movimiento de efectivo",
+        "manage_cash_movement" => "Caja",
         "orders" => "Comandas",
     ],
     "no_active_order" => [
@@ -110,6 +110,28 @@ return [
         "empty_title" => "Sin mesas cargadas",
         "empty_description" => "Creá mesas en Admin > Salón para verlas en el plano.",
         "context_placeholder" => "Acciones rápidas: próximamente",
+    ],
+    "caja" => [
+        "title" => "Caja",
+        "session_active" => "Turno activo",
+        "no_session" => "No hay turno abierto. Abrí un turno para operar.",
+        "opening_balance" => "Saldo inicial",
+        "expected_cash" => "Saldo esperado",
+        "total_in" => "Ingresos del turno",
+        "total_out" => "Egresos del turno",
+        "new_movement" => "Registrar movimiento",
+        "register_movement" => "Registrar",
+        "movement_saved" => "Movimiento registrado",
+        "movements_title" => "Movimientos del turno",
+        "no_movements" => "Todavía no hay movimientos en este turno.",
+        "close_session" => "Cerrar caja",
+        "close_title" => "Arqueo de caja",
+        "close_subtitle" => "Contá el efectivo y registrá el monto real. Si hay diferencia, justificá.",
+        "cash_actual" => "Efectivo contado",
+        "difference" => "Diferencia",
+        "justification" => "Justificación (obligatoria si hay diferencia)",
+        "confirm_close" => "Cerrar caja",
+        "closed_ok" => "Caja cerrada correctamente.",
     ],
     "more_actions" => [
         "label" => "Más acciones",

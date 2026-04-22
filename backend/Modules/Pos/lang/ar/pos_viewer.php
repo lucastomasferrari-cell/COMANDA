@@ -92,7 +92,7 @@ return [
 
     "actions" => [
         "table_viewer" => "عارض الطاولات",
-        "manage_cash_movement" => "إدارة حركة النقد",
+        "manage_cash_movement" => "الصندوق",
         "orders" => "الطلبات",
     ],
     "no_active_order" => [
@@ -110,6 +110,28 @@ return [
         "empty_title" => "لا توجد طاولات",
         "empty_description" => "أنشئ طاولات من لوحة الإدارة > القاعة لعرضها في المخطط.",
         "context_placeholder" => "إجراءات سريعة: قريبًا",
+    ],
+    "caja" => [
+        "title" => "الصندوق",
+        "session_active" => "الوردية النشطة",
+        "no_session" => "لا توجد وردية مفتوحة. افتح وردية للعمل.",
+        "opening_balance" => "الرصيد الافتتاحي",
+        "expected_cash" => "النقد المتوقع",
+        "total_in" => "إيرادات الوردية",
+        "total_out" => "مصاريف الوردية",
+        "new_movement" => "تسجيل حركة",
+        "register_movement" => "تسجيل",
+        "movement_saved" => "تم تسجيل الحركة",
+        "movements_title" => "حركات الوردية",
+        "no_movements" => "لا توجد حركات بعد في هذه الوردية.",
+        "close_session" => "إغلاق الصندوق",
+        "close_title" => "جرد الصندوق",
+        "close_subtitle" => "قم بعد النقد الفعلي وأدخل المبلغ. برر أي فرق.",
+        "cash_actual" => "النقد المعدود",
+        "difference" => "الفرق",
+        "justification" => "التبرير (إلزامي عند وجود فرق)",
+        "confirm_close" => "إغلاق الصندوق",
+        "closed_ok" => "تم إغلاق الصندوق بنجاح.",
     ],
     "more_actions" => [
         "label" => "المزيد من الإجراءات",
