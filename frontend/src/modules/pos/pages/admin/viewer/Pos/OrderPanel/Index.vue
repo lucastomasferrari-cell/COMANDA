@@ -295,20 +295,20 @@
        y todo tiene que ir apilado en vertical. -->
   <div
     v-if="!hasActiveOrder"
-    class="order-panel-empty d-flex flex-column align-center justify-center text-center h-100 px-4"
+    class="order-panel-empty d-flex flex-column align-center text-center h-100 px-4 pt-10"
   >
-    <div class="empty-icon-wrap mb-4">
-      <VIcon color="primary" icon="tabler-clipboard-list" size="56" />
+    <div class="empty-icon-wrap mb-3">
+      <VIcon color="primary" icon="tabler-clipboard-list" size="36" />
     </div>
-    <h3 class="text-h6 mb-2">{{ t('pos::pos_viewer.no_active_order.title') }}</h3>
-    <p class="text-body-2 text-medium-emphasis mb-6">
+    <h3 class="text-subtitle-1 font-weight-medium mb-1">
+      {{ t('pos::pos_viewer.no_active_order.title') }}
+    </h3>
+    <p class="text-body-2 text-medium-emphasis mb-4">
       {{ t('pos::pos_viewer.no_active_order.description') }}
     </p>
     <VBtn
-      block
       color="primary"
       prepend-icon="tabler-plus"
-      size="x-large"
       @click="$emit('new-order')"
     >
       {{ t('pos::pos_viewer.no_active_order.cta_new') }}
@@ -489,8 +489,8 @@
 }
 
 .empty-icon-wrap {
-  width: 96px;
-  height: 96px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   background: rgba(var(--v-theme-primary), 0.08);
   display: flex;

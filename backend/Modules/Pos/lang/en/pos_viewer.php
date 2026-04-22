@@ -243,8 +243,7 @@ return [
         "title" => "Active orders",
         "new_button" => "New",
         "empty" => "No active orders",
-        "empty_hint" => "Tap '+ New' to start",
-        "empty_cta" => "Start a new one",
+        "empty_hint" => "Tap '+ New' above to start",
         "refresh_note" => "Updates every 30s",
         "error_opening" => "Could not open the order.",
         "status_label" => [

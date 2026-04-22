@@ -244,8 +244,7 @@ return [
         "title" => "Comandas activas",
         "new_button" => "Nueva",
         "empty" => "No hay comandas activas",
-        "empty_hint" => "Tocá '+ Nueva' para empezar",
-        "empty_cta" => "Empezar una nueva",
+        "empty_hint" => "Tocá '+ Nueva' arriba para empezar",
         "refresh_note" => "Actualiza cada 30s",
         "error_opening" => "No se pudo abrir la comanda.",
         "status_label" => [
