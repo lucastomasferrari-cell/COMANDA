@@ -3,7 +3,8 @@
   import type { Cart, UseCart } from '@/modules/cart/composables/cart.ts'
   import type { PosForm, PosMeta } from '@/modules/pos/contracts/posViewer.ts'
   import type { useQintrix } from '@/modules/printer/composables/qintrix.ts'
-  import { ref } from 'vue'
+  import { computed, ref } from 'vue'
+  import { useDisplay } from 'vuetify'
   import { useToast } from 'vue-toastification'
   import { useI18n } from 'vue-i18n'
   import { useAuth } from '@/modules/auth/composables/auth.ts'
@@ -49,6 +50,12 @@
   const showStartOrderDialog = ref(false)
   const showPlanoGuestCountDialog = ref(false)
   const pendingPlanoTable = ref<PlanoTable | null>(null)
+
+  // Responsive: lg+ mantiene las 3 columnas inline; md-and-down mueve el
+  // ActiveOrdersPanel a un drawer lateral invocado con boton del TopBar.
+  const display = useDisplay()
+  const isNarrow = computed(() => !display.lgAndUp.value)
+  const showActiveOrdersDrawer = ref(false)
 
   const paymentDialog = ref<Record<string, any>>({ orderId: null, open: false })
   const refundCancelDialog = ref<Record<string, any>>({ orderId: null, open: false })
@@ -181,9 +188,14 @@
        La TopActionsBar vive arriba de todo como sibling de la VRow; contiene
        el toggle Mesas/Rápido y las 4 acciones globales del viewer. -->
   <div class="pos-viewer-layout d-flex flex-column">
-    <TopActionsBar :meta="meta" @on-click-action="onClickAction" />
+    <TopActionsBar
+      :is-narrow="isNarrow"
+      :meta="meta"
+      @on-click-action="onClickAction"
+      @open-active-orders="showActiveOrdersDrawer = true"
+    />
     <VRow class="pos-wrapper flex-grow-1" dense>
-    <VCol cols="12" md="3">
+    <VCol v-if="!isNarrow" cols="12" md="3">
       <VCard class="pos-col-card">
         <ActiveOrdersPanel
           :branch-id="form.branchId"
@@ -193,7 +205,7 @@
         />
       </VCard>
     </VCol>
-    <VCol cols="12" md="5">
+    <VCol cols="12" md="7" lg="5">
       <VCard class="pos-col-card">
         <VCardText class="pa-3">
           <MenuPanel
@@ -208,7 +220,7 @@
         </VCardText>
       </VCard>
     </VCol>
-    <VCol cols="12" md="4">
+    <VCol cols="12" md="5" lg="4">
       <VCard class="pos-col-card">
         <VCardText class="pa-3">
           <OrderPanel
@@ -228,6 +240,22 @@
     </VCol>
     </VRow>
   </div>
+  <!-- En pantallas md-and-down, ActiveOrdersPanel pasa a drawer lateral.
+       Se abre con el botón "☰ Comandas" del TopActionsBar. -->
+  <VNavigationDrawer
+    v-if="isNarrow"
+    v-model="showActiveOrdersDrawer"
+    location="left"
+    temporary
+    :width="340"
+  >
+    <ActiveOrdersPanel
+      :branch-id="form.branchId"
+      :cart-id="cart.cartId"
+      @init-order="(response:Record<string, any>) => { showActiveOrdersDrawer = false; $emit('init-order', response) }"
+      @new-order="() => { showActiveOrdersDrawer = false; onNewOrder() }"
+    />
+  </VNavigationDrawer>
   <StartOrderDialog
     v-model="showStartOrderDialog"
     @open-table-viewer="onStartOrderOpenTable"

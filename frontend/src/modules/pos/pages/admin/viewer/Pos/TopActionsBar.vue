@@ -7,10 +7,12 @@
 
   const props = defineProps<{
     meta: PosMeta
+    isNarrow?: boolean
   }>()
 
   defineEmits<{
     (e: 'on-click-action', value: string): void
+    (e: 'open-active-orders'): void
   }>()
 
   const { t } = useI18n()
@@ -51,6 +53,16 @@
 
 <template>
   <div class="top-actions-bar d-flex align-center ga-3 px-3 py-2">
+    <!-- En md-and-down el ActiveOrdersPanel se colapsa a drawer; boton
+         "☰ Comandas" lo abre. En lg+ el panel vive inline y no mostramos
+         este boton. -->
+    <VBtn
+      v-if="isNarrow"
+      icon="tabler-list"
+      size="small"
+      variant="text"
+      @click="$emit('open-active-orders')"
+    />
     <!-- Segmented control: 2 botones iguales, el activo con fondo primary.
          Usamos div + clicks en vez de VBtnToggle porque el toggle de Vuetify
          corta el texto cuando density='compact' y el styling custom es mas
