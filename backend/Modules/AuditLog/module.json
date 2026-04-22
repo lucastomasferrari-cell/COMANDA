@@ -1,0 +1,11 @@
+{
+    "name": "AuditLog",
+    "alias": "auditlog",
+    "description": "Audit trail append-only para acciones sensibles (anti-fraude).",
+    "keywords": [],
+    "priority": 260,
+    "providers": [
+        "Modules\\AuditLog\\Providers\\AuditLogServiceProvider"
+    ],
+    "files": []
+}

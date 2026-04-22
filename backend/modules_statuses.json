@@ -6,6 +6,7 @@
     "User": true,
     "Media": true,
     "ActivityLog": true,
+    "AuditLog": true,
     "Branch": true,
     "Currency": true,
     "Admin": true,

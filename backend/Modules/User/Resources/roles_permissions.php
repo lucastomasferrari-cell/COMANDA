@@ -148,6 +148,8 @@ return [
         "admin.payments.show",
         "admin.activity_logs.index",
         "admin.activity_logs.show",
+        "admin.audit_logs.index",
+        "admin.audit_logs.show",
         "admin.authentication_logs.index",
         "admin.reports.index",
         "admin.reports.sales",

@@ -1,0 +1,16 @@
+{
+    "name": "forkiva/auditlog",
+    "description": "Audit trail append-only para acciones sensibles.",
+    "authors": [
+        {
+            "name": "Forkiva",
+            "email": "dev@forkiva.app"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Modules\\AuditLog\\": "app/"
+        }
+    }
+}

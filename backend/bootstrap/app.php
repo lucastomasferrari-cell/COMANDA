@@ -32,6 +32,14 @@ return Application::configure(basePath: dirname(__DIR__))
                 ->where('expires_at', '<', now())
                 ->delete();
         })->dailyAt('03:00')->name('idempotency_keys.cleanup')->onOneServer();
+
+        // Archiva + elimina audit logs > 1 año no fiscales. Los fiscales
+        // (AFIP 10 años) NUNCA se tocan acá. El archive queda en
+        // storage/app/audit-archive/YYYY-MM-DD.jsonl.gz.
+        $schedule->command('audit:cleanup')
+            ->dailyAt('03:15')
+            ->name('audit_logs.cleanup')
+            ->onOneServer();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (NotFoundHttpException $exception, Request $request) {
