@@ -93,13 +93,19 @@ return [
     "actions" => [
         "table_viewer" => "عارض الطاولات",
         "manage_cash_movement" => "إدارة حركة النقد",
-        "orders" => "الطلبات",
+        "orders" => "كل الطلبات",
+        "search_order" => "البحث عن طلب",
+    ],
+    "mode" => [
+        "tables" => "طاولات",
+        "quick" => "سريع",
     ],
     "active_orders" => "الطلبات النشطة",
     "upcoming_orders" => "الطلبات القادمة",
     "no_cart_items" => [
-        "title" => "لا توجد عناصر في الطلب",
+        "title" => "ابدأ طلبًا جديدًا",
         "description" => "اختر الأطباق من القائمة لبدء طلبك",
+        "description_tables" => "اختر طاولة أو اختر الأطباق من القائمة للبدء",
     ],
     "order_management" => "إدارة الطلبات",
     "filters" => "عوامل التصفية",

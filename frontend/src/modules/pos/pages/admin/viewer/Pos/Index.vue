@@ -14,15 +14,16 @@
   import TableViewerDrawer from './Drawers/TableViewer/Index.vue'
   import MenuPanel from './MenuPanel/Index.vue'
   import OrderPanel from './OrderPanel/Index.vue'
+  import TopActionsBar from './TopActionsBar.vue'
 
-  defineProps<{
+  const props = defineProps<{
     form: PosForm
     meta: PosMeta
     cart: UseCart
     qintrix: ReturnType<typeof useQintrix>
   }>()
 
-  defineEmits<{
+  const emit = defineEmits<{
     (e: 'init-order', response: Record<string, any>): void
     (e: 'reset', cart?: Cart): void
   }>()
@@ -41,13 +42,22 @@
   const tableViewerDrawerRef = ref()
 
   const onClickAction = (action: string) => {
-    if (action == 'orders' && canOrders) {
+    if ((action == 'orders' || action == 'search_order') && canOrders) {
       showOrdersDrawer.value = true
     } else if (action == 'manage_cash_movement' && can('admin.pos_cash_movements.create')) {
       showCashMovementDrawer.value = true
     } else if (action == 'table_viewer' && can('admin.tables.viewer')) {
       showTableViewerDrawer.value = true
     }
+  }
+
+  // "+ Nueva": si estabas editando una orden o tenias items en el carrito,
+  // hay que limpiar backend y form antes de arrancar la orden nueva.
+  // Mismo patron que el boton "Cancelar pedido" del OrderPanel.
+  const onNewOrder = async () => {
+    if (props.cart.processing.value) return
+    await props.cart.clear()
+    emit('reset')
   }
 
   const storePayment = (orderId: number | string) => {
@@ -97,15 +107,18 @@
 
 <template>
   <!-- Layout 3 columnas: ActiveOrders 25% | Menu 42% | Order 33% en desktop.
-       Mobile/tablet queda stack vertical (cols=12) por ahora; responsive
-       a tablet vertical (drawer colapsable) queda como ticket aparte. -->
-  <VRow class="pos-wrapper" dense>
+       La TopActionsBar vive arriba de todo como sibling de la VRow; contiene
+       el toggle Mesas/Rápido y las 4 acciones globales del viewer. -->
+  <div class="pos-viewer-layout d-flex flex-column">
+    <TopActionsBar :meta="meta" @on-click-action="onClickAction" />
+    <VRow class="pos-wrapper flex-grow-1" dense>
     <VCol cols="12" md="3">
       <VCard class="pos-col-card">
         <ActiveOrdersPanel
           :branch-id="form.branchId"
           :cart-id="cart.cartId"
           @init-order="(response:Record<string, any>) => $emit('init-order', response)"
+          @new-order="onNewOrder"
         />
       </VCard>
     </VCol>
@@ -131,7 +144,8 @@
         </VCardText>
       </VCard>
     </VCol>
-  </VRow>
+    </VRow>
+  </div>
   <OrderDetailsDialog
     v-if="can('admin.orders.show') && viewOrderDetailsDialog.open"
     v-model="viewOrderDetailsDialog.open"
@@ -198,14 +212,20 @@
 </template>
 
 <style lang="scss" scoped>
-.pos-wrapper {
+.pos-viewer-layout {
   height: calc(100vh - var(--v-layout-navbar-height, 72px));
   overflow: hidden;
   min-height: 0;
 }
 
+.pos-wrapper {
+  overflow: hidden;
+  min-height: 0;
+  flex: 1 1 auto;
+}
+
 .pos-col-card {
-  height: 91vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;

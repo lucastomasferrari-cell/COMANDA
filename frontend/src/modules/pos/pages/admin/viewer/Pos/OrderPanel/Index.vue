@@ -7,7 +7,6 @@
   import { useToast } from 'vue-toastification'
   import { useAuth } from '@/modules/auth/composables/auth.ts'
   import { useOrder } from '@/modules/sale/composables/order.ts'
-  import Actions from './Actions.vue'
   import AdditionalInformation from './AdditionalInformation.vue'
   import CartItems from './CartItems/Index.vue'
   import Discount from './Discount.vue'
@@ -231,12 +230,9 @@
        layout 3-cols exterior, el OrderPanel ahora ocupa ~33% de la pantalla
        y todo tiene que ir apilado en vertical. -->
   <div class="order-panel-stack d-flex flex-column" style="min-height: 91vh; gap: 0.5rem;">
-    <!-- Header: actions rapidas + info de orden (mozo/cliente) + canal -->
-    <Actions
-      :form="form"
-      :meta="meta"
-      @on-click-action="(action:string)=>$emit('on-click-action',action)"
-    />
+    <!-- Header: info de orden (mozo/cliente) + canal.
+         Las acciones globales (visor mesas, cash movement, comandas) viven
+         ahora en TopActionsBar a nivel del viewer, no dentro del OrderPanel. -->
     <Header :cart="cart" :form="form" :meta="meta" />
     <OrderTypes
       :cart="cart"

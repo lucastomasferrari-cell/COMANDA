@@ -93,13 +93,19 @@ return [
     "actions" => [
         "table_viewer" => "Visor de mesas",
         "manage_cash_movement" => "Movimiento de efectivo",
-        "orders" => "Pedidos",
+        "orders" => "Todas las comandas",
+        "search_order" => "Buscar comanda",
+    ],
+    "mode" => [
+        "tables" => "Mesas",
+        "quick" => "Rápido",
     ],
     "active_orders" => "Pedidos activos",
     "upcoming_orders" => "Pedidos próximos",
     "no_cart_items" => [
-        "title" => "No hay ítems en el pedido",
+        "title" => "Arrancá una comanda",
         "description" => "Seleccioná platos del menú para comenzar el pedido",
+        "description_tables" => "Elegí una mesa o seleccioná platos del menú para arrancar",
     ],
     "order_management" => "Gestión de pedidos",
     "filters" => "Filtros",

@@ -2,7 +2,6 @@
   import type { AxiosError } from 'axios'
   import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
   import { useI18n } from 'vue-i18n'
-  import { useRouter } from 'vue-router'
   import { useToast } from 'vue-toastification'
   import { useOrder } from '@/modules/sale/composables/order.ts'
 
@@ -13,11 +12,11 @@
 
   const emit = defineEmits<{
     (e: 'init-order', response: Record<string, any>): void
+    (e: 'new-order'): void
   }>()
 
   const { t } = useI18n()
   const { activeOrders, edit } = useOrder()
-  const router = useRouter()
   const toast = useToast()
 
   interface ActiveOrder {
@@ -114,10 +113,7 @@
   }
 
   function newOrder () {
-    router.push({
-      name: 'admin.pos.index',
-      params: { cartId: crypto.randomUUID() },
-    } as any)
+    emit('new-order')
   }
 
   onMounted(() => {

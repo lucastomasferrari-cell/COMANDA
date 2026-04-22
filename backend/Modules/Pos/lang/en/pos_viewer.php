@@ -93,13 +93,19 @@ return [
     "actions" => [
         "table_viewer" => "Table Viewer",
         "manage_cash_movement" => "Cash Movement",
-        "orders" => "Orders",
+        "orders" => "All Orders",
+        "search_order" => "Search Order",
+    ],
+    "mode" => [
+        "tables" => "Tables",
+        "quick" => "Quick",
     ],
     "active_orders" => "Active Orders",
     "upcoming_orders" => "Upcoming Orders",
     "no_cart_items" => [
-        "title" => "No Items in the Order",
+        "title" => "Start a new order",
         "description" => "Select dishes from the menu to start your order",
+        "description_tables" => "Pick a table or select dishes from the menu to start",
     ],
     "order_management" => "Order Management",
     "filters" => "Filters",
