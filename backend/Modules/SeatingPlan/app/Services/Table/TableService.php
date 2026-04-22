@@ -6,6 +6,7 @@ use App\Forkiva;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Support\Facades\DB;
 use Modules\Branch\Models\Branch;
 use Modules\SeatingPlan\Enums\TableShape;
 use Modules\SeatingPlan\Enums\TableStatus;
@@ -158,5 +159,24 @@ class TableService implements TableServiceInterface
             ->with(["changedBy:id,name"])
             ->paginate(Forkiva::paginate())
             ->withQueryString();
+    }
+
+    /** @inheritDoc */
+    public function updatePositions(array $positions): int
+    {
+        return DB::transaction(function () use ($positions): int {
+            $count = 0;
+            foreach ($positions as $row) {
+                $updated = Table::where("id", $row["id"])->update([
+                    "position_x" => $row["position_x"],
+                    "position_y" => $row["position_y"],
+                    "width" => $row["width"],
+                    "height" => $row["height"],
+                    "rotation" => $row["rotation"] ?? 0,
+                ]);
+                $count += $updated;
+            }
+            return $count;
+        });
     }
 }

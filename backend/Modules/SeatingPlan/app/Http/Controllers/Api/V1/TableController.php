@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Modules\Core\Http\Controllers\Controller;
 use Modules\SeatingPlan\Http\Requests\Api\V1\SaveTableRequest;
+use Modules\SeatingPlan\Http\Requests\Api\V1\UpdateTablePositionsRequest;
 use Modules\SeatingPlan\Services\Table\TableServiceInterface;
 use Modules\SeatingPlan\Transformers\Api\V1\TableResource;
 use Modules\SeatingPlan\Transformers\Api\V1\TableStatusLogResource;
@@ -132,6 +133,22 @@ class TableController extends Controller
                     : $request->get('branch_id'),
                 floorId: $request->get('floor_id'),
             )
+        );
+    }
+
+    /**
+     * Batch update de posiciones del plano visual.
+     *
+     * @param UpdateTablePositionsRequest $request
+     * @return JsonResponse
+     */
+    public function updatePositions(UpdateTablePositionsRequest $request): JsonResponse
+    {
+        return ApiResponse::updated(
+            body: [
+                "updated" => $this->service->updatePositions($request->validated()["positions"]),
+            ],
+            resource: $this->service->label()
         );
     }
 }

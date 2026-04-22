@@ -77,6 +77,11 @@ class Table extends Model
         "capacity",
         "status",
         "shape",
+        "position_x",
+        "position_y",
+        "width",
+        "height",
+        "rotation",
         self::ACTIVE_COLUMN_NAME,
         self::BRANCH_COLUMN_NAME,
     ];
@@ -261,6 +266,11 @@ class Table extends Model
         return [
             "status" => TableStatus::class,
             "shape" => TableShape::class,
+            "position_x" => "float",
+            "position_y" => "float",
+            "width" => "float",
+            "height" => "float",
+            "rotation" => "int",
             self::ACTIVE_COLUMN_NAME => 'boolean',
             self::ORDER_COLUMN_NAME => "int"
         ];

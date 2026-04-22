@@ -113,4 +113,13 @@ interface TableServiceInterface
      * @return LengthAwarePaginator
      */
     public function getStatusLogs(int $id): LengthAwarePaginator;
+
+    /**
+     * Batch update de posiciones/tamano/rotacion. Cada row es
+     * ['id', 'position_x', 'position_y', 'width', 'height', 'rotation'].
+     *
+     * @param array $positions
+     * @return int total de mesas actualizadas
+     */
+    public function updatePositions(array $positions): int;
 }

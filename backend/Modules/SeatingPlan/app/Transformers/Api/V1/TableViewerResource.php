@@ -27,6 +27,19 @@ class TableViewerResource extends JsonResource
             ],
             "has_merged" => !is_null($this->current_merge_id),
             "status" => $this->status->toTrans(),
+            "shape" => $this->shape?->value,
+            "position_x" => $this->position_x,
+            "position_y" => $this->position_y,
+            "width" => (float) $this->width,
+            "height" => (float) $this->height,
+            "rotation" => (int) $this->rotation,
+            "capacity" => $this->capacity,
+            "active_order" => $this->whenLoaded("activeOrder", fn () => $this->activeOrder ? [
+                "id" => $this->activeOrder->id,
+                "guest_count" => $this->activeOrder->guest_count,
+                "total" => $this->activeOrder->total,
+                "created_at" => $this->activeOrder->created_at?->toIso8601String(),
+            ] : null),
         ];
     }
 }

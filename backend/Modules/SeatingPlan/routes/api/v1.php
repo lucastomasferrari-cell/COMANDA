@@ -39,12 +39,13 @@ Route::controller(TableController::class)
     ->prefix('tables')
     ->group(function () {
         Route::get('/', 'index')->middleware('can:admin.tables.index');
+        Route::patch('/positions', 'updatePositions')->middleware('can:admin.tables.edit');
+        Route::get('/form/meta', 'getFormMeta')->middleware('permission:admin.tables.edit|admin.tables.create');
         Route::get('/{id}', 'show')->middleware('permission:admin.tables.show|admin.tables.edit');
         Route::get('/{id}/status-logs', 'getStatusLogs')->middleware('can:admin.tables.show');
         Route::post('/', 'store')->middleware('can:admin.tables.create');
         Route::put('/{id}', 'update')->middleware('can:admin.tables.edit');
         Route::delete('/{ids}', 'destroy')->middleware('can:admin.tables.destroy');
-        Route::get('/form/meta', 'getFormMeta')->middleware('permission:admin.tables.edit|admin.tables.create');
     });
 
 Route::controller(TableViewerController::class)
