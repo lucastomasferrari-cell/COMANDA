@@ -45,7 +45,10 @@
         prepend-inner-icon="tabler-git-branch"
         variant="solo-filled"
       />
+      <!-- D.2: si hay un solo menu activo, no tiene sentido el selector.
+           Se muestra el nombre como texto estatico para contexto. -->
       <VSelect
+        v-if="meta.menus.length > 1"
         v-model="form.menuId"
         class="pos-select"
         density="compact"
@@ -58,6 +61,10 @@
         prepend-inner-icon="tabler-list-details"
         variant="solo-filled"
       />
+      <div v-else-if="meta.menus.length === 1" class="pos-menu-label d-flex align-center ga-2">
+        <VIcon icon="tabler-list-details" size="18" />
+        <span>{{ meta.menus[0].name }}</span>
+      </div>
       <VSelect
         v-model="form.registerId"
         class="pos-select"
@@ -103,5 +110,10 @@
 
 .v-input--density-compact .v-field__input {
   font-size: 14px;
+}
+
+.pos-menu-label {
+  color: rgba(var(--v-theme-on-surface), 0.7);
+  font-size: 0.9rem;
 }
 </style>

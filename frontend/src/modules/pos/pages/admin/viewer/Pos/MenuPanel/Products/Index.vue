@@ -104,7 +104,11 @@
   })
 
   const hasActiveSearch = computed(() => debouncedSearchQuery.value?.trim().length > 0)
+  const hasActiveCategory = computed(() => props.activeCategories.length > 0)
   const showNoResults = computed(() => visibleProducts.value.length === 0 && hasActiveSearch.value)
+  const showEmptyCategory = computed(() =>
+    visibleProducts.value.length === 0 && hasActiveCategory.value && !hasActiveSearch.value,
+  )
 
   const openProductOptionDialog = (product: Product) => {
     productOptionDialog.value = { open: true, product: product }
@@ -120,6 +124,16 @@
     <h4 class="mb-1 font-weight-medium">No se encontró ningún producto</h4>
     <p class="text-body-2 text-medium-emphasis mb-0">
       Probá con otra palabra o revisá la categoría seleccionada.
+    </p>
+  </div>
+  <div
+    v-else-if="showEmptyCategory"
+    class="no-results-state d-flex flex-column align-center justify-center text-center py-8 px-4"
+  >
+    <VIcon class="mb-3" color="grey-500" icon="tabler-basket" size="48" />
+    <h4 class="mb-1 font-weight-medium">No hay productos en esta categoría</h4>
+    <p class="text-body-2 text-medium-emphasis mb-0">
+      Cambiá de categoría o cargá productos desde Menú → Productos.
     </p>
   </div>
   <VVirtualScroll
