@@ -1019,6 +1019,23 @@ class Order extends Model
     }
 
     /**
+     * Guard centralizado para writes sobre la orden. Tirar 422 si la
+     * orden esta en estado terminal (paid/refunded/cancelled/merged).
+     * El reopen real vive como flujo aparte via refund/credit note —
+     * no re-habilita updates libres.
+     *
+     * @throws \Symfony\Component\HttpKernel\Exception\HttpException
+     */
+    public function ensureEditable(): void
+    {
+        abort_unless(
+            $this->editIsAllowed(),
+            422,
+            __('order::messages.edit_not_allowed'),
+        );
+    }
+
+    /**
      * Update Or Create Discount
      *
      * @param CartDiscount|null $discount

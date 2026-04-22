@@ -8,6 +8,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Collection;
+use Modules\AuditLog\Services\AuditLogger;
 use Modules\Branch\Models\Branch;
 use Modules\Cart\Facades\Cart;
 use Modules\Order\Enums\OrderPaymentStatus;
@@ -88,6 +89,7 @@ class OrderService implements OrderServiceInterface
         );
 
         DB::transaction(function () use ($order, $data, $activeSession) {
+            $previousStatus = $order->status?->value;
             $order->update(['status' => OrderStatus::Cancelled]);
 
             event(new OrderUpdateStatus(
@@ -108,6 +110,18 @@ class OrderService implements OrderServiceInterface
                 note: $data['note'] ?? null,
                 giftCardCode: $data['gift_card_code'] ?? null
             ));
+
+            AuditLogger::log('order_cancelled', $order, [
+                'reason' => $data['note'] ?? null,
+                'old_values' => ['status' => $previousStatus],
+                'new_values' => ['status' => OrderStatus::Cancelled->value],
+                'metadata' => [
+                    'reason_id' => $data['reason_id'] ?? null,
+                    'refund_payment_method' => $data['refund_payment_method'] ?? null,
+                    'register_id' => $data['register_id'] ?? null,
+                ],
+                'is_fiscal' => false,
+            ]);
         });
     }
 
@@ -148,6 +162,7 @@ class OrderService implements OrderServiceInterface
         );
 
         DB::transaction(function () use ($order, $activeSession, $data) {
+            $previousStatus = $order->status?->value;
             $order->update(['status' => OrderStatus::Refunded]);
 
             event(new OrderUpdateStatus(
@@ -168,6 +183,23 @@ class OrderService implements OrderServiceInterface
                 note: $data['note'] ?? null,
                 giftCardCode: $data['gift_card_code'] ?? null
             ));
+
+            // Refund toca facturacion AFIP — is_fiscal=true bloquea el
+            // cleanup de 1 año (retencion 10 años legal).
+            AuditLogger::log('order_refunded', $order, [
+                'reason' => $data['note'] ?? null,
+                'old_values' => [
+                    'status' => $previousStatus,
+                    'total' => $order->total?->amount(),
+                ],
+                'new_values' => ['status' => OrderStatus::Refunded->value],
+                'metadata' => [
+                    'reason_id' => $data['reason_id'] ?? null,
+                    'refund_payment_method' => $data['refund_payment_method'] ?? null,
+                    'register_id' => $data['register_id'] ?? null,
+                ],
+                'is_fiscal' => true,
+            ]);
         });
     }
 
@@ -586,21 +618,10 @@ class OrderService implements OrderServiceInterface
             /** @var Order $order */
             $order = $this->findOrFail($id);
 
-            // Estados donde tiene sentido agregar items: pending, confirmed,
-            // preparing, ready, served. No aceptamos en completed / cancelled
-            // / refunded / merged.
-            $allowedStatuses = [
-                OrderStatus::Pending,
-                OrderStatus::Confirmed,
-                OrderStatus::Preparing,
-                OrderStatus::Ready,
-                OrderStatus::Served,
-            ];
-            abort_unless(
-                in_array($order->status, $allowedStatuses, true),
-                422,
-                __("order::messages.custom_product_invalid_status"),
-            );
+            // Unifica check con el resto de mutations. ensureEditable
+            // cubre paid/refunded/cancelled/merged — mismo guard que
+            // SaveOrderService::update.
+            $order->ensureEditable();
 
             $quantity = max(1, (int) ($data["quantity"] ?? 1));
             $price = (float) $data["custom_price"];

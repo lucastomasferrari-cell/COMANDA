@@ -73,6 +73,7 @@ enum PermissionAction: string
     case Redeem = "redeem";
     case AvailableGifts = "available_gifts";
     case Print = "print";
+    case Reopen = "reopen";
 
     case LoyaltyLastActivity = "loyalty_last_activity";
     case LoyaltyInactiveCustomers = "loyalty_inactive_customers";

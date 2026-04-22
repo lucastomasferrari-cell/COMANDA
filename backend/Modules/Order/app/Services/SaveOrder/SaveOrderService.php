@@ -167,6 +167,11 @@ class SaveOrderService implements SaveOrderServiceInterface
         /** @var Order $order */
         $order = Order::query()->with(["branch", "products"])->findOrFail($id);
 
+        // Guard inmutabilidad post-cobro: si la orden esta paid/refunded/
+        // cancelled/merged, no aceptamos writes. El reopen real vive
+        // como flujo separado (refund parcial / nota de credito).
+        $order->ensureEditable();
+
         $user = auth()->user();
 
         $scale = Currency::subunit($order->currency);

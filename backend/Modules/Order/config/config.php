@@ -17,6 +17,7 @@ return [
             Action::UpdateStatus,
             Action::Financials,
             Action::Print,
+            Action::Reopen,
         ],
         "reasons" => [Action::Index, Action::Show, Action::Create, Action::Edit, Action::Destroy]
     ],
