@@ -85,24 +85,20 @@ const adminRoutes: RouteRecordRaw[] = [
         meta: { permission: 'admin.printers.index' },
       },
       {
-        // KDS existe como ruta full-screen aparte (admin.pos.kitchen_viewer).
-        // Esta tab renderiza un placeholder con enlace por si el operador
-        // cayo aca desde el sidebar. El sidebar top-level linkea directo.
+        // KDS full-screen sigue siendo ruta aparte (admin.pos.kitchen_viewer)
+        // con icono en el top bar. Esta tab ahora hosta la configuracion
+        // del KDS (checkbox auto-refresh + pause_on_idle) — antes estaba
+        // como tab separada "ajustes". Fusion hace un solo tab para todo
+        // lo del display de cocina: settings + deeplink al full-screen.
         path: 'kds',
         name: 'admin.cocina.kds',
-        component: () => import('@/modules/core/components/ComingSoonPlaceholder.vue'),
+        component: () => import('@/modules/setting/pages/admin/setting/Kitchen.vue'),
+        meta: { permission: 'admin.settings.edit' },
       },
       {
         path: 'reglas-de-impresion',
         name: 'admin.cocina.reglas',
         component: () => import('@/modules/core/components/ComingSoonPlaceholder.vue'),
-      },
-      {
-        // Kitchen settings movido desde Configuracion > General (Bloque 4.2).
-        path: 'ajustes',
-        name: 'admin.cocina.ajustes',
-        component: () => import('@/modules/setting/pages/admin/setting/Kitchen.vue'),
-        meta: { permission: 'admin.settings.edit' },
       },
     ],
   },

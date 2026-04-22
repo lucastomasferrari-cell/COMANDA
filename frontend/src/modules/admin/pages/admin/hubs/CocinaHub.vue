@@ -5,11 +5,14 @@
 
   const { t } = useI18n()
 
+  // Tabs del hub Cocina. "KDS" absorbe la config de cocina (el tab
+  // separado "Ajustes" con solo el checkbox de auto-refresh quedaba
+  // redundante — la configuracion pertenece al mismo dominio que el
+  // display de cocina).
   const tabs = computed(() => [
     { label: t('admin::sidebar.printers'), to: { name: 'admin.cocina.impresoras' } },
     { label: t('admin::sidebar.kds'), to: { name: 'admin.cocina.kds' } },
     { label: t('admin::sidebar.print_rules'), to: { name: 'admin.cocina.reglas' } },
-    { label: t('setting::settings.sections.kitchen'), to: { name: 'admin.cocina.ajustes' } },
   ])
 </script>
 
