@@ -102,7 +102,11 @@
   <VRow class="pos-wrapper" dense>
     <VCol cols="12" md="3">
       <VCard class="pos-col-card">
-        <ActiveOrdersPanel :branch-id="form.branchId" :cart-id="cart.cartId" />
+        <ActiveOrdersPanel
+          :branch-id="form.branchId"
+          :cart-id="cart.cartId"
+          @init-order="(response:Record<string, any>) => $emit('init-order', response)"
+        />
       </VCard>
     </VCol>
     <VCol cols="12" md="5">
