@@ -111,6 +111,17 @@ return [
         "message_tables" => "Tocá una mesa del plano o creá una orden rápida para empezar a cargar productos.",
         "message_quick" => "Tocá '+ Nueva' en la columna izquierda para abrir una tab.",
     ],
+    "start_order_dialog" => [
+        "title" => "¿Cómo querés arrancar?",
+        "table" => [
+            "title" => "Abrir mesa",
+            "subtitle" => "Elegí una mesa del visor",
+        ],
+        "quick" => [
+            "title" => "Orden rápida",
+            "subtitle" => "Sin mesa, para llevar o mostrador",
+        ],
+    ],
     "active_orders" => "Pedidos activos",
     "upcoming_orders" => "Pedidos próximos",
     "no_cart_items" => [

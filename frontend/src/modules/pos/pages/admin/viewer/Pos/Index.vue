@@ -4,11 +4,13 @@
   import type { useQintrix } from '@/modules/printer/composables/qintrix.ts'
   import { ref } from 'vue'
   import { useAuth } from '@/modules/auth/composables/auth.ts'
+  import { usePosViewerMode } from '@/modules/pos/composables/usePosViewerMode.ts'
   import OrderDetailsDialog from '@/modules/pos/pages/admin/viewer/Pos/Dialogs/OrderDetails/Index.vue'
   import PaymentDialog from '@/modules/pos/pages/admin/viewer/Pos/Dialogs/Payment/Index.vue'
   import OrdersDrawer from '@/modules/pos/pages/admin/viewer/Pos/Drawers/Orders/Index.vue'
   import OrderPrintDialog from './Dialogs/OrderPrint/Index.vue'
   import RefundCancelDialog from './Dialogs/RefundCancelDialog.vue'
+  import StartOrderDialog from './Dialogs/StartOrderDialog.vue'
   import ActiveOrdersPanel from './ActiveOrdersPanel/Index.vue'
   import CashMovementDrawer from './Drawers/CashMovement/Index.vue'
   import TableViewerDrawer from './Drawers/TableViewer/Index.vue'
@@ -30,11 +32,13 @@
     (e: 'reset', cart?: Cart): void
   }>()
   const { can } = useAuth()
+  const { mode: viewerMode } = usePosViewerMode()
 
   const canOrders = can('admin.orders.upcoming') || can('admin.orders.active')
   const showOrdersDrawer = ref(false)
   const showCashMovementDrawer = ref(false)
   const showTableViewerDrawer = ref(false)
+  const showStartOrderDialog = ref(false)
 
   const paymentDialog = ref<Record<string, any>>({ orderId: null, open: false })
   const refundCancelDialog = ref<Record<string, any>>({ orderId: null, open: false })
@@ -53,10 +57,24 @@
     }
   }
 
-  // "+ Nueva" delega en el composable startNewOrder, que prende el flag
-  // hasActiveOrder inmediatamente (para mutar la UI) y limpia el cart en
-  // background.
-  const onNewOrder = () => props.startNewOrder()
+  // "+ Nueva" bifurca por modo del viewer:
+  //   - Modo Mesas: abrimos el dialog de seleccion (abrir mesa vs rapida).
+  //   - Modo Rapido: vamos directo, sin dialog de por medio.
+  const onNewOrder = () => {
+    if (viewerMode.value === 'tables') {
+      showStartOrderDialog.value = true
+    } else {
+      props.startNewOrder()
+    }
+  }
+
+  const onStartOrderQuick = () => props.startNewOrder()
+
+  const onStartOrderOpenTable = () => {
+    if (can('admin.tables.viewer')) {
+      showTableViewerDrawer.value = true
+    }
+  }
 
   const storePayment = (orderId: number | string) => {
     if (can('admin.orders.receive_payment')) {
@@ -151,6 +169,11 @@
     </VCol>
     </VRow>
   </div>
+  <StartOrderDialog
+    v-model="showStartOrderDialog"
+    @open-table-viewer="onStartOrderOpenTable"
+    @quick="onStartOrderQuick"
+  />
   <OrderDetailsDialog
     v-if="can('admin.orders.show') && viewOrderDetailsDialog.open"
     v-model="viewOrderDetailsDialog.open"

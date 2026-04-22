@@ -111,6 +111,17 @@ return [
         "message_tables" => "Tap a table on the floor or start a quick order to begin adding products.",
         "message_quick" => "Tap '+ New' in the left column to open a tab.",
     ],
+    "start_order_dialog" => [
+        "title" => "How do you want to start?",
+        "table" => [
+            "title" => "Open a table",
+            "subtitle" => "Pick a table from the viewer",
+        ],
+        "quick" => [
+            "title" => "Quick order",
+            "subtitle" => "No table, takeaway or counter",
+        ],
+    ],
     "active_orders" => "Active Orders",
     "upcoming_orders" => "Upcoming Orders",
     "no_cart_items" => [
