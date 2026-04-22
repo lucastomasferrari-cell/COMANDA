@@ -189,7 +189,8 @@ return [
     "active_orders" => [
         "title" => "Active orders",
         "new_button" => "New",
-        "empty" => "No active orders.",
+        "empty" => "No active orders",
+        "empty_hint" => "Tap '+ New' to start",
         "empty_cta" => "Start a new one",
         "refresh_note" => "Updates every 30s",
         "error_opening" => "Could not open the order.",

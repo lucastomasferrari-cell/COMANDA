@@ -190,7 +190,8 @@ return [
     "active_orders" => [
         "title" => "Comandas activas",
         "new_button" => "Nueva",
-        "empty" => "No hay comandas activas.",
+        "empty" => "No hay comandas activas",
+        "empty_hint" => "Tocá '+ Nueva' para empezar",
         "empty_cta" => "Empezar una nueva",
         "refresh_note" => "Actualiza cada 30s",
         "error_opening" => "No se pudo abrir la comanda.",

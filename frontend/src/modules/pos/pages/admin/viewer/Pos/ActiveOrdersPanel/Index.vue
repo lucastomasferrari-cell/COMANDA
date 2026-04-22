@@ -155,11 +155,22 @@
       v-else-if="orders.length === 0"
       class="flex-grow-1 d-flex flex-column align-center justify-center text-center px-4"
     >
-      <VIcon class="mb-2" color="grey-500" icon="tabler-inbox" size="40" />
-      <p class="text-body-2 text-medium-emphasis mb-3">
+      <div class="empty-icon-wrap mb-3">
+        <VIcon color="primary" icon="tabler-inbox" size="36" />
+      </div>
+      <p class="text-subtitle-2 font-weight-medium mb-1">
         {{ t('pos::pos_viewer.active_orders.empty') }}
       </p>
-      <VBtn color="primary" prepend-icon="tabler-plus" @click="newOrder">
+      <p class="text-caption text-medium-emphasis mb-4">
+        {{ t('pos::pos_viewer.active_orders.empty_hint') }}
+      </p>
+      <VBtn
+        block
+        color="primary"
+        prepend-icon="tabler-plus"
+        size="large"
+        @click="newOrder"
+      >
         {{ t('pos::pos_viewer.active_orders.empty_cta') }}
       </VBtn>
     </div>
@@ -258,5 +269,14 @@
   border-radius: 50%;
   margin-right: 4px;
   vertical-align: middle;
+}
+.empty-icon-wrap {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: rgba(var(--v-theme-primary), 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
