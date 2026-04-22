@@ -6,6 +6,7 @@
   import { useI18n } from 'vue-i18n'
   import { useToast } from 'vue-toastification'
   import { useAuth } from '@/modules/auth/composables/auth.ts'
+  import { usePosViewerMode } from '@/modules/pos/composables/usePosViewerMode.ts'
   import { useOrder } from '@/modules/sale/composables/order.ts'
   import AdditionalInformation from './AdditionalInformation.vue'
   import CartItems from './CartItems/Index.vue'
@@ -21,6 +22,7 @@
     meta: PosMeta
     cart: UseCart
     qintrix: ReturnType<typeof useQintrix>
+    hasActiveOrder: boolean
   }>()
 
   const emit = defineEmits<{
@@ -28,12 +30,14 @@
     (e: 'on-click-action', value: string): void
     (e: 'store-payment', value: string | number): void
     (e: 'reset', cart?: Cart): void
+    (e: 'new-order'): void
   }>()
 
   const { t } = useI18n()
   const toast = useToast()
   const { getPrintMeta, printPreview, store, update } = useOrder()
   const { can } = useAuth()
+  const { mode: viewerMode } = usePosViewerMode()
 
   const { processing, data, clear, cartId } = props.cart
   const { refundPaymentMethod } = toRefs(props.form)
@@ -229,7 +233,40 @@
        Antes era 2 sub-cols (7/5) que asumia pantalla ancha — con el nuevo
        layout 3-cols exterior, el OrderPanel ahora ocupa ~33% de la pantalla
        y todo tiene que ir apilado en vertical. -->
-  <div class="order-panel-stack d-flex flex-column" style="min-height: 91vh; gap: 0.5rem;">
+  <div
+    v-if="!hasActiveOrder"
+    class="order-panel-empty d-flex flex-column align-center justify-center text-center h-100 px-4"
+  >
+    <div class="empty-icon-wrap mb-4">
+      <VIcon color="primary" icon="tabler-clipboard-list" size="56" />
+    </div>
+    <h3 class="text-h6 mb-2">{{ t('pos::pos_viewer.no_active_order.title') }}</h3>
+    <p class="text-body-2 text-medium-emphasis mb-6">
+      {{ t('pos::pos_viewer.no_active_order.description') }}
+    </p>
+    <VBtn
+      block
+      color="primary"
+      prepend-icon="tabler-plus"
+      size="x-large"
+      @click="$emit('new-order')"
+    >
+      {{ t('pos::pos_viewer.no_active_order.cta_new') }}
+    </VBtn>
+    <VBtn
+      v-if="viewerMode === 'tables' && can('admin.tables.viewer')"
+      block
+      class="mt-2"
+      color="primary"
+      prepend-icon="tabler-brand-airtable"
+      size="large"
+      variant="tonal"
+      @click="$emit('on-click-action', 'table_viewer')"
+    >
+      {{ t('pos::pos_viewer.no_active_order.cta_table') }}
+    </VBtn>
+  </div>
+  <div v-else class="order-panel-stack d-flex flex-column" style="min-height: 91vh; gap: 0.5rem;">
     <!-- Header: info de orden (mozo/cliente) + canal.
          Las acciones globales (visor mesas, cash movement, comandas) viven
          ahora en TopActionsBar a nivel del viewer, no dentro del OrderPanel. -->
@@ -339,5 +376,19 @@
   flex-shrink: 0;
   border-top: thin solid rgba(var(--v-theme-on-surface), 0.08);
   padding-top: 0.5rem;
+}
+
+.order-panel-empty {
+  min-height: 80vh;
+}
+
+.empty-icon-wrap {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: rgba(var(--v-theme-primary), 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

@@ -21,6 +21,8 @@
     meta: PosMeta
     cart: UseCart
     qintrix: ReturnType<typeof useQintrix>
+    hasActiveOrder: boolean
+    startNewOrder: () => Promise<void>
   }>()
 
   const emit = defineEmits<{
@@ -51,14 +53,10 @@
     }
   }
 
-  // "+ Nueva": si estabas editando una orden o tenias items en el carrito,
-  // hay que limpiar backend y form antes de arrancar la orden nueva.
-  // Mismo patron que el boton "Cancelar pedido" del OrderPanel.
-  const onNewOrder = async () => {
-    if (props.cart.processing.value) return
-    await props.cart.clear()
-    emit('reset')
-  }
+  // "+ Nueva" delega en el composable startNewOrder, que prende el flag
+  // hasActiveOrder inmediatamente (para mutar la UI) y limpia el cart en
+  // background.
+  const onNewOrder = () => props.startNewOrder()
 
   const storePayment = (orderId: number | string) => {
     if (can('admin.orders.receive_payment')) {
@@ -125,7 +123,12 @@
     <VCol cols="12" md="5">
       <VCard class="pos-col-card">
         <VCardText class="pa-3">
-          <MenuPanel :cart="cart" :form="form" :meta="meta" />
+          <MenuPanel
+            :cart="cart"
+            :form="form"
+            :has-active-order="hasActiveOrder"
+            :meta="meta"
+          />
         </VCardText>
       </VCard>
     </VCol>
@@ -135,8 +138,10 @@
           <OrderPanel
             :cart="cart"
             :form="form"
+            :has-active-order="hasActiveOrder"
             :meta="meta"
             :qintrix="qintrix"
+            @new-order="onNewOrder"
             @on-click-action="onClickAction"
             @reset="(cartData?:Cart)=>$emit('reset',cartData)"
             @store-payment="storePayment"

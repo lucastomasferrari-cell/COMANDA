@@ -12,6 +12,8 @@
     loadConfiguration,
     loadMenuItems,
     hasConfigurationErrors,
+    hasActiveOrder,
+    startNewOrder,
     form,
     meta,
     cart,
@@ -47,8 +49,10 @@
       v-else
       :cart="cart"
       :form="form"
+      :has-active-order="hasActiveOrder"
       :meta="meta"
       :qintrix="qintrix"
+      :start-new-order="startNewOrder"
       @init-order="initOrder"
       @reset="reset"
     />

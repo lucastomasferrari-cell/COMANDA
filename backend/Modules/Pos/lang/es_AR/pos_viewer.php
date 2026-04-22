@@ -100,6 +100,12 @@ return [
         "tables" => "Mesas",
         "quick" => "Rápido",
     ],
+    "no_active_order" => [
+        "title" => "Sin comanda activa",
+        "description" => "Abrí una mesa o creá una orden rápida para empezar",
+        "cta_new" => "Nueva orden",
+        "cta_table" => "Abrir mesa",
+    ],
     "active_orders" => "Pedidos activos",
     "upcoming_orders" => "Pedidos próximos",
     "no_cart_items" => [

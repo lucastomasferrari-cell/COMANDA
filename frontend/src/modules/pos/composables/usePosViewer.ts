@@ -58,6 +58,14 @@ export function usePosViewer (cartId: string) {
   const form = ref<PosForm>(structuredClone(defaultForm))
   const skipNextMenuLoad = ref(false)
 
+  // Flag explícito de intencion: solo es true cuando el user arranca una orden
+  // (click "+ Nueva" o abre una existente desde ActiveOrdersPanel). Sin esto,
+  // al entrar al POS el cart está en create mode vacio pero no queremos mostrar
+  // el panel de orden aún — queremos empty state con CTA.
+  const newOrderStarted = ref(false)
+
+  const hasActiveOrder = computed(() => form.value.mode === 'edit' || newOrderStarted.value)
+
   const hasOpenSession = computed(() => meta.value.registers.length > 0 && form.value.sessionId != null)
 
   const hasConfigurationErrors = computed(() =>
@@ -174,6 +182,27 @@ export function usePosViewer (cartId: string) {
       waiter: null,
       table: null,
     }
+    newOrderStarted.value = false
+  }
+
+  // Arranca una orden nueva en create mode. Prende el flag enseguida para que
+  // la UI mute el empty state sin esperar al backend; si cart.clear falla,
+  // revertimos.
+  const startNewOrder = async () => {
+    if (cart.processing.value) return
+    newOrderStarted.value = true
+    try {
+      await cart.clear()
+      form.value = {
+        ...form.value,
+        meta: { ...structuredClone(defaultForm).meta },
+        mode: 'create',
+        waiter: null,
+        table: null,
+      }
+    } catch {
+      newOrderStarted.value = false
+    }
   }
 
   return {
@@ -184,6 +213,8 @@ export function usePosViewer (cartId: string) {
     loadMenuItems,
     hasConfigurationErrors,
     hasOpenSession,
+    hasActiveOrder,
+    startNewOrder,
     meta,
     qintrix,
     form,

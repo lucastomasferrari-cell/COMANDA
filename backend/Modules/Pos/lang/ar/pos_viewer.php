@@ -100,6 +100,12 @@ return [
         "tables" => "طاولات",
         "quick" => "سريع",
     ],
+    "no_active_order" => [
+        "title" => "لا يوجد طلب نشط",
+        "description" => "افتح طاولة أو ابدأ طلبًا سريعًا للبدء",
+        "cta_new" => "طلب جديد",
+        "cta_table" => "فتح طاولة",
+    ],
     "active_orders" => "الطلبات النشطة",
     "upcoming_orders" => "الطلبات القادمة",
     "no_cart_items" => [

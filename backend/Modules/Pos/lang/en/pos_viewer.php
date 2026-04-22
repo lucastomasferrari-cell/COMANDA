@@ -100,6 +100,12 @@ return [
         "tables" => "Tables",
         "quick" => "Quick",
     ],
+    "no_active_order" => [
+        "title" => "No active order",
+        "description" => "Open a table or start a quick order to begin",
+        "cta_new" => "New order",
+        "cta_table" => "Open table",
+    ],
     "active_orders" => "Active Orders",
     "upcoming_orders" => "Upcoming Orders",
     "no_cart_items" => [
