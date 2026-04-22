@@ -133,6 +133,16 @@ return [
         "empty_description" => "Create tables in Admin > Floor to see them on the plan.",
         "context_placeholder" => "Quick actions: coming soon",
     ],
+    "more_actions" => [
+        "label" => "More actions",
+        "coming_soon" => "Coming soon",
+        "items" => [
+            "apply_discount" => "Apply overall discount",
+            "split_bill" => "Split bill",
+            "change_table" => "Change table",
+            "print" => "Print order",
+        ],
+    ],
     "item_menu" => [
         "edit_qty" => "Edit quantity",
         "add_note" => "Add note",

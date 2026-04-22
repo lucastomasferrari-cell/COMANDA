@@ -133,6 +133,16 @@ return [
         "empty_description" => "Creá mesas en Admin > Salón para verlas en el plano.",
         "context_placeholder" => "Acciones rápidas: próximamente",
     ],
+    "more_actions" => [
+        "label" => "Más acciones",
+        "coming_soon" => "Próximamente",
+        "items" => [
+            "apply_discount" => "Aplicar descuento general",
+            "split_bill" => "Dividir cuenta",
+            "change_table" => "Cambiar de mesa",
+            "print" => "Imprimir comanda",
+        ],
+    ],
     "item_menu" => [
         "edit_qty" => "Editar cantidad",
         "add_note" => "Agregar nota",

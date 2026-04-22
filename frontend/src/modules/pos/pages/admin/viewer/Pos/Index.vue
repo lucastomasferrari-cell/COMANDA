@@ -56,6 +56,9 @@
   const showOrderPrintDialog = ref<Record<string, any>>({ orderId: null, open: false })
   const ordersDrawerRef = ref()
   const tableViewerDrawerRef = ref()
+  const menuPanelRef = ref<any>(null)
+
+  const onFocusMenuSearch = () => menuPanelRef.value?.focusSearch?.()
 
   const onClickAction = (action: string) => {
     if ((action == 'orders' || action == 'search_order') && canOrders) {
@@ -183,6 +186,7 @@
       <VCard class="pos-col-card">
         <VCardText class="pa-3">
           <MenuPanel
+            ref="menuPanelRef"
             :cart="cart"
             :form="form"
             :has-active-order="hasActiveOrder"
@@ -202,6 +206,7 @@
             :has-active-order="hasActiveOrder"
             :meta="meta"
             :qintrix="qintrix"
+            @focus-menu-search="onFocusMenuSearch"
             @new-order="onNewOrder"
             @on-click-action="onClickAction"
             @reset="(cartData?:Cart)=>$emit('reset',cartData)"

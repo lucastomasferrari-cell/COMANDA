@@ -27,6 +27,7 @@
 
   const activeCategories = ref<Category[]>([])
   const searchQuery = ref<string>('')
+  const searchInputRef = ref<any>(null)
 
   const promptMessage = computed(() => mode.value === 'tables'
     ? t('pos::pos_viewer.menu_prompt.message_tables')
@@ -35,6 +36,12 @@
   const onChangeRootCategory = (category?: Category | null) => {
     activeCategories.value = category ? [category] : []
   }
+
+  // Expuesto al padre para que el OrderPanel pueda delegar foco al search
+  // con ESC, sin bajar una ref hasta adentro.
+  defineExpose({
+    focusSearch: () => searchInputRef.value?.focus?.(),
+  })
 
 </script>
 
@@ -65,6 +72,7 @@
       <template v-if="meta.products.length > 0">
         <div class="mb-2">
           <VTextField
+            ref="searchInputRef"
             v-model="searchQuery"
             autofocus
             clearable

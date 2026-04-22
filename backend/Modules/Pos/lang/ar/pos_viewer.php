@@ -133,6 +133,16 @@ return [
         "empty_description" => "أنشئ طاولات من لوحة الإدارة > القاعة لعرضها في المخطط.",
         "context_placeholder" => "إجراءات سريعة: قريبًا",
     ],
+    "more_actions" => [
+        "label" => "المزيد من الإجراءات",
+        "coming_soon" => "قريبًا",
+        "items" => [
+            "apply_discount" => "تطبيق خصم عام",
+            "split_bill" => "تقسيم الفاتورة",
+            "change_table" => "تغيير الطاولة",
+            "print" => "طباعة الطلب",
+        ],
+    ],
     "item_menu" => [
         "edit_qty" => "تعديل الكمية",
         "add_note" => "إضافة ملاحظة",

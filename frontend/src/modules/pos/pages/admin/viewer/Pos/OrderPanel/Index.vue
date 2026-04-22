@@ -2,7 +2,7 @@
   import type { Cart, UseCart } from '@/modules/cart/composables/cart.ts'
   import type { PosForm, PosMeta } from '@/modules/pos/contracts/posViewer.ts'
   import type { useQintrix } from '@/modules/printer/composables/qintrix.ts'
-  import { ref } from 'vue'
+  import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { useToast } from 'vue-toastification'
   import { useAuth } from '@/modules/auth/composables/auth.ts'
@@ -31,6 +31,7 @@
     (e: 'store-payment', value: string | number): void
     (e: 'reset', cart?: Cart): void
     (e: 'new-order'): void
+    (e: 'focus-menu-search'): void
   }>()
 
   const { t } = useI18n()
@@ -62,6 +63,15 @@
       || !props.form.registerId
       || (isEditMode.value && overpaidAmount.value > 0 && !props.form.refundPaymentMethod)
   })
+
+  // Mostrar "Cobrar" cuando el canal no es dine_in (salón no paga en caja
+  // de la comanda) y el user puede recibir pagos. No bloquea en edit mode
+  // si hubo overpaid negativo (queda solo el Enviar a cocina ampliado).
+  const canShowPay = computed(() =>
+    data.value.orderType?.id !== 'dine_in'
+    && canReceivePayment.value
+    && (!isEditMode.value || overpaidAmount.value < 0),
+  )
 
   const submitState = ref<{
     action: null | 'send_to_kitchen' | 'hold_order' | 'pay_and_fire'
@@ -226,6 +236,35 @@
 
     return scheduledDate <= today
   }
+
+  // Keyboard shortcuts (Enter / Ctrl+Enter / ESC). Solo activos cuando hay
+  // orden activa y el foco NO esta en un input/textarea/contenteditable —
+  // asi no interferimos con la busqueda de productos ni los campos del form.
+  const onGlobalKeydown = (ev: KeyboardEvent) => {
+    if (!props.hasActiveOrder) return
+    const target = ev.target as HTMLElement | null
+    const tag = target?.tagName?.toLowerCase()
+    const isTextInput = tag === 'input' || tag === 'textarea' || target?.isContentEditable
+    if (ev.key === 'Escape') {
+      if (isTextInput) return
+      emit('focus-menu-search')
+      return
+    }
+    if (ev.key !== 'Enter') return
+    if (isTextInput) return
+    if (isSubmitDisabled.value || submitState.value.action != null) return
+    if (ev.ctrlKey || ev.metaKey) {
+      if (!canShowPay.value) return
+      ev.preventDefault()
+      submit('pay_and_fire')
+      return
+    }
+    ev.preventDefault()
+    submit('send_to_kitchen')
+  }
+
+  onMounted(() => { window.addEventListener('keydown', onGlobalKeydown) })
+  onBeforeUnmount(() => { window.removeEventListener('keydown', onGlobalKeydown) })
 </script>
 
 <template>
@@ -289,18 +328,17 @@
     <div class="order-panel-footer">
       <Discount :cart="cart" :meta="meta" />
       <Invoice :amount-due="amountDue" :cart="cart" :is-edit-mode="isEditMode" />
-      <VRow class="mt-2" dense>
-        <VCol v-if="hasRefundAmount" cols="12">
+      <VRow v-if="hasRefundAmount" class="mt-2" dense>
+        <VCol cols="12">
           <RefundPaymentMethod :form="form" :meta="meta" :overpaid-amount="overpaidAmount" />
         </VCol>
-        <VCol
-          v-if="!isEditMode"
-          cols="12"
-          :md="canReceivePayment && data.orderType?.id != 'dine_in'?6:12"
-        >
+      </VRow>
+      <!-- Footer Toast-style: 2 botones grandes principales + 1 mas acciones -->
+      <div class="order-footer-buttons mt-2">
+        <div class="primary-row">
           <VBtn
-            block
-            color="primary"
+            class="primary-cta"
+            color="warning"
             :disabled="isSubmitDisabled||submitState.action != null"
             :loading="submitState.isLoading && submitState.action =='send_to_kitchen'"
             size="x-large"
@@ -308,65 +346,103 @@
           >
             <VIcon icon="tabler-chef-hat" start />
             {{ t('pos::pos_viewer.send_to_kitchen') }}
+            <kbd class="shortcut-hint ms-2">↵</kbd>
           </VBtn>
-        </VCol>
-        <VCol
-          v-if="data.orderType?.id != 'dine_in' && (!isEditMode || isEditMode && overpaidAmount<0) && canReceivePayment"
-          cols="12"
-          :md="isEditMode && overpaidAmount<0?12:6"
-        >
           <VBtn
-            block
+            v-if="canShowPay"
+            class="primary-cta"
             color="success"
             :disabled="isSubmitDisabled||submitState.action != null"
             :loading="submitState.isLoading && submitState.action =='pay_and_fire'"
             size="x-large"
             @click="submit('pay_and_fire')"
           >
-            <VIcon icon="tabler-flame" start />
+            <VIcon icon="tabler-cash" start />
             {{ t('pos::pos_viewer.pay_and_fire') }}
+            <kbd class="shortcut-hint ms-2">⌘↵</kbd>
           </VBtn>
-        </VCol>
-        <VCol cols="12" md="6">
-          <VBtn
-            block
-            color="error"
-            :disabled="data.items.length === 0"
-            :loading="loadingCancelOrder"
-            size="x-large"
-            @click="cancelOrder"
-          >
-            <VIcon icon="tabler-trash" start />
-            {{ t(`pos::pos_viewer.${isEditMode ? "cancel_edit" : "cancel_order"}`) }}
-          </VBtn>
-        </VCol>
-        <VCol v-if="!isEditMode" cols="12" md="6">
-          <VBtn
-            block
-            color="warning"
-            :disabled="isSubmitDisabled||submitState.action != null"
-            :loading="submitState.isLoading && submitState.action =='hold_order'"
-            size="x-large"
-            @click="submit('hold_order')"
-          >
-            <VIcon icon="tabler-clock-pause" start />
-            {{ t('pos::pos_viewer.hold_order') }}
-          </VBtn>
-        </VCol>
-        <VCol v-if="isEditMode" cols="12" md="6">
-          <VBtn
-            block
-            color="primary"
-            :disabled="isSubmitDisabled||submitState.action != null"
-            :loading="submitState.isLoading && submitState.action =='send_to_kitchen'"
-            size="x-large"
-            @click="submit('send_to_kitchen')"
-          >
-            <VIcon icon="tabler-chef-hat" start />
-            {{ t('pos::pos_viewer.send_to_kitchen') }}
-          </VBtn>
-        </VCol>
-      </VRow>
+        </div>
+        <VMenu location="top">
+          <template #activator="{ props: menuProps }">
+            <VBtn
+              v-bind="menuProps"
+              block
+              class="more-actions-btn mt-2"
+              color="default"
+              prepend-icon="tabler-dots"
+              variant="tonal"
+            >
+              {{ t('pos::pos_viewer.more_actions.label') }}
+            </VBtn>
+          </template>
+          <VList density="compact">
+            <VListItem
+              v-if="!isEditMode"
+              :disabled="isSubmitDisabled||submitState.action != null"
+              @click="submit('hold_order')"
+            >
+              <template #prepend><VIcon color="warning" icon="tabler-clock-pause" /></template>
+              <VListItemTitle>
+                {{ t('pos::pos_viewer.hold_order') }}
+              </VListItemTitle>
+            </VListItem>
+            <VListItem @click="emit('on-click-action','more_discount')">
+              <template #prepend><VIcon icon="tabler-discount" /></template>
+              <VListItemTitle>
+                {{ t('pos::pos_viewer.more_actions.items.apply_discount') }}
+              </VListItemTitle>
+              <template #append>
+                <VChip color="grey" density="compact" size="x-small">
+                  {{ t('pos::pos_viewer.more_actions.coming_soon') }}
+                </VChip>
+              </template>
+            </VListItem>
+            <VListItem @click="emit('on-click-action','more_split_bill')">
+              <template #prepend><VIcon icon="tabler-columns-2" /></template>
+              <VListItemTitle>
+                {{ t('pos::pos_viewer.more_actions.items.split_bill') }}
+              </VListItemTitle>
+              <template #append>
+                <VChip color="grey" density="compact" size="x-small">
+                  {{ t('pos::pos_viewer.more_actions.coming_soon') }}
+                </VChip>
+              </template>
+            </VListItem>
+            <VListItem @click="emit('on-click-action','more_change_table')">
+              <template #prepend><VIcon icon="tabler-arrows-right-left" /></template>
+              <VListItemTitle>
+                {{ t('pos::pos_viewer.more_actions.items.change_table') }}
+              </VListItemTitle>
+              <template #append>
+                <VChip color="grey" density="compact" size="x-small">
+                  {{ t('pos::pos_viewer.more_actions.coming_soon') }}
+                </VChip>
+              </template>
+            </VListItem>
+            <VListItem @click="emit('on-click-action','more_print')">
+              <template #prepend><VIcon icon="tabler-printer" /></template>
+              <VListItemTitle>
+                {{ t('pos::pos_viewer.more_actions.items.print') }}
+              </VListItemTitle>
+              <template #append>
+                <VChip color="grey" density="compact" size="x-small">
+                  {{ t('pos::pos_viewer.more_actions.coming_soon') }}
+                </VChip>
+              </template>
+            </VListItem>
+            <VDivider class="my-1" />
+            <VListItem
+              :disabled="data.items.length === 0 || loadingCancelOrder"
+              @click="cancelOrder"
+            >
+              <template #prepend><VIcon color="error" icon="tabler-trash" /></template>
+              <VListItemTitle class="text-error">
+                {{ t(`pos::pos_viewer.${isEditMode ? "cancel_edit" : "cancel_order"}`) }}
+              </VListItemTitle>
+            </VListItem>
+          </VList>
+        </VMenu>
+      </div>
     </div>
   </div>
 </template>
@@ -390,5 +466,39 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.order-footer-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.primary-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.primary-row .primary-cta {
+  flex: 1 1 0;
+  min-height: 56px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.shortcut-hint {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-family: inherit;
+  padding: 0 4px;
+  line-height: 1.2;
+  opacity: 0.9;
+}
+
+.more-actions-btn {
+  font-weight: 600;
 }
 </style>
