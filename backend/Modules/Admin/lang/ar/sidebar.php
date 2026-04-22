@@ -67,6 +67,27 @@ return [
     "print_agents" => "وكلاء الطباعة",
     "manage_printers" => "إدارة الطابعات",
     "tools" => "الأدوات",
-    "database" => "قاعدة البيانات"
+    "database" => "قاعدة البيانات",
 
+    // Sidebar reorganized (Toast-like): new top-level entries and tabs.
+    "menu" => "القائمة",
+    "salon" => "صالة الطعام",
+    "cocina" => "المطبخ",
+    "pagos" => "المدفوعات",
+    "personal" => "الموظفون",
+    "marketing" => "التسويق",
+    "configuracion" => "الإعدادات",
+    "general" => "عام",
+    "appearance" => "المظهر",
+    "afip" => "AFIP",
+    "integrations" => "التكاملات",
+    "sales_channels" => "قنوات البيع",
+    "notifications" => "الإشعارات",
+    "payment_methods" => "طرق الدفع",
+    "print_rules" => "قواعد الطباعة",
+    "kds" => "KDS",
+    "jobs" => "الوظائف",
+    "shifts" => "النوبات",
+    "coming_soon_title" => "قريبا",
+    "coming_soon_description" => "هذا القسم سيكون متاحا في الإصدار القادم.",
 ];

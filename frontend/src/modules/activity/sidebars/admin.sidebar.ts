@@ -1,6 +1,9 @@
 import type { SidebarList } from '@/modules/core/contracts/SidebarItem.ts'
 
-export const adminSidebar: SidebarList = {
+// Preserved for rollback: sidebar items de este modulo fueron consolidados
+// en admin/sidebars/admin.sidebar.ts. La estructura original queda intacta
+// en _legacyAdminSidebar abajo; el export activo emite items vacios.
+export const _legacyAdminSidebar: SidebarList = {
   target: 'admin',
   items: [
     {
@@ -29,4 +32,9 @@ export const adminSidebar: SidebarList = {
       ],
     },
   ],
+}
+
+export const adminSidebar: SidebarList = {
+  target: 'admin',
+  items: [],
 }
