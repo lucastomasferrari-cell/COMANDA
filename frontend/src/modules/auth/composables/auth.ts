@@ -30,7 +30,10 @@ export function useAuth () {
     }
 
     await authStore.logout()
-    await (authStore.isAuthenticated ? router.push({ name: 'admin.dashboard' } as unknown as RouteLocationRaw) : router.push({ name: 'auth.login' } as unknown as RouteLocationRaw))
+    // 9.1: al logout siempre a /login, aunque queden otras cuentas
+    // autenticadas (multi-account). Simplifica el UX — el multi-account
+    // switcher sigue funcionando desde la pantalla de login si hace falta.
+    await router.push({ name: 'auth.login' } as unknown as RouteLocationRaw)
   }
 
   const logoutAll = async () => {

@@ -14,7 +14,7 @@ class InitializeAppLocaleMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $locale = $request->get('locale', $request->header('X-Forkiva-Locale', setting('default_locale')));
+        $locale = $request->get('locale', $request->header('X-Comanda-Locale', setting('default_locale')));
 
         if (in_array($locale, supportedLocaleKeys())) {
             $oldLocale = locale();

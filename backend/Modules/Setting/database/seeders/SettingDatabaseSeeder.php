@@ -39,12 +39,12 @@ class SettingDatabaseSeeder extends Seeder
             'theme_warning_color' => '#f1c40f',
             'theme_error_color' => '#e74c3c',
             'pwa_enabled' => false,
-            'pwa_name' => 'Forkiva',
-            'pwa_short_name' => 'Forkiva',
+            'pwa_name' => 'Comanda',
+            'pwa_short_name' => 'Comanda',
             'pwa_icon' => null,
             'pwa_background_color' => '#FAF8F3',
             'pwa_theme_color' => '#FAF8F3',
-            'pwa_description' => 'Forkiva restaurant POS and management system.',
+            'pwa_description' => 'Comanda — sistema POS y gestión para restaurantes.',
         ]);
     }
 }

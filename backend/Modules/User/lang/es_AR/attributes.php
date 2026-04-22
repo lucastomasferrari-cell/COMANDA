@@ -1,7 +1,7 @@
 <?php
 return [
     'auth' => [
-        "identifier" => "Correo electrónico/Nombre de usuario",
+        "identifier" => "Usuario o email",
         "password" => "Contraseña",
     ],
     "users" => [

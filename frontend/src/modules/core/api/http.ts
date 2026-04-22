@@ -19,7 +19,7 @@ http.interceptors.request.use(config => {
     config.headers.Authorization = `Bearer ${auth.getToken}`
   }
 
-  config.headers['X-Forkiva-Locale'] = app.appCurrentLocale || 'en'
+  config.headers['X-Comanda-Locale'] = app.appCurrentLocale || 'en'
   return config
 })
 

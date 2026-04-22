@@ -3,10 +3,10 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { initApp } from './app/bootstrap/initApp'
 
 import routes from './app/router'
-import Forkiva from './Forkiva.vue'
+import Comanda from './Comanda.vue'
 import '@/assets/css.ts'
 
-const app = createApp(Forkiva)
+const app = createApp(Comanda)
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

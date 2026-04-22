@@ -6,7 +6,7 @@ export function getOnlineMenuUrl (slug: string) {
  * Generate a random voucher code
  *
  * @param {Object} options
- * @param {String} [options.prefix] - Optional prefix like "FORKIVA"
+ * @param {String} [options.prefix] - Optional prefix like "COMANDA"
  * @param {Number} [options.length] - Number of random characters to append
  * @param {Boolean} [options.includeYear] - Append current year at the end
  * @returns {String}
