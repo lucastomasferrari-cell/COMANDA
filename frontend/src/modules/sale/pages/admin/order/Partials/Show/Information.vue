@@ -24,7 +24,7 @@
         <VCol cols="4" md="2">
           <BlockInfo :title="t('order::orders.show.order_number')" :value="order.order_number" />
         </VCol>
-        <VCol v-if="!user?.assigned_to_branch" cols="4" md="2">
+        <VCol v-if="false" cols="4" md="2">
           <BlockInfo :title="t('order::orders.show.branch')" :value="order.branch.name" />
         </VCol>
         <VCol cols="4" md="2">

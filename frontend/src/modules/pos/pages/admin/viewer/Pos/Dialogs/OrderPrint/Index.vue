@@ -98,7 +98,7 @@
           </div>
           <VDivider class="mb-4 dashed-divider" />
           <VRow v-if="!registerId" class="mb-2">
-            <VCol v-if="!user?.assigned_to_branch" cols="12" md="6">
+            <VCol v-if="false" cols="12" md="6">
               <VSelect
                 v-model="meta.branch_id"
                 item-title="name"

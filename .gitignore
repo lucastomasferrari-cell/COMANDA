@@ -19,3 +19,8 @@ desktop.ini
 
 # Claude local config
 .claude/
+
+# Docs internas de trabajo (no son del producto, no se commitean)
+/ANALYSIS.md
+/ANALYSIS_RISKS.md
+/INVENTORY.md

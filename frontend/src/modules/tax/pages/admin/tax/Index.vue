@@ -17,7 +17,7 @@
       value: 'branch.name',
       sortable: true,
       sortable_key: 'branch_id',
-      hidden: user?.assigned_to_branch,
+      hidden: true,
     },
     { title: t('tax::taxes.table.code'), value: 'code', sortable: true },
     { title: t('tax::taxes.table.rate'), value: 'rate', sortable: true },

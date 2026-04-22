@@ -32,7 +32,7 @@
   <teleport to="#main-header-left-content">
     <div class="pos-header-selects d-flex align-center ga-3">
       <VSelect
-        v-if="!user?.assigned_to_branch"
+        v-if="false"
         v-model="form.branchId"
         class="pos-select"
         density="compact"

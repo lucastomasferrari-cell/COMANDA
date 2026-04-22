@@ -14,7 +14,7 @@
       value: 'branch.name',
       sortable_key: 'branch_id',
       sortable: true,
-      hidden: user?.assigned_to_branch,
+      hidden: true,
     },
     { title: t('printer::print_agents.table.host'), value: 'host', sortable: true },
     { title: t('printer::print_agents.table.port'), value: 'port', sortable: true },

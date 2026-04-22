@@ -14,7 +14,7 @@
       value: 'branch.name',
       sortable_key: 'branch_id',
       sortable: true,
-      hidden: user?.assigned_to_branch,
+      hidden: true,
     },
     {
       title: t('seatingplan::zones.table.floor'),

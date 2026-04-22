@@ -95,7 +95,7 @@
                       :label="t('pos::attributes.pos_registers.name') + ` ( ${currentLanguage.name} )`"
                     />
                   </VCol>
-                  <VCol v-if="action=='create' && !user?.assigned_to_branch" cols="12" md="6">
+                  <VCol v-if="false" cols="12" md="6">
                     <VSelect
                       v-model="form.state.branch_id"
                       :error="!!form.errors.value?.branch_id"

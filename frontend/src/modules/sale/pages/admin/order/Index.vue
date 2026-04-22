@@ -47,7 +47,7 @@
       value: 'branch.name',
       sortable: true,
       sortable_key: 'branch_id',
-      hidden: user?.assigned_to_branch,
+      hidden: true,
     },
     { title: t('order::orders.table.type'), value: 'type', sortable: true },
     { title: t('order::orders.table.status'), value: 'status', sortable: true },

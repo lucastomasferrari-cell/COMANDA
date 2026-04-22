@@ -51,7 +51,7 @@
       />
 
       <VSelect
-        v-if="!user?.assigned_to_branch"
+        v-if="false"
         v-model="filters.branchId"
         class="pos-select"
         density="compact"

@@ -135,7 +135,7 @@
     </VCardTitle>
     <VCardText>
       <VRow>
-        <VCol v-if="!user?.assigned_to_branch" cols="12" md="3">
+        <VCol v-if="false" cols="12" md="3">
           <VSelect
             v-model="filters.branch_id"
             clearable

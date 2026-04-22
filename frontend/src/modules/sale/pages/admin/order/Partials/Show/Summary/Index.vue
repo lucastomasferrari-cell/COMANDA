@@ -19,7 +19,7 @@
       {{ t('order::orders.show.cards.order_summary') }}
     </VCardTitle>
     <VCardText>
-      <template v-if="!user?.assigned_to_branch">
+      <template v-if="false">
         <Row :label="t('order::orders.show.currency')" :value="order.currency" />
         <Row border :label="t('order::orders.show.currency_rate')" :value="order.currency_rate" />
       </template>

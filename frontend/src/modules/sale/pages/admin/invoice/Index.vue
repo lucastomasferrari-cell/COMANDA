@@ -20,7 +20,7 @@
       value: 'branch.name',
       sortable: true,
       sortable_key: 'branch_id',
-      hidden: user?.assigned_to_branch,
+      hidden: true,
     },
     { title: t('invoice::invoices.table.seller'), value: 'seller.name', sortable: false },
     { title: t('invoice::invoices.table.buyer'), value: 'buyer.name', sortable: false },

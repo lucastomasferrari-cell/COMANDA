@@ -14,7 +14,7 @@
       value: 'branch.name',
       sortable_key: 'branch_id',
       sortable: true,
-      hidden: user?.assigned_to_branch,
+      hidden: true,
     },
     { title: t('admin::admin.table.activation'), value: 'is_active', sortable: true },
     { title: t('admin::admin.table.created_at'), value: 'created_at', sortable: true },

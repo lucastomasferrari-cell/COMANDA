@@ -141,7 +141,7 @@
           </VCardTitle>
           <VCardText>
             <VRow>
-              <VCol v-if="action=='create' && !user?.assigned_to_branch" cols="12" md="12">
+              <VCol v-if="false" cols="12" md="12">
                 <VSelect
                   v-model="form.state.branch_id"
                   :error="!!form.errors.value?.branch_id"

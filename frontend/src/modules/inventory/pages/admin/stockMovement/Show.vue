@@ -53,8 +53,8 @@ const close = () => emit('update:modelValue', false)
       <VCardText>
         <PageStateWrapper :loading="loading" :not-found="isNotFound">
           <VRow v-if="item">
-            <VCol v-if="!user?.assigned_to_branch" cols="4" md="2">
-              <BlockInfo :title="t('inventory::stock_movements.show.branch')" :value="item.branch.name"/>
+            <VCol v-if="false" cols="4" md="2">
+              <BlockInfo :title="t('inventory::stock_movements.show.branch')" :value="item?.branch?.name"/>
             </VCol>
             <VCol cols="4" md="2">
               <BlockInfo :title="t('inventory::stock_movements.show.ingredient')" :value="item.ingredient.name"/>

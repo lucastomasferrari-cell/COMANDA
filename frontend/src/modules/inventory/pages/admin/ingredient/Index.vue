@@ -15,7 +15,7 @@
       value: 'branch.name',
       sortable_key: 'branch_id',
       sortable: true,
-      hidden: user?.assigned_to_branch,
+      hidden: true,
     },
     { title: t('inventory::ingredients.table.current_stock'), value: 'current_stock', sortable: true },
     { title: t('inventory::ingredients.table.alert_quantity'), value: 'alert_quantity', sortable: true },

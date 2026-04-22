@@ -16,7 +16,7 @@
       value: 'branch.name',
       sortable_key: 'branch_id',
       sortable: true,
-      hidden: user?.assigned_to_branch,
+      hidden: true,
     },
     { title: t('discount::discounts.table.type'), value: 'type', sortable: true },
     {
