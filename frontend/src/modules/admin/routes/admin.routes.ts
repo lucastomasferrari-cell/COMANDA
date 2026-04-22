@@ -140,7 +140,10 @@ const adminRoutes: RouteRecordRaw[] = [
     ],
   },
 
-  // Personal hub — usuarios, jobs (placeholder), permisos, turnos (placeholder), arqueos.
+  // Personal hub — usuarios, jobs (placeholder), permisos, turnos (placeholder).
+  // Arqueos se movio a la pantalla Caja del POS. El Index de pos/session
+  // queda como componente orfano, reutilizable si luego hacemos un
+  // reporte historico de sesiones.
   {
     path: 'personal',
     component: () => import('@/modules/admin/pages/admin/hubs/PersonalHub.vue'),
@@ -168,12 +171,6 @@ const adminRoutes: RouteRecordRaw[] = [
         path: 'turnos',
         name: 'admin.personal.turnos',
         component: () => import('@/modules/core/components/ComingSoonPlaceholder.vue'),
-      },
-      {
-        path: 'arqueos',
-        name: 'admin.personal.arqueos',
-        component: () => import('@/modules/pos/pages/admin/session/Index.vue'),
-        meta: { permission: 'admin.pos_sessions.index' },
       },
     ],
   },
