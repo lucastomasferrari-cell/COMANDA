@@ -26,6 +26,32 @@ use Modules\User\Models\User;
 class DashboardService implements DashboardServiceInterface
 {
     /** @inheritDoc */
+    public function pulse(): array
+    {
+        $user = auth()->user();
+        $currency = $user->assignedToBranch() ? $user->branch->currency : setting("default_currency");
+        $today = today();
+
+        $salesToday = Order::withoutCanceledOrders()
+            ->whereDate('order_date', $today)
+            ->sum(DB::raw('total / currency_rate'));
+
+        $ordersToday = Order::withoutCanceledOrders()
+            ->whereDate('order_date', $today)
+            ->count();
+
+        $ordersActive = Order::activeOrders()->count();
+
+        return [
+            'sales_today' => (new Money($salesToday, $currency))->format(),
+            'orders_today' => $ordersToday,
+            'orders_active' => $ordersActive,
+            'currency' => $currency,
+            'as_of' => now()->toIso8601String(),
+        ];
+    }
+
+    /** @inheritDoc */
     public function overview(): array
     {
         $user = auth()->user();

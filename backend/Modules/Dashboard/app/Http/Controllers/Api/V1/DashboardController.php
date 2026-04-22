@@ -31,6 +31,14 @@ class DashboardController extends Controller
     }
 
     /**
+     * Pulse: snapshot para el navbar (sales hoy, orders hoy, orders activos).
+     */
+    public function pulse(): JsonResponse
+    {
+        return ApiResponse::success($this->service->pulse());
+    }
+
+    /**
      * Get dashboard sales analytics
      *
      * @param SalesAnalyticsFilter $filter

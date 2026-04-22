@@ -44,6 +44,8 @@ export function clearDashboardCache () {
 }
 
 export const overview = () => cachedGet('overview', '/v1/dashboards/overview')
+// Pulse: snapshot liviano para el navbar. SIN cache local (refresh cada 60s lo maneja el componente).
+export const pulse = () => http.get('/v1/dashboards/pulse')
 export const salesAnalytics = (filter: string) => cachedGet(`sales-analytics:${filter}`, `/v1/dashboards/sales-analytics/${filter}`)
 export const bestPerformingBranches = (filter: string) => cachedGet(`best-performing-branches:${filter}`, `/v1/dashboards/best-performing-branches/${filter}`)
 export const orderTypeDistribution = (filter: string) => cachedGet(`order-type-distribution:${filter}`, `/v1/dashboards/order-type-distribution/${filter}`)

@@ -15,6 +15,14 @@ interface DashboardServiceInterface
     public function overview(): array;
 
     /**
+     * Pulse: snapshot ligero de hoy para el navbar.
+     * Devuelve sales_today, orders_today, orders_active (pendientes + en preparacion).
+     *
+     * @return array
+     */
+    public function pulse(): array;
+
+    /**
      * Get dashboard best performing branches
      *
      * @param AnalyticsPeriod $filter

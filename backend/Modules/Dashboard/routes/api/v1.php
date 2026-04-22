@@ -10,6 +10,9 @@ Route::controller(DashboardController::class)
     ->group(function () {
         Route::get('overview', 'overview')
             ->middleware('permission:admin.dashboards.total_sales|admin.dashboards.total_orders|admin.dashboards.total_active_orders|admin.dashboards.average_order_value|admin.dashboards.total_users|admin.dashboards.total_menus|admin.dashboards.total_products|admin.dashboards.total_categories');
+        // Pulse del navbar: usa el mismo permiso mas minimo del dashboard.
+        Route::get('pulse', 'pulse')
+            ->middleware('can:admin.dashboards.total_active_orders');
         Route::get('sales-analytics/{filter}', 'salesAnalytics')
             ->whereIn("filter", SalesAnalyticsFilter::values())
             ->middleware("can:admin.dashboards.sales_analytics");
