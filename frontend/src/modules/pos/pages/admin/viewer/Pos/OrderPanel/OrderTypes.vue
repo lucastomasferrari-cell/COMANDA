@@ -1,9 +1,7 @@
 <script lang="ts" setup>
   import type { UseCart } from '@/modules/cart/composables/cart.ts'
   import type { PosForm, PosMeta } from '@/modules/pos/contracts/posViewer.ts'
-  import { ref, toRefs, watch } from 'vue'
-  import { useAuth } from '@/modules/auth/composables/auth.ts'
-  import { usePosViewerMode } from '@/modules/pos/composables/usePosViewerMode.ts'
+  import { computed, ref, toRefs, watch } from 'vue'
 
   const props = defineProps<{
     meta: PosMeta
@@ -11,61 +9,63 @@
     cart: UseCart
   }>()
 
-  const emit = defineEmits<{
+  defineEmits<{
     (e: 'on-click-action', value: string): void
   }>()
 
   const { processing, data, storeOrderType } = props.cart
-  const { can } = useAuth()
-  const { mode } = usePosViewerMode()
   const loading = ref(false)
   const targetId = ref<string | null>(null)
   const { form } = toRefs(props)
 
+  // Senal real: la orden tiene mesa o no. Si tiene mesa, el canal es dine_in
+  // fijo (el cashier no puede cambiar el tipo sin soltar la mesa). Si no
+  // tiene mesa, solo ofrecemos los tipos no-dine_in como opciones editables.
+  const hasTable = computed(() => form.value.table != null)
+  const nonDineInTypes = computed(() => (props.meta.orderTypes ?? []).filter(type => type.id !== 'dine_in'))
+
   const toggleOrderType = async (id: string) => {
     if (loading.value || processing.value) return
-    if (id === 'dine_in' && can('admin.tables.viewer')) {
-      emit('on-click-action', 'table_viewer')
-    } else {
-      if (id !== data.value.orderType?.id) {
-        form.value.table = null
-        loading.value = true
-        targetId.value = id
-        await storeOrderType(id)
-        loading.value = false
-        targetId.value = null
-      }
+    if (id === data.value.orderType?.id) return
+    loading.value = true
+    targetId.value = id
+    try {
+      await storeOrderType(id)
+    } finally {
+      loading.value = false
+      targetId.value = null
     }
   }
 
-  // Modo Rapido: si el tipo actual es dine_in (o no hay ninguno), autoseteamos
-  // al primer tipo no-dine_in disponible. El user no puede seleccionar dine_in
-  // cuando las tabs estan ocultas.
+  // Si no hay mesa y el canal actual es dine_in (o no hay ninguno), auto-set
+  // al primer tipo no-dine_in disponible. Evita que la orden quede sin canal.
   watch(
-    [mode, () => props.meta.orderTypes, () => data.value.orderType?.id],
-    async ([newMode, types, currentId]) => {
-      if (newMode !== 'quick' || loading.value || processing.value) return
+    [hasTable, nonDineInTypes, () => data.value.orderType?.id],
+    async ([tableOn, types, currentId]) => {
+      if (tableOn || loading.value || processing.value) return
       if (currentId && currentId !== 'dine_in') return
-      const fallback = types?.find(t => t.id !== 'dine_in')
+      const fallback = types?.[0]
       if (!fallback || fallback.id === currentId) return
       loading.value = true
       targetId.value = fallback.id
-      form.value.table = null
-      await storeOrderType(fallback.id)
-      loading.value = false
-      targetId.value = null
+      try {
+        await storeOrderType(fallback.id)
+      } finally {
+        loading.value = false
+        targetId.value = null
+      }
     },
     { immediate: true },
   )
 </script>
 
 <template>
-  <!-- En modo Rapido las tabs de canal quedan ocultas y se fija un tipo
-       no-dine_in. El user no pasa por la decision "con mesa o sin mesa". -->
-  <div v-if="mode === 'tables'" class="order-type-scroll">
+  <!-- Con mesa asignada: canal queda fijo en dine_in; no renderizamos tabs.
+       TableInfo.vue ya muestra la mesa (piso / zona / nombre) arriba. -->
+  <div v-if="!hasTable && nonDineInTypes.length > 0" class="order-type-scroll">
     <div class="scroll-container">
       <div
-        v-for="type in meta.orderTypes"
+        v-for="type in nonDineInTypes"
         :key="type.id"
         class="order-type-card"
         :class="{ active: data.orderType?.id === type.id,'cursor-not-allowed':loading||processing }"
