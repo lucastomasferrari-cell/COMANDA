@@ -10,8 +10,26 @@
     products: Product[]
     searchQuery: string
     activeCategories: Category[]
+    categories: Category[]
     cart: UseCart
   }>()
+
+  // Mapa id -> color hex. Se usa en Item.vue para pintar el borde superior
+  // del boton de producto con el color de su categoria primaria.
+  const categoryColorMap = computed(() => {
+    const map = new Map<number | string, string>()
+    const walk = (cats: Category[]) => {
+      for (const c of cats) {
+        const color = (c as any).color
+        if (typeof color === 'string' && /^#[0-9a-f]{6}$/i.test(color)) {
+          map.set(c.id, color)
+        }
+        if (c.items?.length) walk(c.items)
+      }
+    }
+    walk(props.categories)
+    return map
+  })
 
   const { xlAndUp, smAndDown } = useDisplay()
   const { searchQuery } = toRefs(props)
@@ -121,7 +139,7 @@
           style="padding: 0"
           xlg="3"
         >
-          <Item :cart="cart" :product="product" @open-options-dialog="openProductOptionDialog" />
+          <Item :cart="cart" :category-color-map="categoryColorMap" :product="product" @open-options-dialog="openProductOptionDialog" />
         </VCol>
       </VRow>
     </template>

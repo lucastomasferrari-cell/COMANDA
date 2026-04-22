@@ -32,7 +32,21 @@ const form = useForm({
     logo: props.item?.logo?.id || null,
   },
   is_active: props.item?.is_active || false,
+  color: props.item?.color || null,
 })
+
+// Paleta Toast. Coincide con HasCategoryColor trait del backend —
+// el auto-asigna uno de estos si el user no elige nada.
+const PALETTE_COLORS = [
+  '#1D9E75', // teal
+  '#EF9F27', // amber
+  '#378ADD', // blue
+  '#D4537E', // pink
+  '#7F77DD', // purple
+  '#639922', // green
+  '#5F5E5A', // gray
+  '#D85A30', // coral
+]
 
 const hiddenActionButton = computed(() => {
   if (props.action == 'create' && !can('admin.categories.create')) {
@@ -121,6 +135,32 @@ async function deleteCategory() {
                     :media="item?.logo" mime="image" />
                 </VCol>
                 <VCol cols="12">
+                  <label class="text-caption text-medium-emphasis d-block mb-2">
+                    {{ t('category::attributes.categories.color') }}
+                  </label>
+                  <div class="d-flex flex-wrap gap-2 mb-2">
+                    <button
+                      v-for="c in PALETTE_COLORS"
+                      :key="c"
+                      type="button"
+                      class="color-swatch"
+                      :class="{ selected: form.state.color === c }"
+                      :style="{ background: c }"
+                      :aria-label="c"
+                      @click="form.state.color = c"
+                    />
+                    <input
+                      v-model="form.state.color"
+                      type="color"
+                      class="color-custom"
+                      :aria-label="t('category::attributes.categories.color_custom')"
+                    >
+                  </div>
+                  <div v-if="form.errors.value?.color" class="text-caption text-error">
+                    {{ form.errors.value.color }}
+                  </div>
+                </VCol>
+                <VCol cols="12">
                   <VCheckbox v-if="action !== 'create'" v-model="form.state.is_active" :label="t('category::attributes.categories.is_active')" />
                 </VCol>
               </VRow>
@@ -131,3 +171,30 @@ async function deleteCategory() {
     </template>
   </BaseForm>
 </template>
+
+<style scoped>
+.color-swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 120ms ease, border-color 120ms ease;
+}
+.color-swatch:hover {
+  transform: scale(1.08);
+}
+.color-swatch.selected {
+  border-color: rgb(var(--v-theme-on-surface));
+  box-shadow: 0 0 0 2px rgb(var(--v-theme-surface));
+}
+.color-custom {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 2px dashed rgba(var(--v-theme-on-surface), 0.3);
+  border-radius: 50%;
+  cursor: pointer;
+  background: transparent;
+}
+</style>

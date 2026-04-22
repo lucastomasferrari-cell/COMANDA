@@ -23,6 +23,7 @@ use Modules\Support\Traits\HasFilters;
 use Modules\Support\Traits\HasOrder;
 use Modules\Support\Traits\HasTagsCacheWithoutBuilder;
 use Modules\Translation\Traits\Translatable;
+use App\Traits\HasCategoryColor;
 
 /**
  * @property int $id
@@ -48,7 +49,8 @@ class Category extends Model
         HasMenu,
         HasTagsCacheWithoutBuilder,
         NodeTrait,
-        HasMedia;
+        HasMedia,
+        HasCategoryColor;
 
     /**
      * The attributes that are mass assignable.
@@ -57,6 +59,7 @@ class Category extends Model
         'name',
         'parent_id',
         'slug',
+        'color',
         self::MENU_COLUMN_NAME,
         self::ACTIVE_COLUMN_NAME,
     ];

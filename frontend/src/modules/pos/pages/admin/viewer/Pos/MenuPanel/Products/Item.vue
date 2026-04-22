@@ -8,6 +8,7 @@
   const props = defineProps<{
     product: Product
     cart: UseCart
+    categoryColorMap?: Map<number | string, string>
   }>()
 
   const { t } = useI18n()
@@ -16,6 +17,17 @@
   const loading = ref<boolean>(false)
   const hasOptions = computed(() => (props.product.options?.length ?? 0) > 0)
   const hasDiscount = computed(() => (props.product.selling_price?.amount ?? 0) < (props.product.price?.amount ?? 0))
+
+  // Color de la categoria primaria del producto (primer category_id que
+  // este en el mapa). Fallback a gris neutro.
+  const categoryColor = computed(() => {
+    if (!props.categoryColorMap) return '#B0B0B0'
+    for (const id of props.product.category_ids ?? []) {
+      const c = props.categoryColorMap.get(id)
+      if (c) return c
+    }
+    return '#B0B0B0'
+  })
 
   const addProductToCart = async () => {
     if (processing.value) {
@@ -47,6 +59,7 @@
   <VCard
     class="product-item mb-3 me-2"
     :ripple="false"
+    :style="{ '--category-color': categoryColor }"
     @click="addProductToCart"
   >
     <VCardText class="pa-3">
@@ -82,6 +95,8 @@
   cursor: pointer;
   border: 2px dashed #ededed;
   border-radius: 0.2rem;
+  /* Borde superior 4px con el color de la categoria primaria. */
+  border-top: 4px solid var(--category-color, #B0B0B0);
 
   .product-name {
     font-weight: 600;

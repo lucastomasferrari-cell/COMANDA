@@ -51,6 +51,7 @@
         <Products
           :active-categories="activeCategories"
           :cart="cart"
+          :categories="meta.categories"
           :products="meta.products"
           :search-query="searchQuery"
         />

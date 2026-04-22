@@ -31,6 +31,9 @@ class SaveCategoryRequest extends Request
             ],
             "parent_id" => "bail|nullable|numeric|exists:categories,id,deleted_at,NULL,menu_id,$this->menu_id",
             "is_active" => "required|boolean",
+            // Color hex #RRGGBB. Nullable — si viene vacio, el trait
+            // HasCategoryColor auto-asigna desde la paleta Toast al save.
+            "color" => ['nullable', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
         ];
     }
 
