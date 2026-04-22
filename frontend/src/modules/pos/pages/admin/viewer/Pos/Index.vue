@@ -9,6 +9,7 @@
   import OrdersDrawer from '@/modules/pos/pages/admin/viewer/Pos/Drawers/Orders/Index.vue'
   import OrderPrintDialog from './Dialogs/OrderPrint/Index.vue'
   import RefundCancelDialog from './Dialogs/RefundCancelDialog.vue'
+  import ActiveOrdersPanel from './ActiveOrdersPanel/Index.vue'
   import CashMovementDrawer from './Drawers/CashMovement/Index.vue'
   import TableViewerDrawer from './Drawers/TableViewer/Index.vue'
   import MenuPanel from './MenuPanel/Index.vue'
@@ -95,16 +96,24 @@
 </script>
 
 <template>
+  <!-- Layout 3 columnas: ActiveOrders 25% | Menu 42% | Order 33% en desktop.
+       Mobile/tablet queda stack vertical (cols=12) por ahora; responsive
+       a tablet vertical (drawer colapsable) queda como ticket aparte. -->
   <VRow class="pos-wrapper" dense>
-    <VCol cols="12" md="4">
-      <VCard height="100%">
+    <VCol cols="12" md="3">
+      <VCard class="pos-col-card">
+        <ActiveOrdersPanel :branch-id="form.branchId" :cart-id="cart.cartId" />
+      </VCard>
+    </VCol>
+    <VCol cols="12" md="5">
+      <VCard class="pos-col-card">
         <VCardText class="pa-3">
           <MenuPanel :cart="cart" :form="form" :meta="meta" />
         </VCardText>
       </VCard>
     </VCol>
-    <VCol cols="12" md="8">
-      <VCard height="91vh">
+    <VCol cols="12" md="4">
+      <VCard class="pos-col-card">
         <VCardText class="pa-3">
           <OrderPanel
             :cart="cart"
@@ -188,6 +197,18 @@
 .pos-wrapper {
   height: calc(100vh - var(--v-layout-navbar-height, 72px));
   overflow: hidden;
+  min-height: 0;
+}
+
+.pos-col-card {
+  height: 91vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.pos-col-card > :deep(.v-card-text) {
+  flex: 1;
+  overflow-y: auto;
   min-height: 0;
 }
 </style>
