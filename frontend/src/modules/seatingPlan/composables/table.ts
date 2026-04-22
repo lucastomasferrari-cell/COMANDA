@@ -13,6 +13,7 @@ import {
   split,
   store,
   update,
+  updatePositions,
 } from '@/modules/seatingPlan/api/table.api.ts'
 import { useConfirmDialog } from '@/modules/core/composables/confirmDialog.ts'
 
@@ -82,5 +83,6 @@ export function useTable () {
     getMergeMeta,
     splitTable,
     merge,
+    updatePositions,
   }
 }

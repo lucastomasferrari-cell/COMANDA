@@ -55,3 +55,16 @@ export function split (mergeId: number) {
 export function getMergeMeta (id: number) {
   return http.get(`/v1/tables/viewer/${id}/merge/meta`)
 }
+
+export interface TablePositionPayload {
+  id: number
+  position_x: number
+  position_y: number
+  width: number
+  height: number
+  rotation?: number
+}
+
+export function updatePositions (positions: TablePositionPayload[]) {
+  return http.patch(`/v1/tables/positions`, { positions })
+}
