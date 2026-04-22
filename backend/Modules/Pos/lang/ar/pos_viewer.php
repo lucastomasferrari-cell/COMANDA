@@ -167,4 +167,39 @@ return [
     "no_items_added_yet" => "لم تتم إضافة أي عناصر بعد.",
     "no_options_selected" => "لم يتم تحديد أي خيارات",
     "order_summary" => "ملخص الطلب",
+
+    "active_orders" => [
+        "title" => "الطلبات النشطة",
+        "new_button" => "جديد",
+        "empty" => "لا توجد طلبات نشطة.",
+        "empty_cta" => "ابدأ طلبًا جديدًا",
+        "refresh_note" => "يتم التحديث كل 30 ثانية",
+        "error_opening" => "تعذر فتح الطلب.",
+        "status_label" => [
+            "pending" => "قيد التنفيذ",
+            "confirmed" => "في المطبخ",
+            "preparing" => "في المطبخ",
+            "ready" => "جاهز",
+        ],
+        "legend" => [
+            "in_progress" => "قيد التنفيذ",
+            "in_kitchen" => "في المطبخ",
+            "ready_to_serve" => "جاهز للتقديم",
+        ],
+        "context" => [
+            "takeaway" => "سفري",
+            "drive_thru" => "Drive-Thru",
+            "pre_order" => "طلب مسبق",
+            "catering" => "تموين",
+            "no_table" => "بدون طاولة",
+        ],
+    ],
+    "search_empty" => [
+        "title" => "لم يتم العثور على أي منتج",
+        "message" => "جرّب كلمة أخرى أو تحقق من الفئة المحددة.",
+    ],
+    "category_empty" => [
+        "title" => "لا توجد منتجات في هذه الفئة",
+        "message" => "غيّر الفئة أو حمّل المنتجات من القائمة → المنتجات.",
+    ],
 ];

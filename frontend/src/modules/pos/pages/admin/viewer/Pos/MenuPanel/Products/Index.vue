@@ -2,9 +2,12 @@
   import type { UseCart } from '@/modules/cart/composables/cart.ts'
   import type { Category, Product } from '@/modules/pos/contracts/posViewer.ts'
   import { computed } from 'vue'
+  import { useI18n } from 'vue-i18n'
   import { useDisplay } from 'vuetify'
   import ProductDialog from './Dialogs/ProductDialog.vue'
   import Item from './Item.vue'
+
+  const { t } = useI18n()
 
   const props = defineProps<{
     products: Product[]
@@ -121,9 +124,9 @@
     class="no-results-state d-flex flex-column align-center justify-center text-center py-8 px-4"
   >
     <VIcon class="mb-3" color="grey-500" icon="tabler-search-off" size="48" />
-    <h4 class="mb-1 font-weight-medium">No se encontró ningún producto</h4>
+    <h4 class="mb-1 font-weight-medium">{{ t('pos::pos_viewer.search_empty.title') }}</h4>
     <p class="text-body-2 text-medium-emphasis mb-0">
-      Probá con otra palabra o revisá la categoría seleccionada.
+      {{ t('pos::pos_viewer.search_empty.message') }}
     </p>
   </div>
   <div
@@ -131,9 +134,9 @@
     class="no-results-state d-flex flex-column align-center justify-center text-center py-8 px-4"
   >
     <VIcon class="mb-3" color="grey-500" icon="tabler-basket" size="48" />
-    <h4 class="mb-1 font-weight-medium">No hay productos en esta categoría</h4>
+    <h4 class="mb-1 font-weight-medium">{{ t('pos::pos_viewer.category_empty.title') }}</h4>
     <p class="text-body-2 text-medium-emphasis mb-0">
-      Cambiá de categoría o cargá productos desde Menú → Productos.
+      {{ t('pos::pos_viewer.category_empty.message') }}
     </p>
   </div>
   <VVirtualScroll

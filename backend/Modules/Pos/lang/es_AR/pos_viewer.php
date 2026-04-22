@@ -168,4 +168,40 @@ return [
     "no_items_added_yet" => "Todavía no se agregaron ítems.",
     "no_options_selected" => "No hay opciones seleccionadas",
     "order_summary" => "Resumen del pedido",
+
+    // Rediseño POS fase 2 — ActiveOrdersPanel + empty states
+    "active_orders" => [
+        "title" => "Comandas activas",
+        "new_button" => "Nueva",
+        "empty" => "No hay comandas activas.",
+        "empty_cta" => "Empezar una nueva",
+        "refresh_note" => "Actualiza cada 30s",
+        "error_opening" => "No se pudo abrir la comanda.",
+        "status_label" => [
+            "pending" => "En curso",
+            "confirmed" => "En cocina",
+            "preparing" => "En cocina",
+            "ready" => "Listo",
+        ],
+        "legend" => [
+            "in_progress" => "En curso",
+            "in_kitchen" => "En cocina",
+            "ready_to_serve" => "Listo para servir",
+        ],
+        "context" => [
+            "takeaway" => "Para llevar",
+            "drive_thru" => "Drive-Thru",
+            "pre_order" => "Pedido anticipado",
+            "catering" => "Catering",
+            "no_table" => "Sin mesa",
+        ],
+    ],
+    "search_empty" => [
+        "title" => "No se encontró ningún producto",
+        "message" => "Probá con otra palabra o revisá la categoría seleccionada.",
+    ],
+    "category_empty" => [
+        "title" => "No hay productos en esta categoría",
+        "message" => "Cambiá de categoría o cargá productos desde Menú → Productos.",
+    ],
 ];

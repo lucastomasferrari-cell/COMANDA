@@ -168,4 +168,39 @@ return [
     "no_items_added_yet" => "No Items Added Yet.",
     "no_options_selected" => "No Options Selected",
     "order_summary" => "Order Summary",
+
+    "active_orders" => [
+        "title" => "Active orders",
+        "new_button" => "New",
+        "empty" => "No active orders.",
+        "empty_cta" => "Start a new one",
+        "refresh_note" => "Updates every 30s",
+        "error_opening" => "Could not open the order.",
+        "status_label" => [
+            "pending" => "In progress",
+            "confirmed" => "In kitchen",
+            "preparing" => "In kitchen",
+            "ready" => "Ready",
+        ],
+        "legend" => [
+            "in_progress" => "In progress",
+            "in_kitchen" => "In kitchen",
+            "ready_to_serve" => "Ready to serve",
+        ],
+        "context" => [
+            "takeaway" => "Takeaway",
+            "drive_thru" => "Drive-Thru",
+            "pre_order" => "Pre-order",
+            "catering" => "Catering",
+            "no_table" => "No table",
+        ],
+    ],
+    "search_empty" => [
+        "title" => "No products found",
+        "message" => "Try a different word or check the selected category.",
+    ],
+    "category_empty" => [
+        "title" => "No products in this category",
+        "message" => "Switch category or load products from Menu -> Products.",
+    ],
 ];

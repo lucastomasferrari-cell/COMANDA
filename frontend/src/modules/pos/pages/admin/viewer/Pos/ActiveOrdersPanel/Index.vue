@@ -1,6 +1,7 @@
 <script lang="ts" setup>
   import type { AxiosError } from 'axios'
   import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+  import { useI18n } from 'vue-i18n'
   import { useRouter } from 'vue-router'
   import { useToast } from 'vue-toastification'
   import { useOrder } from '@/modules/sale/composables/order.ts'
@@ -14,6 +15,7 @@
     (e: 'init-order', response: Record<string, any>): void
   }>()
 
+  const { t } = useI18n()
   const { activeOrders, edit } = useOrder()
   const router = useRouter()
   const toast = useToast()
@@ -73,21 +75,18 @@
   }
 
   function statusLabel (status: string): string {
-    return {
-      pending: 'En curso',
-      confirmed: 'En cocina',
-      preparing: 'En cocina',
-      ready: 'Listo',
-    }[status] ?? status
+    const key = `pos::pos_viewer.active_orders.status_label.${status}`
+    const translated = t(key)
+    return translated === key ? status : translated
   }
 
   function contextLabel (o: ActiveOrder): string {
     if (o.table?.name) return o.table.name
-    if (o.type === 'takeaway') return 'Para llevar'
-    if (o.type === 'drive_thru') return 'Drive-Thru'
-    if (o.type === 'pre_order') return 'Pedido anticipado'
-    if (o.type === 'catering') return 'Catering'
-    return o.customer?.name ?? 'Sin mesa'
+    if (o.type === 'takeaway') return t('pos::pos_viewer.active_orders.context.takeaway')
+    if (o.type === 'drive_thru') return t('pos::pos_viewer.active_orders.context.drive_thru')
+    if (o.type === 'pre_order') return t('pos::pos_viewer.active_orders.context.pre_order')
+    if (o.type === 'catering') return t('pos::pos_viewer.active_orders.context.catering')
+    return o.customer?.name ?? t('pos::pos_viewer.active_orders.context.no_table')
   }
 
   function elapsedLabel (iso: string): string {
@@ -108,7 +107,7 @@
       const response = (await edit(props.cartId, order.id)).data.body
       emit('init-order', response)
     } catch (error) {
-      toast.error((error as AxiosError<{ message?: string }>).response?.data?.message ?? 'No se pudo abrir la comanda.')
+      toast.error((error as AxiosError<{ message?: string }>).response?.data?.message ?? t('pos::pos_viewer.active_orders.error_opening'))
     } finally {
       loadingOrderId.value = null
     }
@@ -137,7 +136,7 @@
   <div class="active-orders-panel d-flex flex-column h-100">
     <div class="panel-header d-flex align-center px-3 py-2">
       <h3 class="text-subtitle-1 font-weight-medium flex-grow-1">
-        Comandas activas
+        {{ t('pos::pos_viewer.active_orders.title') }}
         <span v-if="totalCount > 0" class="text-medium-emphasis text-body-2">({{ totalCount }})</span>
       </h3>
       <VBtn
@@ -148,7 +147,7 @@
         variant="tonal"
         @click="newOrder"
       >
-        Nueva
+        {{ t('pos::pos_viewer.active_orders.new_button') }}
       </VBtn>
     </div>
 
@@ -162,10 +161,10 @@
     >
       <VIcon class="mb-2" color="grey-500" icon="tabler-inbox" size="40" />
       <p class="text-body-2 text-medium-emphasis mb-3">
-        No hay comandas activas.
+        {{ t('pos::pos_viewer.active_orders.empty') }}
       </p>
       <VBtn color="primary" prepend-icon="tabler-plus" @click="newOrder">
-        Empezar una nueva
+        {{ t('pos::pos_viewer.active_orders.empty_cta') }}
       </VBtn>
     </div>
 
@@ -206,12 +205,12 @@
           <VIcon v-bind="activator" icon="tabler-info-circle" size="14" color="grey" />
         </template>
         <div class="text-caption">
-          <div><span class="legend-dot" style="background:#2ecc71" /> En curso</div>
-          <div><span class="legend-dot" style="background:#f1c40f" /> En cocina</div>
-          <div><span class="legend-dot" style="background:#e67e22" /> Listo para servir</div>
+          <div><span class="legend-dot" style="background:#2ecc71" /> {{ t('pos::pos_viewer.active_orders.legend.in_progress') }}</div>
+          <div><span class="legend-dot" style="background:#f1c40f" /> {{ t('pos::pos_viewer.active_orders.legend.in_kitchen') }}</div>
+          <div><span class="legend-dot" style="background:#e67e22" /> {{ t('pos::pos_viewer.active_orders.legend.ready_to_serve') }}</div>
         </div>
       </VTooltip>
-      <span class="text-caption text-medium-emphasis">Actualiza cada 30s</span>
+      <span class="text-caption text-medium-emphasis">{{ t('pos::pos_viewer.active_orders.refresh_note') }}</span>
     </div>
   </div>
 </template>
