@@ -6,7 +6,11 @@
   import KitchenViewer from '@/app/layouts/components/KitchenViewer.vue'
   import NavbarAction from '@/app/layouts/components/NavbarAction.vue'
   import NavbarFullscreenSwitcher from '@/app/layouts/components/NavbarFullscreenSwitcher.vue'
-  import NavbarLanguageSwitcher from '@/app/layouts/components/NavbarLanguageSwitcher.vue'
+  // Selector de idioma desmontado: COMANDA es mercado argentino, el
+  // locale queda fijo en es_AR (ver backend .env APP_LOCALE). Si en el
+  // futuro necesitamos multi-idioma para franquicias, descomentar esta
+  // línea y el tag <NavbarLanguageSwitcher /> más abajo.
+  // import NavbarLanguageSwitcher from '@/app/layouts/components/NavbarLanguageSwitcher.vue'
   import NavbarThemeSwitcher from '@/app/layouts/components/NavbarThemeSwitcher.vue'
   import NavbarViewPos from '@/app/layouts/components/NavbarViewPos.vue'
   import NavItems from '@/app/layouts/components/NavItems.vue'
@@ -53,7 +57,7 @@
         </template>
         <NavbarFullscreenSwitcher class="me-2" />
         <NavbarThemeSwitcher class="me-2" />
-        <NavbarLanguageSwitcher class="me-2" />
+        <!-- <NavbarLanguageSwitcher class="me-2" /> -->
         <UserProfile />
       </div>
 
