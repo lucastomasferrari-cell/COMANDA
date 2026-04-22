@@ -183,4 +183,32 @@ interface OrderServiceInterface
      * @return Order
      */
     public function addCustomProduct(int|string $id, array $data): Order;
+
+    /**
+     * Marca que el cliente pidio la cuenta. Setea bill_requested_at y
+     * dispara OrderBillRequested (que eventualmente imprime el ticket).
+     *
+     * @param int|string $id
+     * @return Order
+     */
+    public function requestBill(int|string $id): Order;
+
+    /**
+     * Poner la orden en espera. La mesa queda available, la orden
+     * persiste y aparece con icono pausa en ActiveOrdersPanel.
+     *
+     * @param int|string $id
+     * @return Order
+     */
+    public function pauseOrder(int|string $id): Order;
+
+    /**
+     * Reanudar una orden pausada. Si la mesa esta available, vuelve a
+     * occupied. Si otra orden esta activa en la misma mesa, el
+     * listener no fuerza el cambio.
+     *
+     * @param int|string $id
+     * @return Order
+     */
+    public function resumeOrder(int|string $id): Order;
 }

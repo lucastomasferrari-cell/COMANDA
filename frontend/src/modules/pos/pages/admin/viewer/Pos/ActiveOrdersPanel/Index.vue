@@ -16,7 +16,7 @@
   }>()
 
   const { t } = useI18n()
-  const { activeOrders, edit } = useOrder()
+  const { activeOrders, edit, resume } = useOrder()
   const toast = useToast()
 
   interface ActiveOrder {
@@ -31,6 +31,8 @@
     total: { formatted: string } | null
     waiter: { name: string } | null
     created_at: string
+    bill_requested_at?: string | null
+    paused_at?: string | null
   }
 
   const orders = ref<ActiveOrder[]>([])
@@ -54,13 +56,14 @@
   }
 
   /**
-   * Color del punto segun order.status.
-   * El "cuenta pedida" (rojo) no existe como estado en el backend actual;
-   * se agregaria como bill_requested_at o similar en una iteracion futura.
-   * "En pausa" (gris) tampoco — idem.
+   * Color del punto segun order.status + flags bill_requested/paused.
+   * bill_requested_at (rojo) y paused_at (gris) ganan sobre el status
+   * base: representan un state de "alerta" o "suspension" independiente.
    */
-  function statusColor (status: string): string {
-    switch (status) {
+  function statusColor (order: ActiveOrder): string {
+    if (order.paused_at) return '#95a5a6' // gris: en pausa
+    if (order.bill_requested_at) return '#e74c3c' // rojo: cuenta pedida
+    switch (order.status) {
       case 'pending':
         return '#2ecc71' // verde: en curso
       case 'confirmed':
@@ -103,6 +106,11 @@
     if (loadingOrderId.value !== null) return
     loadingOrderId.value = order.id
     try {
+      // Si la orden está pausada, la reanudamos antes del edit — la mesa
+      // vuelve a occupied automáticamente via listener RestoreTableOnResume.
+      if (order.paused_at) {
+        await resume(order.id)
+      }
       const response = (await edit(props.cartId, order.id)).data.body
       emit('init-order', response)
     } catch (error) {
@@ -184,7 +192,21 @@
         @click="openOrder(order)"
       >
         <div class="d-flex align-start mb-1">
-          <span class="status-dot me-2" :style="{ background: statusColor(order.status) }" />
+          <span class="status-dot me-2" :style="{ background: statusColor(order) }" />
+          <VIcon
+            v-if="order.paused_at"
+            class="me-1"
+            color="grey"
+            icon="tabler-player-pause"
+            size="14"
+          />
+          <VIcon
+            v-if="order.bill_requested_at"
+            class="me-1"
+            color="error"
+            icon="tabler-receipt"
+            size="14"
+          />
           <div class="flex-grow-1">
             <div class="d-flex align-center gap-2">
               <span class="order-number text-body-2 font-weight-bold">#{{ order.order_number }}</span>

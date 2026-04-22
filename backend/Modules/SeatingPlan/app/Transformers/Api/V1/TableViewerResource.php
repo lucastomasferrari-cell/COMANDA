@@ -39,6 +39,8 @@ class TableViewerResource extends JsonResource
                 "guest_count" => $this->activeOrder->guest_count,
                 "total" => $this->activeOrder->total,
                 "created_at" => $this->activeOrder->created_at?->toIso8601String(),
+                "bill_requested_at" => $this->activeOrder->bill_requested_at?->toIso8601String(),
+                "paused_at" => $this->activeOrder->paused_at?->toIso8601String(),
             ] : null),
         ];
     }

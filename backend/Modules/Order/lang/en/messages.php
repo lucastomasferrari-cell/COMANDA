@@ -18,4 +18,8 @@ return [
     "table_cannot_be_changed_because_merge_request" => "Unfortunately, the table for this order cannot be changed because it has an active merge request.",
     "print_has_been_successfully" => "Print has been successfully.",
     "custom_product_invalid_status" => "Cannot add an open item to a completed, cancelled or refunded order.",
+    "bill_requested_successfully" => "Bill marked as requested.",
+    "order_paused_successfully" => "Order put on hold.",
+    "order_resumed_successfully" => "Order resumed.",
+    "pause_invalid_status" => "Cannot pause a completed, cancelled or merged order.",
 ];

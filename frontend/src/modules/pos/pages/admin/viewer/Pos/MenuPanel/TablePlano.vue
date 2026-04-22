@@ -28,19 +28,30 @@
     loading.value = true
     try {
       const res = await getTableViewer(props.branchId, {})
-      tables.value = (res.data.body.tables ?? []).map((t: any) => ({
-        id: t.id,
-        name: typeof t.name === 'string' ? t.name : t.name?.value ?? '',
-        shape: t.shape ?? 'circle',
-        position_x: t.position_x,
-        position_y: t.position_y,
-        width: Number(t.width) || 80,
-        height: Number(t.height) || 80,
-        rotation: Number(t.rotation) || 0,
-        status: t.status ?? null,
-        capacity: t.capacity,
-        active_order: t.active_order ?? null,
-      }))
+      tables.value = (res.data.body.tables ?? []).map((t: any) => {
+        const activeOrder = t.active_order ?? null
+        // Override sintético de status: bill_requested y paused pisan el
+        // status real para que el plano los pinte rojo/gris respectivamente.
+        let statusOverride = t.status ?? null
+        if (activeOrder?.bill_requested_at && statusOverride) {
+          statusOverride = { ...statusOverride, id: 'bill_requested' }
+        } else if (activeOrder?.paused_at && statusOverride) {
+          statusOverride = { ...statusOverride, id: 'paused' }
+        }
+        return {
+          id: t.id,
+          name: typeof t.name === 'string' ? t.name : t.name?.value ?? '',
+          shape: t.shape ?? 'circle',
+          position_x: t.position_x,
+          position_y: t.position_y,
+          width: Number(t.width) || 80,
+          height: Number(t.height) || 80,
+          rotation: Number(t.rotation) || 0,
+          status: statusOverride,
+          capacity: t.capacity,
+          active_order: activeOrder,
+        }
+      })
     } catch {
       // silencioso: el polling no interrumpe al usuario
     } finally {

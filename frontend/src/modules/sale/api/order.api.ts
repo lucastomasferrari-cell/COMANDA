@@ -76,6 +76,18 @@ export function moveToNextStatus (id: number | string) {
   return http.patch(`/v1/orders/${id}/move-to-next-status`)
 }
 
+export function requestBill (id: number | string) {
+  return http.post(`/v1/orders/${id}/request-bill`)
+}
+
+export function pauseOrder (id: number | string) {
+  return http.post(`/v1/orders/${id}/pause`)
+}
+
+export function resumeOrder (id: number | string) {
+  return http.post(`/v1/orders/${id}/resume`)
+}
+
 export function getPrintMeta (id: number | string, branchId?: number | null, registerId?: number | null) {
   return http.get(`/v1/orders/${id}/print`, {
     params: {

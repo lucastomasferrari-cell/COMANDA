@@ -383,6 +383,46 @@ class OrderController extends Controller
         );
     }
 
+    /**
+     * Cliente pidio la cuenta. Setea bill_requested_at y dispara
+     * evento para impresion fiscal (stub hoy).
+     */
+    public function requestBill(int|string $orderId): JsonResponse
+    {
+        $this->service->requestBill($orderId);
+
+        return ApiResponse::success(
+            body: ["success" => true],
+            message: __("order::messages.bill_requested_successfully"),
+        );
+    }
+
+    /**
+     * Pausa la orden. La mesa queda libre visualmente, la orden persiste.
+     */
+    public function pauseOrder(int|string $orderId): JsonResponse
+    {
+        $this->service->pauseOrder($orderId);
+
+        return ApiResponse::success(
+            body: ["success" => true],
+            message: __("order::messages.order_paused_successfully"),
+        );
+    }
+
+    /**
+     * Reanuda una orden pausada.
+     */
+    public function resumeOrder(int|string $orderId): JsonResponse
+    {
+        $this->service->resumeOrder($orderId);
+
+        return ApiResponse::success(
+            body: ["success" => true],
+            message: __("order::messages.order_resumed_successfully"),
+        );
+    }
+
     protected function normalizeDrawerFilters(Request $request): array
     {
         return [

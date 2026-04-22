@@ -138,11 +138,15 @@ return [
         "coming_soon" => "قريبًا",
         "print_needs_order" => "الطباعة متاحة بعد إرسال الطلب",
         "print_needs_order_short" => "أرسل أولاً",
+        "bill_requested" => "تم طلب الفاتورة — تم طباعة التذكرة",
+        "order_paused" => "تم تعليق الطلب",
         "items" => [
             "apply_discount" => "تطبيق خصم عام",
             "split_bill" => "تقسيم الفاتورة",
             "change_table" => "تغيير الطاولة",
             "print" => "طباعة الطلب",
+            "request_bill" => "طلب الفاتورة",
+            "pause_order" => "تعليق الطلب",
         ],
     ],
     "open_item" => [

@@ -36,7 +36,7 @@
 
   const { t } = useI18n()
   const toast = useToast()
-  const { getPrintMeta, printPreview, store, update } = useOrder()
+  const { getPrintMeta, printPreview, store, update, requestBill, pause } = useOrder()
   const { can } = useAuth()
   const { mode: viewerMode } = usePosViewerMode()
 
@@ -208,6 +208,29 @@
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.message || t('core::errors.an_unexpected_error_occurred'))
+    }
+  }
+
+  async function requestBillForOrder () {
+    const orderId = props.meta.order?.id
+    if (!orderId) return
+    try {
+      const res = await requestBill(orderId)
+      toast.success(res.data?.message ?? t('pos::pos_viewer.more_actions.bill_requested'))
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message ?? t('core::errors.an_unexpected_error_occurred'))
+    }
+  }
+
+  async function pauseCurrentOrder () {
+    const orderId = props.meta.order?.id
+    if (!orderId) return
+    try {
+      const res = await pause(orderId)
+      toast.success(res.data?.message ?? t('pos::pos_viewer.more_actions.order_paused'))
+      emit('reset')
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message ?? t('core::errors.an_unexpected_error_occurred'))
     }
   }
 
@@ -384,6 +407,24 @@
               <template #prepend><VIcon color="warning" icon="tabler-clock-pause" /></template>
               <VListItemTitle>
                 {{ t('pos::pos_viewer.hold_order') }}
+              </VListItemTitle>
+            </VListItem>
+            <VListItem
+              v-if="isEditMode && meta.order?.id"
+              @click="requestBillForOrder"
+            >
+              <template #prepend><VIcon color="error" icon="tabler-receipt" /></template>
+              <VListItemTitle>
+                {{ t('pos::pos_viewer.more_actions.items.request_bill') }}
+              </VListItemTitle>
+            </VListItem>
+            <VListItem
+              v-if="isEditMode && meta.order?.id"
+              @click="pauseCurrentOrder"
+            >
+              <template #prepend><VIcon color="grey" icon="tabler-player-pause" /></template>
+              <VListItemTitle>
+                {{ t('pos::pos_viewer.more_actions.items.pause_order') }}
               </VListItemTitle>
             </VListItem>
             <VListItem @click="emit('on-click-action','more_discount')">

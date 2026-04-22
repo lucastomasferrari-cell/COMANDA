@@ -8,8 +8,11 @@ import {
   getPrintMeta,
   getUpdateStatusMeta,
   moveToNextStatus,
+  pauseOrder,
   printPreview,
   refund,
+  requestBill,
+  resumeOrder,
   show,
   store,
   storePayment,
@@ -47,5 +50,8 @@ export function useOrder () {
     edit,
     printPreview,
     getPrintMeta,
+    requestBill,
+    pause: pauseOrder,
+    resume: resumeOrder,
   }
 }

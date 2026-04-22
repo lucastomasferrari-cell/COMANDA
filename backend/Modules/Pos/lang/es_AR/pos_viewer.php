@@ -138,11 +138,15 @@ return [
         "coming_soon" => "Próximamente",
         "print_needs_order" => "Imprimir está disponible cuando la comanda ya fue enviada",
         "print_needs_order_short" => "Envialo primero",
+        "bill_requested" => "Cuenta pedida — se imprime el ticket",
+        "order_paused" => "Comanda puesta en espera",
         "items" => [
             "apply_discount" => "Aplicar descuento general",
             "split_bill" => "Dividir cuenta",
             "change_table" => "Cambiar de mesa",
             "print" => "Imprimir comanda",
+            "request_bill" => "Pedir la cuenta",
+            "pause_order" => "Poner en espera",
         ],
     ],
     "open_item" => [

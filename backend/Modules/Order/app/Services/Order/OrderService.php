@@ -15,6 +15,9 @@ use Modules\Order\Enums\OrderProductStatus;
 use Modules\Order\Enums\OrderStatus;
 use Modules\Order\Enums\OrderType;
 use Modules\Order\Enums\ReasonType;
+use Modules\Order\Events\OrderBillRequested;
+use Modules\Order\Events\OrderPaused;
+use Modules\Order\Events\OrderResumed;
 use Modules\Order\Events\OrderUpdateStatus;
 use Modules\Order\Events\OrderVoided;
 use Modules\Order\Models\Order;
@@ -627,5 +630,66 @@ class OrderService implements OrderServiceInterface
 
             return $order->fresh();
         });
+    }
+
+    /** @inheritDoc */
+    public function requestBill(int|string $id): Order
+    {
+        /** @var Order $order */
+        $order = $this->findOrFail($id);
+
+        // Idempotente: si ya habia sido pedida, no re-disparamos el evento
+        // (evita prints duplicados en la fiscal).
+        if (!is_null($order->bill_requested_at)) {
+            return $order;
+        }
+
+        $order->update(["bill_requested_at" => now()]);
+        event(new OrderBillRequested($order->fresh()));
+
+        return $order->fresh();
+    }
+
+    /** @inheritDoc */
+    public function pauseOrder(int|string $id): Order
+    {
+        /** @var Order $order */
+        $order = $this->findOrFail($id);
+
+        if (!is_null($order->paused_at)) {
+            return $order;
+        }
+
+        abort_if(
+            in_array($order->status, [
+                OrderStatus::Completed,
+                OrderStatus::Cancelled,
+                OrderStatus::Refunded,
+                OrderStatus::Merged,
+            ], true),
+            422,
+            __("order::messages.pause_invalid_status"),
+        );
+
+        $order->update(["paused_at" => now()]);
+        event(new OrderPaused($order->fresh()));
+
+        return $order->fresh();
+    }
+
+    /** @inheritDoc */
+    public function resumeOrder(int|string $id): Order
+    {
+        /** @var Order $order */
+        $order = $this->findOrFail($id);
+
+        if (is_null($order->paused_at)) {
+            return $order;
+        }
+
+        $order->update(["paused_at" => null]);
+        event(new OrderResumed($order->fresh()));
+
+        return $order->fresh();
     }
 }

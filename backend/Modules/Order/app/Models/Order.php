@@ -1441,6 +1441,8 @@ class Order extends Model
             "start_date" => "datetime",
             "end_date" => "datetime",
             "scheduled_at" => "datetime",
+            "bill_requested_at" => "datetime",
+            "paused_at" => "datetime",
         ];
     }
 

@@ -18,4 +18,8 @@ return [
     "table_cannot_be_changed_because_merge_request" => "Lamentablemente, la mesa de este pedido no se puede cambiar porque tiene una solicitud de unificación activa.",
     "print_has_been_successfully" => "La impresión se realizó correctamente.",
     "custom_product_invalid_status" => "No se puede agregar un ítem suelto a un pedido completado, cancelado o reembolsado.",
+    "bill_requested_successfully" => "La cuenta fue marcada como pedida.",
+    "order_paused_successfully" => "La comanda quedó en espera.",
+    "order_resumed_successfully" => "La comanda se reanudó.",
+    "pause_invalid_status" => "No se puede pausar una comanda completada, cancelada o unificada.",
 ];

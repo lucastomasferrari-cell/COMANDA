@@ -138,11 +138,15 @@ return [
         "coming_soon" => "Coming soon",
         "print_needs_order" => "Printing is available once the order has been sent",
         "print_needs_order_short" => "Send first",
+        "bill_requested" => "Bill requested — ticket printed",
+        "order_paused" => "Order put on hold",
         "items" => [
             "apply_discount" => "Apply overall discount",
             "split_bill" => "Split bill",
             "change_table" => "Change table",
             "print" => "Print order",
+            "request_bill" => "Request bill",
+            "pause_order" => "Put on hold",
         ],
     ],
     "open_item" => [

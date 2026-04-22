@@ -47,6 +47,8 @@ class ActiveOrderResource extends JsonResource
             ],
             "time" => dateTimeFormat($this->created_at, DateTimeFormat::Time),
             "date" => dateTimeFormat($this->created_at, DateTimeFormat::Date),
+            "bill_requested_at" => $this->bill_requested_at?->toIso8601String(),
+            "paused_at" => $this->paused_at?->toIso8601String(),
         ];
     }
 }
