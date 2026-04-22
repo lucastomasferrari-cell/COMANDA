@@ -1,8 +1,9 @@
 <script lang="ts" setup>
   import type { UseCart } from '@/modules/cart/composables/cart.ts'
   import type { PosForm, PosMeta } from '@/modules/pos/contracts/posViewer.ts'
-  import { ref } from 'vue'
+  import { ref, toRefs, watch } from 'vue'
   import { useAuth } from '@/modules/auth/composables/auth.ts'
+  import { usePosViewerMode } from '@/modules/pos/composables/usePosViewerMode.ts'
 
   const props = defineProps<{
     meta: PosMeta
@@ -16,6 +17,7 @@
 
   const { processing, data, storeOrderType } = props.cart
   const { can } = useAuth()
+  const { mode } = usePosViewerMode()
   const loading = ref(false)
   const targetId = ref<string | null>(null)
   const { form } = toRefs(props)
@@ -35,10 +37,32 @@
       }
     }
   }
+
+  // Modo Rapido: si el tipo actual es dine_in (o no hay ninguno), autoseteamos
+  // al primer tipo no-dine_in disponible. El user no puede seleccionar dine_in
+  // cuando las tabs estan ocultas.
+  watch(
+    [mode, () => props.meta.orderTypes, () => data.value.orderType?.id],
+    async ([newMode, types, currentId]) => {
+      if (newMode !== 'quick' || loading.value || processing.value) return
+      if (currentId && currentId !== 'dine_in') return
+      const fallback = types?.find(t => t.id !== 'dine_in')
+      if (!fallback || fallback.id === currentId) return
+      loading.value = true
+      targetId.value = fallback.id
+      form.value.table = null
+      await storeOrderType(fallback.id)
+      loading.value = false
+      targetId.value = null
+    },
+    { immediate: true },
+  )
 </script>
 
 <template>
-  <div class="order-type-scroll">
+  <!-- En modo Rapido las tabs de canal quedan ocultas y se fija un tipo
+       no-dine_in. El user no pasa por la decision "con mesa o sin mesa". -->
+  <div v-if="mode === 'tables'" class="order-type-scroll">
     <div class="scroll-container">
       <div
         v-for="type in meta.orderTypes"
