@@ -13,7 +13,7 @@ class Forkiva
      *
      * @var string
      */
-    public static string $version = "1.8.1";
+    public static string $version = "1.8.2";
 
     /**
      * Determine if forkiva is cache enabled
