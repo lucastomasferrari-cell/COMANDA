@@ -95,31 +95,10 @@ return [
         "manage_cash_movement" => "Movimiento de efectivo",
         "orders" => "Comandas",
     ],
-    "mode" => [
-        "tables" => "Mesas",
-        "quick" => "Rápido",
-    ],
     "no_active_order" => [
         "title" => "Sin comanda activa",
-        "description" => "Abrí una mesa o creá una orden rápida para empezar",
+        "description" => "Tocá una mesa del plano o clickeá + Nueva para arrancar",
         "cta_new" => "Nueva orden",
-        "cta_table" => "Abrir mesa",
-    ],
-    "menu_prompt" => [
-        "title" => "Empezá una comanda",
-        "message_tables" => "Tocá una mesa del plano o creá una orden rápida para empezar a cargar productos.",
-        "message_quick" => "Tocá '+ Nueva' en la columna izquierda para abrir una tab.",
-    ],
-    "start_order_dialog" => [
-        "title" => "¿Cómo querés arrancar?",
-        "table" => [
-            "title" => "Abrir mesa",
-            "subtitle" => "Elegí una mesa del visor",
-        ],
-        "quick" => [
-            "title" => "Orden rápida",
-            "subtitle" => "Sin mesa, para llevar o mostrador",
-        ],
     ],
     "guest_count_dialog" => [
         "title" => "¿Cuántos comensales?",
@@ -191,7 +170,6 @@ return [
     "no_cart_items" => [
         "title" => "Arrancá una comanda",
         "description" => "Seleccioná platos del menú para comenzar el pedido",
-        "description_tables" => "Elegí una mesa o seleccioná platos del menú para arrancar",
     ],
     "order_management" => "Gestión de pedidos",
     "filters" => "Filtros",

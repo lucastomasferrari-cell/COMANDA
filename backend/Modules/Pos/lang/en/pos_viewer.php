@@ -95,31 +95,10 @@ return [
         "manage_cash_movement" => "Cash Movement",
         "orders" => "Orders",
     ],
-    "mode" => [
-        "tables" => "Tables",
-        "quick" => "Quick",
-    ],
     "no_active_order" => [
         "title" => "No active order",
-        "description" => "Open a table or start a quick order to begin",
+        "description" => "Tap a table on the plan or click + New to start",
         "cta_new" => "New order",
-        "cta_table" => "Open table",
-    ],
-    "menu_prompt" => [
-        "title" => "Start an order",
-        "message_tables" => "Tap a table on the floor or start a quick order to begin adding products.",
-        "message_quick" => "Tap '+ New' in the left column to open a tab.",
-    ],
-    "start_order_dialog" => [
-        "title" => "How do you want to start?",
-        "table" => [
-            "title" => "Open a table",
-            "subtitle" => "Pick a table from the viewer",
-        ],
-        "quick" => [
-            "title" => "Quick order",
-            "subtitle" => "No table, takeaway or counter",
-        ],
     ],
     "guest_count_dialog" => [
         "title" => "How many guests?",
@@ -191,7 +170,6 @@ return [
     "no_cart_items" => [
         "title" => "Start a new order",
         "description" => "Select dishes from the menu to start your order",
-        "description_tables" => "Pick a table or select dishes from the menu to start",
     ],
     "order_management" => "Order Management",
     "filters" => "Filters",

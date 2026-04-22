@@ -3,7 +3,6 @@
   import type { PosForm } from '@/modules/pos/contracts/posViewer.ts'
   import { computed } from 'vue'
   import { useI18n } from 'vue-i18n'
-  import { usePosViewerMode } from '@/modules/pos/composables/usePosViewerMode.ts'
   import Item from './Item.vue'
 
   const props = defineProps<{
@@ -12,7 +11,6 @@
   }>()
   const { data } = props.cart
   const { t } = useI18n()
-  const { mode } = usePosViewerMode()
 
   const rows = computed(() =>
     (data.value.items || []).map(item => {
@@ -26,10 +24,6 @@
       }
     }),
   )
-
-  const emptyDescription = computed(() => mode.value === 'tables'
-    ? t('pos::pos_viewer.no_cart_items.description_tables')
-    : t('pos::pos_viewer.no_cart_items.description'))
 
 </script>
 
@@ -50,7 +44,7 @@
         {{ t('pos::pos_viewer.no_cart_items.title') }}
       </p>
       <p>
-        {{ emptyDescription }}
+        {{ t('pos::pos_viewer.no_cart_items.description') }}
       </p>
     </div>
   </div>

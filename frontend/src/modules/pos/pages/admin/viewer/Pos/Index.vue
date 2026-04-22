@@ -8,7 +8,6 @@
   import { useToast } from 'vue-toastification'
   import { useI18n } from 'vue-i18n'
   import { useAuth } from '@/modules/auth/composables/auth.ts'
-  import { usePosViewerMode } from '@/modules/pos/composables/usePosViewerMode.ts'
   import { useOrder } from '@/modules/sale/composables/order.ts'
   import GuestCountDialog from './Dialogs/GuestCountDialog.vue'
   import OrderDetailsDialog from '@/modules/pos/pages/admin/viewer/Pos/Dialogs/OrderDetails/Index.vue'
@@ -16,7 +15,6 @@
   import OrdersDrawer from '@/modules/pos/pages/admin/viewer/Pos/Drawers/Orders/Index.vue'
   import OrderPrintDialog from './Dialogs/OrderPrint/Index.vue'
   import RefundCancelDialog from './Dialogs/RefundCancelDialog.vue'
-  import StartOrderDialog from './Dialogs/StartOrderDialog.vue'
   import ActiveOrdersPanel from './ActiveOrdersPanel/Index.vue'
   import CashMovementDrawer from './Drawers/CashMovement/Index.vue'
   import TableViewerDrawer from './Drawers/TableViewer/Index.vue'
@@ -41,13 +39,11 @@
   const { t } = useI18n()
   const toast = useToast()
   const { edit: editOrder } = useOrder()
-  const { mode: viewerMode } = usePosViewerMode()
 
   const canOrders = can('admin.orders.upcoming') || can('admin.orders.active')
   const showOrdersDrawer = ref(false)
   const showCashMovementDrawer = ref(false)
   const showTableViewerDrawer = ref(false)
-  const showStartOrderDialog = ref(false)
   const showPlanoGuestCountDialog = ref(false)
   const pendingPlanoTable = ref<PlanoTable | null>(null)
 
@@ -88,24 +84,10 @@
     }
   }
 
-  // "+ Nueva" bifurca por modo del viewer:
-  //   - Modo Mesas: abrimos el dialog de seleccion (abrir mesa vs rapida).
-  //   - Modo Rapido: vamos directo, sin dialog de por medio.
-  const onNewOrder = () => {
-    if (viewerMode.value === 'tables') {
-      showStartOrderDialog.value = true
-    } else {
-      props.startNewOrder()
-    }
-  }
-
-  const onStartOrderQuick = () => props.startNewOrder()
-
-  const onStartOrderOpenTable = () => {
-    if (can('admin.tables.viewer')) {
-      showTableViewerDrawer.value = true
-    }
-  }
+  // "+ Nueva" dispara una orden rapida directa. Si el cajero queria
+  // abrir mesa, usa el plano del centro (click en mesa libre) —
+  // eliminamos el dialog intermedio porque duplicaba la decision.
+  const onNewOrder = () => props.startNewOrder()
 
   // Mesa libre clickeada desde el plano: pedimos comensales antes de abrir.
   const onPlanoPickFree = (table: PlanoTable) => {
@@ -257,11 +239,6 @@
       @new-order="() => { showActiveOrdersDrawer = false; onNewOrder() }"
     />
   </VNavigationDrawer>
-  <StartOrderDialog
-    v-model="showStartOrderDialog"
-    @open-table-viewer="onStartOrderOpenTable"
-    @quick="onStartOrderQuick"
-  />
   <GuestCountDialog
     v-model="showPlanoGuestCountDialog"
     :initial="1"

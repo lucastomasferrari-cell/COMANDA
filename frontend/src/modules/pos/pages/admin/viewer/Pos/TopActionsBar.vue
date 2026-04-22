@@ -3,9 +3,8 @@
   import { computed } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { useAuth } from '@/modules/auth/composables/auth.ts'
-  import { usePosViewerMode } from '@/modules/pos/composables/usePosViewerMode.ts'
 
-  const props = defineProps<{
+  defineProps<{
     meta: PosMeta
     isNarrow?: boolean
   }>()
@@ -17,13 +16,9 @@
 
   const { t } = useI18n()
   const { can } = useAuth()
-  const { mode, setMode } = usePosViewerMode()
 
-  // Las acciones globales del viewer. "Visor de mesas" se removio — el
-  // plano ya es visible en el panel central cuando no hay orden activa,
-  // y el drawer se accede desde el StartOrderDialog / OrderPanel empty
-  // state. "search_order" se fusiono con "orders" — ambos abrian el
-  // mismo drawer, ahora el drawer auto-focusea su propio search.
+  // El toggle Mesas/Rapido se removio. El flujo es directo: click en
+  // mesa del plano = orden con mesa; boton "+ Nueva" = orden rapida.
   const actions = computed(() => [
     {
       id: 'manage_cash_movement',
@@ -52,34 +47,6 @@
       variant="text"
       @click="$emit('open-active-orders')"
     />
-    <!-- Segmented control: 2 botones iguales, el activo con fondo primary.
-         Usamos div + clicks en vez de VBtnToggle porque el toggle de Vuetify
-         corta el texto cuando density='compact' y el styling custom es mas
-         predecible. -->
-    <div class="mode-segmented" role="tablist" :aria-label="t('pos::pos_viewer.mode.tables')">
-      <button
-        class="segment"
-        :class="{ active: mode === 'tables' }"
-        role="tab"
-        :aria-selected="mode === 'tables'"
-        type="button"
-        @click="setMode('tables')"
-      >
-        <VIcon icon="tabler-brand-airtable" size="18" />
-        <span class="label">{{ t('pos::pos_viewer.mode.tables') }}</span>
-      </button>
-      <button
-        class="segment"
-        :class="{ active: mode === 'quick' }"
-        role="tab"
-        :aria-selected="mode === 'quick'"
-        type="button"
-        @click="setMode('quick')"
-      >
-        <VIcon icon="tabler-bolt" size="18" />
-        <span class="label">{{ t('pos::pos_viewer.mode.quick') }}</span>
-      </button>
-    </div>
 
     <VSpacer />
 
@@ -102,52 +69,5 @@
   background: rgba(var(--v-theme-surface), 1);
   border-bottom: thin solid rgba(var(--v-theme-on-surface), 0.08);
   flex-shrink: 0;
-}
-
-.mode-segmented {
-  display: inline-flex;
-  flex-shrink: 0;
-  background: rgba(var(--v-theme-on-surface), 0.06);
-  border-radius: 10px;
-  padding: 4px;
-  gap: 4px;
-}
-
-.segment {
-  all: unset;
-  box-sizing: border-box;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  min-width: 118px;
-  padding: 0.45rem 0.9rem;
-  border-radius: 7px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: rgba(var(--v-theme-on-surface), 0.72);
-  transition: color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
-  white-space: nowrap;
-
-  .label {
-    line-height: 1;
-  }
-
-  &:hover:not(.active) {
-    color: rgb(var(--v-theme-on-surface));
-    background: rgba(var(--v-theme-on-surface), 0.04);
-  }
-
-  &.active {
-    color: rgb(var(--v-theme-on-primary));
-    background: rgb(var(--v-theme-primary));
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
-  }
-
-  &:focus-visible {
-    outline: 2px solid rgba(var(--v-theme-primary), 0.6);
-    outline-offset: 2px;
-  }
 }
 </style>

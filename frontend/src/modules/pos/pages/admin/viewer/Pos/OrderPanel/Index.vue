@@ -6,7 +6,6 @@
   import { useI18n } from 'vue-i18n'
   import { useToast } from 'vue-toastification'
   import { useAuth } from '@/modules/auth/composables/auth.ts'
-  import { usePosViewerMode } from '@/modules/pos/composables/usePosViewerMode.ts'
   import { useOrder } from '@/modules/sale/composables/order.ts'
   import AdditionalInformation from './AdditionalInformation.vue'
   import CartItems from './CartItems/Index.vue'
@@ -38,7 +37,6 @@
   const toast = useToast()
   const { getPrintMeta, printPreview, store, update, requestBill, pause } = useOrder()
   const { can } = useAuth()
-  const { mode: viewerMode } = usePosViewerMode()
 
   const { processing, data, clear, cartId } = props.cart
   const { refundPaymentMethod } = toRefs(props.form)
@@ -314,18 +312,6 @@
       @click="$emit('new-order')"
     >
       {{ t('pos::pos_viewer.no_active_order.cta_new') }}
-    </VBtn>
-    <VBtn
-      v-if="viewerMode === 'tables' && can('admin.tables.viewer')"
-      block
-      class="mt-2"
-      color="primary"
-      prepend-icon="tabler-brand-airtable"
-      size="large"
-      variant="tonal"
-      @click="$emit('on-click-action', 'table_viewer')"
-    >
-      {{ t('pos::pos_viewer.no_active_order.cta_table') }}
     </VBtn>
   </div>
   <div v-else class="order-panel-stack d-flex flex-column" style="min-height: 91vh; gap: 0.5rem;">
