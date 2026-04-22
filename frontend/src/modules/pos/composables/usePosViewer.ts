@@ -187,18 +187,25 @@ export function usePosViewer (cartId: string) {
 
   // Arranca una orden nueva en create mode. Prende el flag enseguida para que
   // la UI mute el empty state sin esperar al backend; si cart.clear falla,
-  // revertimos.
-  const startNewOrder = async () => {
+  // revertimos. El overload con opts se usa desde el plano visual cuando el
+  // user clickea una mesa libre (pre-setea table + guestCount + orderType).
+  const startNewOrder = async (opts?: { table?: Record<string, any> | null, guestCount?: number }) => {
     if (cart.processing.value) return
     newOrderStarted.value = true
     try {
       await cart.clear()
+      if (opts?.table) {
+        await cart.storeOrderType("dine_in")
+      }
       form.value = {
         ...form.value,
-        meta: { ...structuredClone(defaultForm).meta },
+        meta: {
+          ...structuredClone(defaultForm).meta,
+          guestCount: opts?.guestCount ?? 1,
+        },
         mode: 'create',
         waiter: null,
-        table: null,
+        table: opts?.table ?? null,
       }
     } catch {
       newOrderStarted.value = false

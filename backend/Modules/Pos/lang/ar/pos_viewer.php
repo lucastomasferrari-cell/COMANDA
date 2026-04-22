@@ -128,6 +128,11 @@ return [
         "confirm" => "تأكيد",
         "cancel" => "إلغاء",
     ],
+    "plano" => [
+        "empty_title" => "لا توجد طاولات",
+        "empty_description" => "أنشئ طاولات من لوحة الإدارة > القاعة لعرضها في المخطط.",
+        "context_placeholder" => "إجراءات سريعة: قريبًا",
+    ],
     "active_orders" => "الطلبات النشطة",
     "upcoming_orders" => "الطلبات القادمة",
     "no_cart_items" => [

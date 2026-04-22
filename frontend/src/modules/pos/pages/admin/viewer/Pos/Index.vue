@@ -1,10 +1,15 @@
 <script lang="ts" setup>
+  import type { PlanoTable } from '@/modules/seatingPlan/components/SalonPlanoVisual.vue'
   import type { Cart, UseCart } from '@/modules/cart/composables/cart.ts'
   import type { PosForm, PosMeta } from '@/modules/pos/contracts/posViewer.ts'
   import type { useQintrix } from '@/modules/printer/composables/qintrix.ts'
   import { ref } from 'vue'
+  import { useToast } from 'vue-toastification'
+  import { useI18n } from 'vue-i18n'
   import { useAuth } from '@/modules/auth/composables/auth.ts'
   import { usePosViewerMode } from '@/modules/pos/composables/usePosViewerMode.ts'
+  import { useOrder } from '@/modules/sale/composables/order.ts'
+  import GuestCountDialog from './Dialogs/GuestCountDialog.vue'
   import OrderDetailsDialog from '@/modules/pos/pages/admin/viewer/Pos/Dialogs/OrderDetails/Index.vue'
   import PaymentDialog from '@/modules/pos/pages/admin/viewer/Pos/Dialogs/Payment/Index.vue'
   import OrdersDrawer from '@/modules/pos/pages/admin/viewer/Pos/Drawers/Orders/Index.vue'
@@ -24,7 +29,7 @@
     cart: UseCart
     qintrix: ReturnType<typeof useQintrix>
     hasActiveOrder: boolean
-    startNewOrder: () => Promise<void>
+    startNewOrder: (opts?: { table?: Record<string, any> | null, guestCount?: number }) => Promise<void>
   }>()
 
   const emit = defineEmits<{
@@ -32,6 +37,9 @@
     (e: 'reset', cart?: Cart): void
   }>()
   const { can } = useAuth()
+  const { t } = useI18n()
+  const toast = useToast()
+  const { edit: editOrder } = useOrder()
   const { mode: viewerMode } = usePosViewerMode()
 
   const canOrders = can('admin.orders.upcoming') || can('admin.orders.active')
@@ -39,6 +47,8 @@
   const showCashMovementDrawer = ref(false)
   const showTableViewerDrawer = ref(false)
   const showStartOrderDialog = ref(false)
+  const showPlanoGuestCountDialog = ref(false)
+  const pendingPlanoTable = ref<PlanoTable | null>(null)
 
   const paymentDialog = ref<Record<string, any>>({ orderId: null, open: false })
   const refundCancelDialog = ref<Record<string, any>>({ orderId: null, open: false })
@@ -73,6 +83,37 @@
   const onStartOrderOpenTable = () => {
     if (can('admin.tables.viewer')) {
       showTableViewerDrawer.value = true
+    }
+  }
+
+  // Mesa libre clickeada desde el plano: pedimos comensales antes de abrir.
+  const onPlanoPickFree = (table: PlanoTable) => {
+    pendingPlanoTable.value = table
+    showPlanoGuestCountDialog.value = true
+  }
+
+  const onPlanoGuestCountConfirm = async (guestCount: number) => {
+    const tbl = pendingPlanoTable.value
+    if (!tbl) return
+    await props.startNewOrder({
+      table: {
+        id: tbl.id,
+        name: tbl.name,
+      },
+      guestCount,
+    })
+    pendingPlanoTable.value = null
+  }
+
+  // Mesa ocupada: cargamos la orden activa y la abrimos en el panel derecho.
+  const onPlanoPickOccupied = async (table: PlanoTable) => {
+    const orderId = table.active_order?.id
+    if (!orderId) return
+    try {
+      const response = (await editOrder(props.cart.cartId, orderId)).data.body
+      emit('init-order', response)
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message ?? t('core::errors.an_unexpected_error_occurred'))
     }
   }
 
@@ -146,6 +187,8 @@
             :form="form"
             :has-active-order="hasActiveOrder"
             :meta="meta"
+            @pick-table-free="onPlanoPickFree"
+            @pick-table-occupied="onPlanoPickOccupied"
           />
         </VCardText>
       </VCard>
@@ -173,6 +216,11 @@
     v-model="showStartOrderDialog"
     @open-table-viewer="onStartOrderOpenTable"
     @quick="onStartOrderQuick"
+  />
+  <GuestCountDialog
+    v-model="showPlanoGuestCountDialog"
+    :initial="1"
+    @confirm="onPlanoGuestCountConfirm"
   />
   <OrderDetailsDialog
     v-if="can('admin.orders.show') && viewOrderDetailsDialog.open"

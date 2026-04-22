@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+  import type { PlanoTable } from '@/modules/seatingPlan/components/SalonPlanoVisual.vue'
   import type { UseCart } from '@/modules/cart/composables/cart.ts'
   import type { Category, PosForm, PosMeta } from '@/modules/pos/contracts/posViewer.ts'
   import { computed, ref } from 'vue'
@@ -7,12 +8,18 @@
   import Categories from './Categories/Index.vue'
   import Empty from './Empty.vue'
   import Products from './Products/Index.vue'
+  import TablePlano from './TablePlano.vue'
 
   defineProps<{
     form: PosForm
     meta: PosMeta
     cart: UseCart
     hasActiveOrder: boolean
+  }>()
+
+  defineEmits<{
+    (e: 'pick-table-free', table: PlanoTable): void
+    (e: 'pick-table-occupied', table: PlanoTable): void
   }>()
 
   const { t } = useI18n()
@@ -34,11 +41,17 @@
 <template>
   <div
     class="menu-items-container"
-    :class="{'menu-items-container-center': !hasActiveOrder || meta.products.length === 0}"
+    :class="{'menu-items-container-center': !hasActiveOrder && mode !== 'tables' || meta.products.length === 0}"
   >
-    <!-- Sin orden activa: prompt contextual al user. El mensaje cambia
-         segun el modo del viewer (Mesas vs Rápido). -->
-    <div v-if="!hasActiveOrder" class="menu-prompt text-center">
+    <!-- Sin orden activa: en modo Mesas mostramos el plano read-only (click
+         abre mesa). En modo Rapido, prompt simple con mensaje contextual. -->
+    <TablePlano
+      v-if="!hasActiveOrder && mode === 'tables'"
+      :branch-id="form.branchId"
+      @pick-free="(table: PlanoTable) => $emit('pick-table-free', table)"
+      @pick-occupied="(table: PlanoTable) => $emit('pick-table-occupied', table)"
+    />
+    <div v-else-if="!hasActiveOrder" class="menu-prompt text-center">
       <div class="prompt-icon mb-3">
         <VIcon color="primary" icon="tabler-tools-kitchen-2" size="56" />
       </div>

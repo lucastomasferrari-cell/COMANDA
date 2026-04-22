@@ -128,6 +128,11 @@ return [
         "confirm" => "Confirmar",
         "cancel" => "Cancelar",
     ],
+    "plano" => [
+        "empty_title" => "Sin mesas cargadas",
+        "empty_description" => "Creá mesas en Admin > Salón para verlas en el plano.",
+        "context_placeholder" => "Acciones rápidas: próximamente",
+    ],
     "active_orders" => "Pedidos activos",
     "upcoming_orders" => "Pedidos próximos",
     "no_cart_items" => [

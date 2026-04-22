@@ -128,6 +128,11 @@ return [
         "confirm" => "Confirm",
         "cancel" => "Cancel",
     ],
+    "plano" => [
+        "empty_title" => "No tables yet",
+        "empty_description" => "Create tables in Admin > Floor to see them on the plan.",
+        "context_placeholder" => "Quick actions: coming soon",
+    ],
     "active_orders" => "Active Orders",
     "upcoming_orders" => "Upcoming Orders",
     "no_cart_items" => [
