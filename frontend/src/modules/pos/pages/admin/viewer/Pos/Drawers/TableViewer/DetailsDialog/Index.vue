@@ -8,6 +8,7 @@ import { useToast } from 'vue-toastification'
 import { useAuth } from '@/modules/auth/composables/auth.ts'
 import { useForm } from '@/modules/core/composables/form.ts'
 import { useTable } from '@/modules/seatingPlan/composables/table.ts'
+import GuestCountDialog from '../../../Dialogs/GuestCountDialog.vue'
 import MergeDetails from './MergeDetails.vue'
 import MergeDialog from './MergeDialog.vue'
 import OrdersDetails from './OrdersDetails/Index.vue'
@@ -36,6 +37,7 @@ const { storeOrderType } = props.cart
 const { form } = toRefs(props)
 
 const loadingCreateOrder = ref(false)
+const showGuestCountDialog = ref(false)
 const table = ref<Record<string, any> | null>(null)
 const meta = reactive({
   waiters: [] as Record<string, any>[],
@@ -97,9 +99,17 @@ if (can('admin.tables.assign_waiter')) {
 
 const close = () => emit('update:modelValue', false)
 
-async function createOrder() {
-  if (table.value) {
-    loadingCreateOrder.value = true
+function createOrder() {
+  // Antes disparaba storeOrderType + form.table directamente; ahora primero
+  // pedimos comensales. Si el user cancela, nada se toca.
+  if (!table.value) return
+  showGuestCountDialog.value = true
+}
+
+async function confirmGuestCount(guestCount: number) {
+  if (!table.value) return
+  loadingCreateOrder.value = true
+  try {
     await storeOrderType('dine_in')
     form.value.table = {
       id: table.value.id,
@@ -107,10 +117,12 @@ async function createOrder() {
       floor: table.value.floor.name,
       zone: table.value.zone.name,
     }
+    form.value.meta.guestCount = guestCount
+  } finally {
     loadingCreateOrder.value = false
-    emit('close-parent')
-    close()
   }
+  emit('close-parent')
+  close()
 }
 
 function initOrder(response: Record<string, any>) {
@@ -247,6 +259,11 @@ defineExpose({ refresh: refreshAll })
     </VCard>
     <MergeDialog v-if="allowMergeTable && showTableMergeDialog" v-model="showTableMergeDialog" :pos-form="form"
       :table-id="currentTableId" @refresh="refreshAll" />
+    <GuestCountDialog
+      v-model="showGuestCountDialog"
+      :initial="form.meta.guestCount ?? 1"
+      @confirm="confirmGuestCount"
+    />
   </VDialog>
 </template>
 

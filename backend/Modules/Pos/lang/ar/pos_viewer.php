@@ -122,6 +122,12 @@ return [
             "subtitle" => "بدون طاولة، للخارج أو على الكاونتر",
         ],
     ],
+    "guest_count_dialog" => [
+        "title" => "كم عدد الضيوف؟",
+        "subtitle" => "سنفتح الطاولة بهذا العدد",
+        "confirm" => "تأكيد",
+        "cancel" => "إلغاء",
+    ],
     "active_orders" => "الطلبات النشطة",
     "upcoming_orders" => "الطلبات القادمة",
     "no_cart_items" => [

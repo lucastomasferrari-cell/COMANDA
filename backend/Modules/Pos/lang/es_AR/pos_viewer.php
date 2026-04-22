@@ -122,6 +122,12 @@ return [
             "subtitle" => "Sin mesa, para llevar o mostrador",
         ],
     ],
+    "guest_count_dialog" => [
+        "title" => "¿Cuántos comensales?",
+        "subtitle" => "Vamos a abrir la mesa con este número",
+        "confirm" => "Confirmar",
+        "cancel" => "Cancelar",
+    ],
     "active_orders" => "Pedidos activos",
     "upcoming_orders" => "Pedidos próximos",
     "no_cart_items" => [

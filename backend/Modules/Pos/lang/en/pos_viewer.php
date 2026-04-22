@@ -122,6 +122,12 @@ return [
             "subtitle" => "No table, takeaway or counter",
         ],
     ],
+    "guest_count_dialog" => [
+        "title" => "How many guests?",
+        "subtitle" => "We'll open the table with this count",
+        "confirm" => "Confirm",
+        "cancel" => "Cancel",
+    ],
     "active_orders" => "Active Orders",
     "upcoming_orders" => "Upcoming Orders",
     "no_cart_items" => [
