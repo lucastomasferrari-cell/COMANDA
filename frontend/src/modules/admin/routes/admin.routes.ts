@@ -97,6 +97,13 @@ const adminRoutes: RouteRecordRaw[] = [
         name: 'admin.cocina.reglas',
         component: () => import('@/modules/core/components/ComingSoonPlaceholder.vue'),
       },
+      {
+        // Kitchen settings movido desde Configuracion > General (Bloque 4.2).
+        path: 'ajustes',
+        name: 'admin.cocina.ajustes',
+        component: () => import('@/modules/setting/pages/admin/setting/Kitchen.vue'),
+        meta: { permission: 'admin.settings.edit' },
+      },
     ],
   },
 
@@ -179,9 +186,11 @@ const adminRoutes: RouteRecordRaw[] = [
     children: [
       { path: '', redirect: { name: 'admin.marketing.descuentos' } },
       {
+        // Bloque 4.4a: descuentos absorbe tambien las loyalty promotions.
+        // Renderiza DiscountIndex + LoyaltyPromotionIndex stackeados.
         path: 'descuentos',
         name: 'admin.marketing.descuentos',
-        component: () => import('@/modules/promotion/pages/admin/discount/Index.vue'),
+        component: () => import('@/modules/admin/pages/admin/hubs/partials/DescuentosConsolidated.vue'),
         meta: { permission: 'admin.discounts.index' },
       },
       {
