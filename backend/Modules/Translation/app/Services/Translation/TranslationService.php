@@ -39,7 +39,39 @@ class TranslationService implements TranslationServiceInterface
             'updated_at' => $snapshot?->latest_updated_at,
             'app_version' => Forkiva::$version,
             'locale' => locale(),
+            'lang_files' => $this->getLangFilesFingerprint(),
         ]));
+    }
+
+    /**
+     * Fingerprint de los archivos de traduccion del sistema, para que el
+     * versioning detecte cambios en .php files (no solo rows en la tabla
+     * translations). Sin esto, agregar keys nuevas a un lang/*.php no
+     * invalidaba el cache de IndexedDB del frontend -> seguian apareciendo
+     * keys crudas hasta limpiar el browser a mano.
+     *
+     * Cubre: backend/lang/<locale>/*.php (Laravel root) +
+     * backend/Modules/<M>/lang/<locale>/*.php (vendor modulos).
+     * Si mas adelante agregamos subdirectorios tipo lang/<locale>/emails/,
+     * hay que ampliar los patrones (hoy solo profundidad 2).
+     */
+    private function getLangFilesFingerprint(): string
+    {
+        $patterns = [
+            base_path('lang/*/*.php'),
+            base_path('Modules/*/lang/*/*.php'),
+        ];
+
+        $mtimes = [];
+        foreach ($patterns as $pattern) {
+            $matches = glob($pattern) ?: [];
+            foreach ($matches as $file) {
+                $mtimes[$file] = @filemtime($file) ?: 0;
+            }
+        }
+
+        ksort($mtimes);
+        return md5(serialize($mtimes));
     }
 
     /** @implements */
