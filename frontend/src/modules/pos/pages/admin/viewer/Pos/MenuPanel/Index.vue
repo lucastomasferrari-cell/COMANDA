@@ -33,8 +33,10 @@
         <div class="mb-2">
           <VTextField
             v-model="searchQuery"
+            autofocus
             clearable
             :placeholder="t('pos::pos_viewer.search_products')"
+            @keydown.esc="searchQuery = ''"
           >
             <template #prepend-inner>
               <VIcon icon="tabler-search" />

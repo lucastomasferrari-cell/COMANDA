@@ -69,10 +69,14 @@
     matchesSearch(normalizedName)
     && (categoryIds.value.length === 0 || (product.category_ids || []).some(catId => categoryIds.value.includes(catId)))
 
-  const productRows = computed(() => {
-    const products = indexedProducts.value
+  const visibleProducts = computed(() =>
+    indexedProducts.value
       .filter(({ product, normalizedName }) => isVisibleProduct(product, normalizedName))
-      .map(({ product }) => product)
+      .map(({ product }) => product),
+  )
+
+  const productRows = computed(() => {
+    const products = visibleProducts.value
     const columnsPerRow = xlAndUp.value ? 4 : (smAndDown.value ? 2 : 3)
     const rows = []
     for (let i = 0; i < products.length; i += columnsPerRow) {
@@ -81,13 +85,27 @@
     return rows
   })
 
+  const hasActiveSearch = computed(() => debouncedSearchQuery.value?.trim().length > 0)
+  const showNoResults = computed(() => visibleProducts.value.length === 0 && hasActiveSearch.value)
+
   const openProductOptionDialog = (product: Product) => {
     productOptionDialog.value = { open: true, product: product }
   }
 </script>
 
 <template>
+  <div
+    v-if="showNoResults"
+    class="no-results-state d-flex flex-column align-center justify-center text-center py-8 px-4"
+  >
+    <VIcon class="mb-3" color="grey-500" icon="tabler-search-off" size="48" />
+    <h4 class="mb-1 font-weight-medium">No se encontró ningún producto</h4>
+    <p class="text-body-2 text-medium-emphasis mb-0">
+      Probá con otra palabra o revisá la categoría seleccionada.
+    </p>
+  </div>
   <VVirtualScroll
+    v-else
     class="mt-1 pt-2 pl-2 pos-virtual-scroll"
     height="100%"
     :items="productRows"
