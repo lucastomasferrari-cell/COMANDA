@@ -34,6 +34,7 @@ use Modules\Support\Traits\HasTagsCache;
 use Modules\Tax\Models\Tax;
 use Modules\Translation\Traits\Translatable;
 use Znck\Eloquent\Traits\BelongsToThrough;
+use App\Traits\HasPaseUuid;
 
 /**
  * @property int $id
@@ -70,7 +71,8 @@ class Product extends Model
         Translatable,
         HasBranchCurrency,
         BelongsToThrough,
-        SoftDeletes;
+        SoftDeletes,
+        HasPaseUuid;
 
     /**
      * The attributes that are mass assignable.

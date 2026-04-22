@@ -25,6 +25,7 @@ use Modules\Support\Traits\HasFilters;
 use Modules\Support\Traits\HasSortBy;
 use Modules\User\Models\User;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use App\Traits\HasPaseUuid;
 
 /**
  * @property int $id
@@ -69,7 +70,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
  */
 class Invoice extends Model
 {
-    use SoftDeletes, HasBranch, HasSortBy, HasFilters;
+    use SoftDeletes, HasBranch, HasSortBy, HasFilters, HasPaseUuid;
 
     /**
      * Default date column

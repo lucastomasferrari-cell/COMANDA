@@ -45,6 +45,7 @@ use Modules\Support\Traits\HasSortBy;
 use Modules\Tax\Enums\TaxType;
 use Modules\User\Models\User;
 use Modules\Voucher\Models\Voucher;
+use App\Traits\HasPaseUuid;
 use Throwable;
 
 /**
@@ -118,7 +119,8 @@ class Order extends Model
     use HasCreatedBy,
         HasFilters,
         HasSortBy,
-        HasBranch;
+        HasBranch,
+        HasPaseUuid;
 
     /**
      * Default date column

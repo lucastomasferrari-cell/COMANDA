@@ -17,6 +17,7 @@ use Modules\Support\Traits\HasCreatedBy;
 use Modules\Support\Traits\HasFilters;
 use Modules\Support\Traits\HasSortBy;
 use Modules\User\Models\User;
+use App\Traits\HasPaseUuid;
 
 /**
  * @property int $id
@@ -44,7 +45,8 @@ class Payment extends Model
         HasCreatedBy,
         HasSortBy,
         HasBranch,
-        HasFilters;
+        HasFilters,
+        HasPaseUuid;
 
     /**
      * The attributes that are mass assignable.
