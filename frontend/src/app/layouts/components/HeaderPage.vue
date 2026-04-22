@@ -82,8 +82,12 @@ const makeTo = (record: RouteLocationMatched) => {
 
 
 const icon = computed(() => meta.value.icon ?? null)
-const hiddenBreadcrumb = computed(() => meta.value.breadcrumb === false)
-const hiddenPageHeader = computed(() => meta.value.pageHeader === false)
+// Breadcrumb y título quedan como opt-in explícito. El sidebar + tabs
+// ya dicen dónde está el user — repetirlo en un h1 + breadcrumb arriba
+// es ruido visual. Si alguna pantalla necesita título dinámico (ej.
+// Reports con nombre del reporte), se setea `meta.pageHeader = true`.
+const hiddenBreadcrumb = computed(() => meta.value.breadcrumb !== true)
+const hiddenPageHeader = computed(() => meta.value.pageHeader !== true)
 
 const title = computed(() =>
   meta.value.title
