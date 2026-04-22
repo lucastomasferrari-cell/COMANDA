@@ -212,6 +212,10 @@ O desde la GUI de Laragon: botón "Reload".
 `.env`: `CORS_ALLOWED_ORIGINS=http://localhost:3101,http://forkiva.test`.
 Si arrancás Vite en otro puerto (3102, etc.), agregarlo al CSV.
 
+### Cache
+
+`.env`: `CACHE_ENABLED=true` en dev y en prod. La flag la lee `Forkiva::cacheEnabled()` y `CoreServiceProvider` la usa para decidir el driver (`file` vs `array`). Con `false` todas las llamadas `Cache::*` se vuelven no-op — la app sigue funcionando pero se pierden las optimizaciones de `Setting::allCached()`, `TranslationLoader::rememberForever()`, etc. No la flippes a `false` a menos que estés depurando un bug de cache específico; hoy no hay código que asuma `true` obligatoriamente (el sistema tolera ambos valores, solo difiere en perf).
+
 ### Queue worker
 
 Los listeners críticos son `ShouldQueueAfterCommit` — sin worker corriendo, los jobs se acumulan en la tabla `jobs`. Para dev correr en terminal aparte:
