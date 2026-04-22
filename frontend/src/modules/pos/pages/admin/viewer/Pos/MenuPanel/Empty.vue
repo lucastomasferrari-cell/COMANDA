@@ -7,7 +7,7 @@
 <template>
   <div class="empty-menu-state">
     <div class="icon-wrapper">
-      <i class="tabler-chef-hat-off" />
+      <VIcon icon="tabler-chef-hat-off" size="32" />
     </div>
 
     <h4 class="title">{{ t("pos::pos_viewer.menu_no_available.title") }}</h4>
@@ -19,6 +19,8 @@
 </template>
 
 <style lang="scss" scoped>
+/* Usa theme vars de Vuetify para que respete light/dark mode del appStore.
+   Antes estaba hardcoded con grises que quedaban ilegibles en dark mode. */
 .empty-menu-state {
   display: flex;
   flex-direction: column;
@@ -26,10 +28,10 @@
   justify-content: center;
   padding: 2rem 1rem;
   text-align: center;
-  color: #606266;
+  color: rgba(var(--v-theme-on-surface), 0.7);
 
   .icon-wrapper {
-    background: #f0f2f5;
+    background: rgba(var(--v-theme-on-surface), 0.05);
     border-radius: 50%;
     width: 70px;
     height: 70px;
@@ -38,21 +40,20 @@
     justify-content: center;
     margin-bottom: 1rem;
 
-    i {
-      font-size: 32px;
-      color: #909399;
+    :deep(.v-icon) {
+      color: rgba(var(--v-theme-on-surface), 0.45);
     }
   }
 
   .title {
     font-weight: bold;
     margin-bottom: 0.4rem;
-    color: #303133;
+    color: rgb(var(--v-theme-on-surface));
   }
 
   .subtitle {
     font-size: 0.95rem;
-    color: #606266;
+    color: rgba(var(--v-theme-on-surface), 0.7);
   }
 }
 </style>
