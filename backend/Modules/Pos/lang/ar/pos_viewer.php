@@ -136,6 +136,8 @@ return [
     "more_actions" => [
         "label" => "المزيد من الإجراءات",
         "coming_soon" => "قريبًا",
+        "print_needs_order" => "الطباعة متاحة بعد إرسال الطلب",
+        "print_needs_order_short" => "أرسل أولاً",
         "items" => [
             "apply_discount" => "تطبيق خصم عام",
             "split_bill" => "تقسيم الفاتورة",

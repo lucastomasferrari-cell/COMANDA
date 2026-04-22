@@ -136,6 +136,8 @@ return [
     "more_actions" => [
         "label" => "More actions",
         "coming_soon" => "Coming soon",
+        "print_needs_order" => "Printing is available once the order has been sent",
+        "print_needs_order_short" => "Send first",
         "items" => [
             "apply_discount" => "Apply overall discount",
             "split_bill" => "Split bill",

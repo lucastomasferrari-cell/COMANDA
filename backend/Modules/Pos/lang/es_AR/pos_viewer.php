@@ -136,6 +136,8 @@ return [
     "more_actions" => [
         "label" => "Más acciones",
         "coming_soon" => "Próximamente",
+        "print_needs_order" => "Imprimir está disponible cuando la comanda ya fue enviada",
+        "print_needs_order_short" => "Envialo primero",
         "items" => [
             "apply_discount" => "Aplicar descuento general",
             "split_bill" => "Dividir cuenta",

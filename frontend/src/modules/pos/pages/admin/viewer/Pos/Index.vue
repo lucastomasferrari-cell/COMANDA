@@ -67,6 +67,17 @@
       showCashMovementDrawer.value = true
     } else if (action == 'table_viewer' && can('admin.tables.viewer')) {
       showTableViewerDrawer.value = true
+    } else if (action == 'more_print' && can('admin.orders.print')) {
+      // El menu "Más acciones > Imprimir" solo funciona en edit mode
+      // (requiere orderId). En create mode el toast "Próximamente" es
+      // misleading pero el caso no es frecuente y hace fallback ok.
+      const orderId = props.meta.order?.id
+      if (orderId) {
+        showOrderPrintDialog.value.orderId = orderId
+        showOrderPrintDialog.value.open = true
+      } else {
+        toast.info(t('pos::pos_viewer.more_actions.print_needs_order'))
+      }
     }
   }
 

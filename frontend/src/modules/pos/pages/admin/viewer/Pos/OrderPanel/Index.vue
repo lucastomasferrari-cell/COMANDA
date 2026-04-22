@@ -419,14 +419,17 @@
                 </VChip>
               </template>
             </VListItem>
-            <VListItem @click="emit('on-click-action','more_print')">
+            <VListItem
+              :disabled="!isEditMode"
+              @click="emit('on-click-action','more_print')"
+            >
               <template #prepend><VIcon icon="tabler-printer" /></template>
               <VListItemTitle>
                 {{ t('pos::pos_viewer.more_actions.items.print') }}
               </VListItemTitle>
-              <template #append>
+              <template v-if="!isEditMode" #append>
                 <VChip color="grey" density="compact" size="x-small">
-                  {{ t('pos::pos_viewer.more_actions.coming_soon') }}
+                  {{ t('pos::pos_viewer.more_actions.print_needs_order_short') }}
                 </VChip>
               </template>
             </VListItem>
