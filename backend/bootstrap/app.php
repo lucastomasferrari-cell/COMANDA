@@ -1,10 +1,12 @@
 <?php
 
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Modules\Support\ApiResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,6 +21,17 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(\App\Http\Middleware\ReadOnlyBranchMutations::class);
         $middleware->append(\App\Http\Middleware\ValidateSingleBranchInvariant::class);
         $middleware->append(\App\Http\Middleware\IdempotencyKey::class);
+    })
+    ->withSchedule(function (Schedule $schedule): void {
+        // Cleanup diario de idempotency_keys vencidas. Evita que la tabla
+        // crezca sin limite en instalaciones con trafico alto. Requiere
+        // `php artisan schedule:work` o un cron llamando `schedule:run` c/
+        // minuto para que se ejecute.
+        $schedule->call(function () {
+            DB::table('idempotency_keys')
+                ->where('expires_at', '<', now())
+                ->delete();
+        })->dailyAt('03:00')->name('idempotency_keys.cleanup')->onOneServer();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (NotFoundHttpException $exception, Request $request) {
