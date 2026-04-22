@@ -14,6 +14,7 @@ use Modules\Order\Enums\OrderType;
 use Modules\Order\Http\Requests\Api\V1\CancelOrRefundOrderRequest;
 use Modules\Order\Http\Requests\Api\V1\OrderPaymentRequest;
 use Modules\Order\Http\Requests\Api\V1\SaveOrderRequest;
+use Modules\Order\Http\Requests\Api\V1\StoreCustomOrderProductRequest;
 use Modules\Order\Services\Order\OrderServiceInterface;
 use Modules\Order\Services\OrderPayment\OrderPaymentServiceInterface;
 use Modules\Order\Services\SaveOrder\SaveOrderServiceInterface;
@@ -359,6 +360,26 @@ class OrderController extends Controller
                 $request->input('branch_id'),
                 $request->input('register_id'),
             )
+        );
+    }
+
+    /**
+     * Agrega un custom / open item a una orden existente. Solo en edit
+     * mode (la orden ya fue enviada o esta en curso). En create mode el
+     * user agrega items al cart con el flujo normal; el endpoint cart
+     * equivalent queda como ticket futuro.
+     *
+     * @param StoreCustomOrderProductRequest $request
+     * @param int|string $orderId
+     * @return JsonResponse
+     */
+    public function storeCustomProduct(StoreCustomOrderProductRequest $request, int|string $orderId): JsonResponse
+    {
+        $order = $this->service->addCustomProduct($orderId, $request->validated());
+
+        return ApiResponse::created(
+            body: new ShowOrderResource($order),
+            resource: __('order::attributes.orders.custom_product')
         );
     }
 

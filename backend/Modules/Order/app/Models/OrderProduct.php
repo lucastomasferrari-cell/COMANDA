@@ -136,7 +136,12 @@ class OrderProduct extends Model
      */
     public function name(): Attribute
     {
-        return Attribute::get(get: fn() => $this->relationLoaded('product') ? $this->product->name : 'Unknown Product');
+        return Attribute::get(get: function () {
+            if (is_null($this->product_id) && !is_null($this->custom_name)) {
+                return $this->custom_name;
+            }
+            return $this->relationLoaded('product') ? $this->product->name : 'Unknown Product';
+        });
     }
 
     /**

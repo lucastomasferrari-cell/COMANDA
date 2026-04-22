@@ -575,4 +575,57 @@ class OrderService implements OrderServiceInterface
 
         return $data;
     }
+
+    /** @inheritDoc */
+    public function addCustomProduct(int|string $id, array $data): Order
+    {
+        return DB::transaction(function () use ($id, $data): Order {
+            /** @var Order $order */
+            $order = $this->findOrFail($id);
+
+            // Estados donde tiene sentido agregar items: pending, confirmed,
+            // preparing, ready, served. No aceptamos en completed / cancelled
+            // / refunded / merged.
+            $allowedStatuses = [
+                OrderStatus::Pending,
+                OrderStatus::Confirmed,
+                OrderStatus::Preparing,
+                OrderStatus::Ready,
+                OrderStatus::Served,
+            ];
+            abort_unless(
+                in_array($order->status, $allowedStatuses, true),
+                422,
+                __("order::messages.custom_product_invalid_status"),
+            );
+
+            $quantity = max(1, (int) ($data["quantity"] ?? 1));
+            $price = (float) $data["custom_price"];
+            $subtotal = $price * $quantity;
+
+            // Custom items no heredan taxes del catalogo — el precio ingresado
+            // es el total por unidad que el cajero quiere cobrar. Si en el
+            // futuro queremos aplicar IVA, agregamos un param include_tax.
+            OrderProduct::create([
+                "order_id" => $order->id,
+                "product_id" => null,
+                "custom_name" => $data["custom_name"],
+                "custom_price" => $price,
+                "custom_description" => $data["custom_description"] ?? null,
+                "currency" => $order->currency,
+                "currency_rate" => $order->currency_rate ?: 1,
+                "unit_price" => $price,
+                "quantity" => $quantity,
+                "subtotal" => $subtotal,
+                "tax_total" => 0,
+                "total" => $subtotal,
+                "status" => OrderProductStatus::Pending,
+            ]);
+
+            $order->recalculate();
+            $order->refreshDueAmount();
+
+            return $order->fresh();
+        });
+    }
 }

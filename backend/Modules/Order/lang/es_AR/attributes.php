@@ -18,6 +18,11 @@ return [
         "products.*.actions.*.quantity" => "Cantidad",
         "refund_payment_method" => "Método de pago del reembolso",
         "products.*.order_product_id" => "Producto del pedido",
+        "custom_product" => "ítem suelto",
+        "custom_name" => "Nombre del ítem",
+        "custom_price" => "Precio",
+        "custom_description" => "Descripción",
+        "quantity" => "Cantidad",
     ],
 
     "reasons" => [

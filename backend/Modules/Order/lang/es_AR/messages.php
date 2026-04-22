@@ -17,4 +17,5 @@ return [
     "edit_not_allowed" => "No está permitido editar este pedido.",
     "table_cannot_be_changed_because_merge_request" => "Lamentablemente, la mesa de este pedido no se puede cambiar porque tiene una solicitud de unificación activa.",
     "print_has_been_successfully" => "La impresión se realizó correctamente.",
+    "custom_product_invalid_status" => "No se puede agregar un ítem suelto a un pedido completado, cancelado o reembolsado.",
 ];

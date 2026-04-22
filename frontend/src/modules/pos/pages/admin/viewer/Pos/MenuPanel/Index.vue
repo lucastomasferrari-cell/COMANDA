@@ -5,33 +5,57 @@
   import { computed, ref } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { usePosViewerMode } from '@/modules/pos/composables/usePosViewerMode.ts'
+  import { useOrder } from '@/modules/sale/composables/order.ts'
   import Categories from './Categories/Index.vue'
   import Empty from './Empty.vue'
+  import OpenItemDialog from './OpenItemDialog.vue'
   import Products from './Products/Index.vue'
   import TablePlano from './TablePlano.vue'
 
-  defineProps<{
+  const props = defineProps<{
     form: PosForm
     meta: PosMeta
     cart: UseCart
     hasActiveOrder: boolean
   }>()
 
-  defineEmits<{
+  const emit = defineEmits<{
     (e: 'pick-table-free', table: PlanoTable): void
     (e: 'pick-table-occupied', table: PlanoTable): void
+    (e: 'init-order', response: Record<string, any>): void
   }>()
 
   const { t } = useI18n()
   const { mode } = usePosViewerMode()
+  const { edit: refetchOrder } = useOrder()
 
   const activeCategories = ref<Category[]>([])
   const searchQuery = ref<string>('')
   const searchInputRef = ref<any>(null)
+  const openItemDialog = ref<boolean>(false)
 
   const promptMessage = computed(() => mode.value === 'tables'
     ? t('pos::pos_viewer.menu_prompt.message_tables')
     : t('pos::pos_viewer.menu_prompt.message_quick'))
+
+  const canAddOpenItem = computed(() =>
+    props.form.mode === 'edit' && !!props.meta.order?.id,
+  )
+
+  // Al guardar un open item, el endpoint custom devuelve solo la orden
+  // actualizada. Para refrescar el cart/form del viewer usamos el edit
+  // endpoint (mismo payload que usa ActiveOrdersPanel al abrir una orden).
+  const onOpenItemSaved = async () => {
+    const orderId = props.meta.order?.id
+    if (!orderId) return
+    try {
+      const response = (await refetchOrder(props.cart.cartId, orderId)).data.body
+      emit('init-order', response)
+    } catch {
+      // fallback silencioso: el dialog ya mostró toast de éxito y el
+      // item quedó persistido en DB; el user puede refrescar manual.
+    }
+  }
 
   const onChangeRootCategory = (category?: Category | null) => {
     activeCategories.value = category ? [category] : []
@@ -70,12 +94,14 @@
     </div>
     <template v-else>
       <template v-if="meta.products.length > 0">
-        <div class="mb-2">
+        <div class="mb-2 d-flex ga-2 align-center">
           <VTextField
             ref="searchInputRef"
             v-model="searchQuery"
             autofocus
+            class="flex-grow-1"
             clearable
+            hide-details
             :placeholder="t('pos::pos_viewer.search_products')"
             @keydown.esc="searchQuery = ''"
           >
@@ -83,6 +109,26 @@
               <VIcon icon="tabler-search" />
             </template>
           </VTextField>
+          <VTooltip
+            location="top"
+            :text="canAddOpenItem
+              ? t('pos::pos_viewer.open_item.tooltip')
+              : t('pos::pos_viewer.open_item.needs_order')"
+          >
+            <template #activator="{ props: tooltipProps }">
+              <div v-bind="tooltipProps">
+                <VBtn
+                  color="primary"
+                  :disabled="!canAddOpenItem"
+                  prepend-icon="tabler-edit"
+                  variant="tonal"
+                  @click="openItemDialog = true"
+                >
+                  {{ t('pos::pos_viewer.open_item.button') }}
+                </VBtn>
+              </div>
+            </template>
+          </VTooltip>
         </div>
         <Categories
           :active-categories="activeCategories"
@@ -99,6 +145,11 @@
       </template>
       <Empty v-else />
     </template>
+    <OpenItemDialog
+      v-model="openItemDialog"
+      :order-id="meta.order?.id ?? null"
+      @saved="onOpenItemSaved"
+    />
   </div>
 </template>
 

@@ -18,6 +18,11 @@ return [
         "products.*.actions.*.quantity" => "Quantity",
         "refund_payment_method" => "Refund Payment Method",
         "products.*.order_product_id" => "Order Product",
+        "custom_product" => "open item",
+        "custom_name" => "Item name",
+        "custom_price" => "Price",
+        "custom_description" => "Description",
+        "quantity" => "Quantity",
     ],
 
     "reasons" => [

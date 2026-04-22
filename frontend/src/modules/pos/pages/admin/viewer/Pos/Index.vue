@@ -214,6 +214,7 @@
             :form="form"
             :has-active-order="hasActiveOrder"
             :meta="meta"
+            @init-order="(response:Record<string, any>) => $emit('init-order', response)"
             @pick-table-free="onPlanoPickFree"
             @pick-table-occupied="onPlanoPickOccupied"
           />

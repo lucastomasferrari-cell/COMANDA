@@ -23,6 +23,17 @@ export function edit (cartId: string, id: number | string) {
   return http.get(`/v1/orders/${cartId}/${id}/edit`)
 }
 
+export interface CustomProductPayload {
+  custom_name: string
+  custom_price: number
+  custom_description?: string
+  quantity: number
+}
+
+export function storeCustomProduct (orderId: number | string, payload: CustomProductPayload) {
+  return http.post(`/v1/orders/${orderId}/products/custom`, payload)
+}
+
 export function cancel (id: number | string, item: Record<string, any>) {
   return http.post(`/v1/orders/${id}/cancel`, item)
 }

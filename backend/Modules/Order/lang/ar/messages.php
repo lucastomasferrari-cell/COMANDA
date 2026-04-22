@@ -14,5 +14,6 @@ return [
     "table_already_have_active_order" => "الطاولة تحتوي على طلب نشط بالفعل.",
     "print_success" => "تمت طباعة الطلب بنجاح.",
     "amount_to_be_paid_is_not_valid" => "المبلغ المراد دفعه غير صحيح.",
-    "order_must_contain_at_least_one_active_product" => "The order must contain at least one active product. You cannot cancel, refund, or delete all products from the order."
+    "order_must_contain_at_least_one_active_product" => "The order must contain at least one active product. You cannot cancel, refund, or delete all products from the order.",
+    "custom_product_invalid_status" => "لا يمكن إضافة صنف حر إلى طلب مكتمل أو ملغى أو مسترد."
 ];

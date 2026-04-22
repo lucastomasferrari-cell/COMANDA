@@ -30,7 +30,7 @@ export interface CartItem {
     name?: string
     values: Array<{ id: string | number, label?: string, price?: MoneyValue }>
   }>
-  orderProduct?: { status?: { id: string } }
+  orderProduct?: { status?: { id: string }, is_custom?: boolean }
 }
 
 export interface Cart {

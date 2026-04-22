@@ -29,6 +29,11 @@ return [
         "products.*.actions.*.quantity" => "الكمية",
         "refund_payment_method" => "طريقة استرجاع الدفع",
         "products.*.order_product_id" => "منتج الطلب",
+        "custom_product" => "صنف حر",
+        "custom_name" => "اسم الصنف",
+        "custom_price" => "السعر",
+        "custom_description" => "الوصف",
+        "quantity" => "الكمية",
     ],
 
     "reasons" => [

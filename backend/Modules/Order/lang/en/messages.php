@@ -17,4 +17,5 @@ return [
     "edit_not_allowed" => "Not allowed to edit this order.",
     "table_cannot_be_changed_because_merge_request" => "Unfortunately, the table for this order cannot be changed because it has an active merge request.",
     "print_has_been_successfully" => "Print has been successfully.",
+    "custom_product_invalid_status" => "Cannot add an open item to a completed, cancelled or refunded order.",
 ];

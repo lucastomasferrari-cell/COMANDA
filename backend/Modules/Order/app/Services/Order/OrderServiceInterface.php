@@ -172,4 +172,15 @@ interface OrderServiceInterface
      * @throws Throwable
      */
     public function printMeta(string|int $id, ?int $branchId = null, ?int $registerId = null): array;
+
+    /**
+     * Agrega un custom / open item a la orden existente. Solo disponible
+     * en edit mode (la orden ya tiene id). Recalcula subtotal / total /
+     * due_amount al terminar.
+     *
+     * @param int|string $id
+     * @param array $data {custom_name, custom_price, custom_description?, quantity}
+     * @return Order
+     */
+    public function addCustomProduct(int|string $id, array $data): Order;
 }

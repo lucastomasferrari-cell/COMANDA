@@ -40,6 +40,7 @@ Route::controller(OrderController::class)
             });
 
         Route::patch('/{orderId}/move-to-next-status', 'moveToNextStatus')->middleware('can:admin.orders.update_status');
+        Route::post('/{orderId}/products/custom', 'storeCustomProduct')->middleware('can:admin.orders.edit');
     });
 
 Route::controller(ReasonController::class)

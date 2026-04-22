@@ -15,18 +15,27 @@ class OrderProductResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $isCustom = is_null($this->product_id);
+
         return [
             "id" => $this->id,
+            "is_custom" => $isCustom,
             "product" => [
                 "id" => $this->product_id,
-                ...($this->relationLoaded("product")
+                ...($isCustom
                     ? [
-                        "name" => $this->product->name,
-                        "thumbnail" => $this->product->thumbnail != null
-                            ? new MediaSimpleResource($this->product->thumbnail)
-                            : null,
+                        "name" => $this->custom_name,
+                        "description" => $this->custom_description,
+                        "thumbnail" => null,
                     ]
-                    : [])
+                    : ($this->relationLoaded("product")
+                        ? [
+                            "name" => $this->product->name,
+                            "thumbnail" => $this->product->thumbnail != null
+                                ? new MediaSimpleResource($this->product->thumbnail)
+                                : null,
+                        ]
+                        : []))
             ],
             "status" => $this->status->toTrans(),
             "currency" => $this->currency,
