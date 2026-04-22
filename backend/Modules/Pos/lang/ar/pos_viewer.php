@@ -89,6 +89,7 @@ return [
     "hold_order" => "تعليق الطلب",
     "save_changes" => "حفظ التغييرات",
     "remove_item" => "إزالة الصنف",
+    "void_item_action" => "إلغاء الصنف",
 
     "actions" => [
         "table_viewer" => "عارض الطاولات",
@@ -110,6 +111,18 @@ return [
         "empty_title" => "لا توجد طاولات",
         "empty_description" => "أنشئ طاولات من لوحة الإدارة > القاعة لعرضها في المخطط.",
         "context_placeholder" => "إجراءات سريعة: قريبًا",
+    ],
+    "void_item" => [
+        "title" => "إلغاء الصنف",
+        "subtitle" => "أنت على وشك إلغاء \"{item}\". سيتم تسجيل هذا في سجل التدقيق.",
+        "reason_required" => "السبب (إلزامي)",
+        "reason_optional" => "السبب (اختياري)",
+        "note_required" => "ملاحظة (إلزامية مع \"أخرى\")",
+        "note_optional" => "ملاحظة (اختيارية)",
+        "note_required_hint" => "20 حرفًا كحد أدنى.",
+        "needs_approval" => "هذا السبب يتطلب موافقة المدير.",
+        "confirm" => "إلغاء",
+        "saved" => "تم إلغاء الصنف.",
     ],
     "caja" => [
         "title" => "الصندوق",

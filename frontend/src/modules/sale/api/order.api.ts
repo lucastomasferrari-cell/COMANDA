@@ -88,6 +88,26 @@ export function resumeOrder (id: number | string) {
   return http.post(`/v1/orders/${id}/resume`)
 }
 
+export interface VoidReason {
+  id: number
+  code: string
+  name: string
+  applies_to: 'item' | 'order' | 'both'
+  requires_manager_approval: boolean
+}
+
+export function listVoidReasons (appliesTo: 'item' | 'order' = 'item') {
+  return http.get(`/v1/void-reasons`, { params: { applies_to: appliesTo } })
+}
+
+export function voidOrderProduct (
+  orderId: number | string,
+  orderProductId: number | string,
+  payload: { void_reason_id?: number | null, void_note?: string | null, manager_approval_token?: string },
+) {
+  return http.post(`/v1/orders/${orderId}/products/${orderProductId}/void`, payload)
+}
+
 export function getPrintMeta (id: number | string, branchId?: number | null, registerId?: number | null) {
   return http.get(`/v1/orders/${id}/print`, {
     params: {

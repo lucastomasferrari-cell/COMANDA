@@ -22,4 +22,10 @@ return [
     "order_paused_successfully" => "La comanda quedó en espera.",
     "order_resumed_successfully" => "La comanda se reanudó.",
     "pause_invalid_status" => "No se puede pausar una comanda completada, cancelada o unificada.",
+    "order_product_not_found" => "No se encontró el ítem en esta comanda.",
+    "order_product_already_voided" => "Este ítem ya fue anulado.",
+    "void_reason_invalid" => "El motivo seleccionado no es válido para anular un ítem.",
+    "void_note_required_for_other" => "Con el motivo \"Otro\", la observación es obligatoria (mínimo 20 caracteres).",
+    "void_reason_required_after_fire" => "Tenés que elegir un motivo para anular un ítem ya enviado a cocina.",
+    "item_voided_successfully" => "Ítem anulado correctamente.",
 ];

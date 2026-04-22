@@ -19,5 +19,11 @@ return [
     "bill_requested_successfully" => "تم طلب الفاتورة.",
     "order_paused_successfully" => "تم تعليق الطلب.",
     "order_resumed_successfully" => "تم استئناف الطلب.",
-    "pause_invalid_status" => "لا يمكن تعليق طلب مكتمل أو ملغى أو مدمج."
+    "pause_invalid_status" => "لا يمكن تعليق طلب مكتمل أو ملغى أو مدمج.",
+    "order_product_not_found" => "الصنف غير موجود في هذا الطلب.",
+    "order_product_already_voided" => "تم إلغاء هذا الصنف بالفعل.",
+    "void_reason_invalid" => "السبب المحدد غير صالح لإلغاء صنف.",
+    "void_note_required_for_other" => "مع السبب \"أخرى\"، الملاحظة إلزامية (20 حرفًا كحد أدنى).",
+    "void_reason_required_after_fire" => "يجب اختيار سبب لإلغاء صنف تم إرساله إلى المطبخ.",
+    "item_voided_successfully" => "تم إلغاء الصنف بنجاح.",
 ];

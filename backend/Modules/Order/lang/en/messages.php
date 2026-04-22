@@ -22,4 +22,10 @@ return [
     "order_paused_successfully" => "Order put on hold.",
     "order_resumed_successfully" => "Order resumed.",
     "pause_invalid_status" => "Cannot pause a completed, cancelled or merged order.",
+    "order_product_not_found" => "Item not found on this order.",
+    "order_product_already_voided" => "This item was already voided.",
+    "void_reason_invalid" => "The selected reason is not valid for voiding an item.",
+    "void_note_required_for_other" => "With reason \"Other\", the note is required (minimum 20 characters).",
+    "void_reason_required_after_fire" => "You must pick a reason to void an item that was already sent to the kitchen.",
+    "item_voided_successfully" => "Item voided successfully.",
 ];

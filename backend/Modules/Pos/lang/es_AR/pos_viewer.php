@@ -89,6 +89,7 @@ return [
     "hold_order" => "Poner pedido en espera",
     "save_changes" => "Guardar cambios",
     "remove_item" => "Quitar ítem",
+    "void_item_action" => "Anular ítem",
 
     "actions" => [
         "table_viewer" => "Visor de mesas",
@@ -110,6 +111,18 @@ return [
         "empty_title" => "Sin mesas cargadas",
         "empty_description" => "Creá mesas en Admin > Salón para verlas en el plano.",
         "context_placeholder" => "Acciones rápidas: próximamente",
+    ],
+    "void_item" => [
+        "title" => "Anular ítem",
+        "subtitle" => "Estás por anular \"{item}\". El ítem queda registrado en auditoría.",
+        "reason_required" => "Motivo (obligatorio)",
+        "reason_optional" => "Motivo (opcional)",
+        "note_required" => "Observación (obligatoria con \"Otro\")",
+        "note_optional" => "Observación (opcional)",
+        "note_required_hint" => "Mínimo 20 caracteres.",
+        "needs_approval" => "Este motivo requiere autorización del encargado.",
+        "confirm" => "Anular",
+        "saved" => "Ítem anulado.",
     ],
     "caja" => [
         "title" => "Caja",

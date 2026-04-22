@@ -420,7 +420,25 @@ class OrderProduct extends Model
         return [
             'start_date' => "datetime",
             "end_date" => "datetime",
-            "status" => OrderProductStatus::class
+            "status" => OrderProductStatus::class,
+            "voided_at" => "datetime",
         ];
+    }
+
+    /**
+     * Scope que excluye items anulados. Los queries del cart en el
+     * POS usan este scope para no mostrar voided.
+     */
+    public function scopeNotVoided($query)
+    {
+        return $query->whereNull('voided_at');
+    }
+
+    /**
+     * Es un void-item (marcado como anulado, no borrado fisico).
+     */
+    public function isVoided(): bool
+    {
+        return !is_null($this->voided_at);
     }
 }

@@ -89,6 +89,7 @@ return [
     "hold_order" => "Hold Order",
     "save_changes" => "Save Changes",
     "remove_item" => "Remove Item",
+    "void_item_action" => "Void item",
 
     "actions" => [
         "table_viewer" => "Table Viewer",
@@ -110,6 +111,18 @@ return [
         "empty_title" => "No tables yet",
         "empty_description" => "Create tables in Admin > Floor to see them on the plan.",
         "context_placeholder" => "Quick actions: coming soon",
+    ],
+    "void_item" => [
+        "title" => "Void item",
+        "subtitle" => "You're about to void \"{item}\". This will be recorded in the audit log.",
+        "reason_required" => "Reason (required)",
+        "reason_optional" => "Reason (optional)",
+        "note_required" => "Note (required with \"Other\")",
+        "note_optional" => "Note (optional)",
+        "note_required_hint" => "Minimum 20 characters.",
+        "needs_approval" => "This reason requires manager approval.",
+        "confirm" => "Void",
+        "saved" => "Item voided.",
     ],
     "caja" => [
         "title" => "Cash drawer",

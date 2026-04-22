@@ -4,8 +4,10 @@
   import { computed, ref } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { useToast } from 'vue-toastification'
+  import { useOrder } from '@/modules/sale/composables/order.ts'
   import BtnProductVoid from './BtnProductVoid.vue'
   import EditQuantityDialog from './EditQuantityDialog.vue'
+  import VoidItemDialog from './VoidItemDialog.vue'
 
   const props = defineProps<{
     cartItem: CartItem
@@ -16,6 +18,7 @@
   const { updateItem, processing, deleteItem, storeAction, removeAction } = props.cart
   const { t } = useI18n()
   const toast = useToast()
+  const { edit: refetchOrder } = useOrder()
 
   const loading = ref<boolean>(false)
   const loadingDelete = ref<boolean>(false)
@@ -23,6 +26,18 @@
   const loadingAction = ref<boolean>(false)
   const open = ref<boolean>(false)
   const editQtyDialog = ref<boolean>(false)
+  const voidDialog = ref<boolean>(false)
+
+  // orderProductId existe solo en edit mode (item persistido).
+  const orderProductId = computed(() => props.cartItem.orderProduct?.id ?? null)
+  const orderId = computed(() => props.cart.data.value.order?.id ?? null)
+  const canVoidPersisted = computed(() =>
+    props.form.mode === 'edit' && !!orderId.value && !!orderProductId.value,
+  )
+  const kitchenFired = computed(() =>
+    !!props.cartItem.orderProduct?.status
+    && props.cartItem.orderProduct.status.id !== 'pending',
+  )
 
   // Estado de cocina del item: el cart devuelve cartItem.orderProduct.status
   // en modo edit. En modo create no hay status → item pendiente de envio.
@@ -72,10 +87,32 @@
   }
 
   async function removeItem () {
+    // En edit mode con item persistido → void real con motivo + audit.
+    // En create mode → delete del cart en memoria como vendor behavior.
+    if (canVoidPersisted.value) {
+      voidDialog.value = true
+      return
+    }
     if (processing.value) return
     loadingDelete.value = true
     await deleteItem(props.cartItem.id)
     loadingDelete.value = false
+  }
+
+  async function onVoided () {
+    if (!orderId.value) return
+    // Refrescar la orden completa para que el cart muestre totales
+    // actualizados y el item voided deje de aparecer.
+    try {
+      const res = await refetchOrder(props.cart.cartId, orderId.value)
+      // El emit init-order burbuja hacia arriba via OrderPanel → Pos/Index
+      // → viewer/Index.vue. Emisión indirecta: escribimos el response
+      // en cart.data (vendor ya lo hace en edit()) no hace falta.
+      // Simplemente toast + auto-close del dialog es suficiente.
+      props.cart.resetCart(res.data.body.cart)
+    } catch {
+      // fallback silencioso
+    }
   }
 
   function getActionNumberOfQuantity (action: string): number {
@@ -200,12 +237,15 @@
             </span>
           </template>
         </VTooltip>
-        <VTooltip :text="t('pos::pos_viewer.remove_item')">
+        <VTooltip :text="canVoidPersisted
+          ? t('pos::pos_viewer.void_item_action')
+          : t('pos::pos_viewer.remove_item')"
+        >
           <template #activator="{ props:tooltipProps }">
             <VBtn
               color="error"
               :disabled="disabledRemoveProduct || !enableEditOrRemoveItem || loadingDelete"
-              icon="tabler-trash"
+              :icon="canVoidPersisted ? 'tabler-circle-x' : 'tabler-trash'"
               :loading="loadingDelete"
               v-bind="tooltipProps"
               variant="text"
@@ -328,6 +368,15 @@
     v-model="editQtyDialog"
     :initial="cartItem.qty"
     @confirm="onConfirmEditQty"
+  />
+  <VoidItemDialog
+    v-if="canVoidPersisted"
+    v-model="voidDialog"
+    :item-name="cartItem.item.name"
+    :kitchen-fired="kitchenFired"
+    :order-id="orderId"
+    :order-product-id="orderProductId"
+    @voided="onVoided"
   />
 </template>
 

@@ -24,6 +24,7 @@ use Modules\Order\Events\OrderVoided;
 use Modules\Order\Models\Order;
 use Modules\Order\Models\OrderProduct;
 use Modules\Order\Models\Reason;
+use Modules\Order\Models\VoidReason;
 use Modules\Payment\Enums\RefundPaymentMethod;
 use Modules\Pos\Models\PosRegister;
 use Modules\Printer\app\Factories\PrintContentFactory;
@@ -696,6 +697,97 @@ class OrderService implements OrderServiceInterface
         event(new OrderPaused($order->fresh()));
 
         return $order->fresh();
+    }
+
+    /** @inheritDoc */
+    public function voidOrderProduct(int|string $orderId, int $orderProductId, array $data): Order
+    {
+        return DB::transaction(function () use ($orderId, $orderProductId, $data): Order {
+            /** @var Order $order */
+            $order = $this->findOrFail($orderId);
+
+            // No se puede void items sobre orden ya cobrada — usar refund.
+            $order->ensureEditable();
+
+            /** @var OrderProduct|null $item */
+            $item = $order->products()->where('id', $orderProductId)->first();
+            abort_unless($item, 404, __("order::messages.order_product_not_found"));
+            abort_if(
+                $item->isVoided(),
+                422,
+                __("order::messages.order_product_already_voided"),
+            );
+
+            // Si hay reason_id, validar que sea de applies_to = item / both
+            // y que esté activa.
+            $reason = null;
+            if (!empty($data['void_reason_id'])) {
+                $reason = VoidReason::where('id', $data['void_reason_id'])
+                    ->where('is_active', true)
+                    ->whereIn('applies_to', ['item', 'both'])
+                    ->first();
+                abort_unless(
+                    $reason,
+                    422,
+                    __("order::messages.void_reason_invalid"),
+                );
+
+                // "Otro" (cualquier reason code que empiece con item_other)
+                // requiere void_note >= 20 chars.
+                if (
+                    str_contains($reason->code, 'other')
+                    && (empty($data['void_note']) || strlen($data['void_note']) < 20)
+                ) {
+                    abort(422, __("order::messages.void_note_required_for_other"));
+                }
+            }
+
+            // Si el item ya fue enviado a cocina (status != Pending),
+            // reason_id es obligatorio.
+            if (
+                $item->status !== OrderProductStatus::Pending
+                && is_null($reason)
+            ) {
+                abort(422, __("order::messages.void_reason_required_after_fire"));
+            }
+
+            $oldValues = [
+                'quantity' => $item->quantity,
+                'total' => $item->total?->amount(),
+                'status' => $item->status?->value,
+            ];
+
+            $item->update([
+                'voided_at' => now(),
+                'voided_by' => auth()->id(),
+                'void_reason_id' => $reason?->id,
+                'void_note' => $data['void_note'] ?? null,
+            ]);
+
+            $order->recalculate();
+            $order->refreshDueAmount();
+
+            AuditLogger::log('void_item', $item, [
+                'reason' => $reason?->name ?? ($data['void_note'] ?? null),
+                'old_values' => $oldValues,
+                'new_values' => [
+                    'voided_at' => now()->toIso8601String(),
+                    'voided_by' => auth()->id(),
+                ],
+                'metadata' => [
+                    'order_id' => $order->id,
+                    'void_reason_id' => $reason?->id,
+                    'void_reason_code' => $reason?->code,
+                    'void_reason_requires_approval' => $reason?->requires_manager_approval,
+                ],
+                // manager_approval_token se procesa en Bloque 8 cuando
+                // exista el flujo de passcode. Por ahora ignoramos el
+                // campo — audit queda con approved_by null.
+                'is_fiscal' => false,
+            ]);
+
+            return $order->fresh();
+        });
     }
 
     /** @inheritDoc */

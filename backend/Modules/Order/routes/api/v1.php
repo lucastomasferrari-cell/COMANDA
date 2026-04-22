@@ -2,6 +2,7 @@
 
 use Modules\Order\Http\Controllers\Api\V1\OrderController;
 use Modules\Order\Http\Controllers\Api\V1\ReasonController;
+use Modules\Order\Http\Controllers\Api\V1\VoidReasonController;
 use Modules\Printer\Enum\PrintContentType;
 
 Route::controller(OrderController::class)
@@ -44,6 +45,14 @@ Route::controller(OrderController::class)
         Route::post('/{orderId}/request-bill', 'requestBill')->middleware('can:admin.orders.edit');
         Route::post('/{orderId}/pause', 'pauseOrder')->middleware('can:admin.orders.edit');
         Route::post('/{orderId}/resume', 'resumeOrder')->middleware('can:admin.orders.edit');
+        Route::post('/{orderId}/products/{productId}/void', 'voidOrderProduct')
+            ->middleware('can:admin.orders.edit');
+    });
+
+Route::controller(VoidReasonController::class)
+    ->prefix('void-reasons')
+    ->group(function () {
+        Route::get('/', 'index')->middleware('can:admin.orders.edit');
     });
 
 Route::controller(ReasonController::class)

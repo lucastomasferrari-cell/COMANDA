@@ -12,7 +12,8 @@ class OrderDatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            ReasonSeeder::class
+            ReasonSeeder::class,
+            VoidReasonSeeder::class,
         ]);
     }
 }

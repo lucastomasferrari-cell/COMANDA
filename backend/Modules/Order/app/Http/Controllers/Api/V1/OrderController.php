@@ -15,6 +15,7 @@ use Modules\Order\Http\Requests\Api\V1\CancelOrRefundOrderRequest;
 use Modules\Order\Http\Requests\Api\V1\OrderPaymentRequest;
 use Modules\Order\Http\Requests\Api\V1\SaveOrderRequest;
 use Modules\Order\Http\Requests\Api\V1\StoreCustomOrderProductRequest;
+use Modules\Order\Http\Requests\Api\V1\VoidOrderProductRequest;
 use Modules\Order\Services\Order\OrderServiceInterface;
 use Modules\Order\Services\OrderPayment\OrderPaymentServiceInterface;
 use Modules\Order\Services\SaveOrder\SaveOrderServiceInterface;
@@ -420,6 +421,23 @@ class OrderController extends Controller
         return ApiResponse::success(
             body: ["success" => true],
             message: __("order::messages.order_resumed_successfully"),
+        );
+    }
+
+    /**
+     * Anula (void) un item de la orden. No hace DELETE fisico — marca
+     * voided_at y filtra en queries del cart.
+     */
+    public function voidOrderProduct(
+        VoidOrderProductRequest $request,
+        int|string $orderId,
+        int $orderProductId,
+    ): JsonResponse {
+        $order = $this->service->voidOrderProduct($orderId, $orderProductId, $request->validated());
+
+        return ApiResponse::success(
+            body: new ShowOrderResource($order),
+            message: __("order::messages.item_voided_successfully"),
         );
     }
 

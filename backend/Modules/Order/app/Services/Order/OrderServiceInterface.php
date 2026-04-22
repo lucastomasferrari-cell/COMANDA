@@ -211,4 +211,14 @@ interface OrderServiceInterface
      * @return Order
      */
     public function resumeOrder(int|string $id): Order;
+
+    /**
+     * Anula (void) un item de una orden. No hace DELETE fisico.
+     *
+     * @param int|string $orderId
+     * @param int $orderProductId
+     * @param array $data {void_reason_id, void_note}
+     * @return Order
+     */
+    public function voidOrderProduct(int|string $orderId, int $orderProductId, array $data): Order;
 }
