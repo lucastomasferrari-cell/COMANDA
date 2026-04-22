@@ -1,5 +1,6 @@
 <script lang="ts" setup>
   import { useI18n } from 'vue-i18n'
+  import SalonPlanoEditor from '@/modules/seatingPlan/components/SalonPlanoEditor.vue'
   import TableIndex from '@/modules/seatingPlan/pages/admin/table/Index.vue'
   import ZoneIndex from '@/modules/seatingPlan/pages/admin/zone/Index.vue'
   import FloorIndex from '@/modules/seatingPlan/pages/admin/floor/Index.vue'
@@ -9,6 +10,13 @@
 
 <template>
   <div class="d-flex flex-column ga-8">
+    <section>
+      <h3 class="text-h6 font-weight-medium mb-4">
+        {{ t('seatingplan::plano.title') }}
+      </h3>
+      <SalonPlanoEditor />
+    </section>
+
     <section>
       <h3 class="text-h6 font-weight-medium mb-4">
         {{ t('admin::sidebar.tables') }}
