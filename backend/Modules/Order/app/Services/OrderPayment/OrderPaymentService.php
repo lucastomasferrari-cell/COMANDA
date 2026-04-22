@@ -4,6 +4,7 @@ namespace Modules\Order\Services\OrderPayment;
 
 use DB;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Modules\Currency\Currency;
 use Modules\GiftCard\Enums\GiftCardTransactionType;
 use Modules\GiftCard\Services\GiftCard\GiftCardServiceInterface;
@@ -364,6 +365,25 @@ class OrderPaymentService implements OrderPaymentServiceInterface
                     ]
                 );
         }
+    }
+
+    /**
+     * Stub del vendor: storePaymentMerge() llama a $this->dispatchPrint() en
+     * linea ~312 pero el metodo nunca estuvo definido en el codebase (bug del
+     * vendor: referencia de una feature de print-dispatch que no se
+     * distribuyo). Sin este stub, cualquier pago con merge de mesas revienta
+     * con BadMethodCallException.
+     *
+     * No-op + log por ahora. Cuando implementemos print queueado (ticket
+     * aparte) este metodo despacha el PrintOrderJob real.
+     */
+    protected function dispatchPrint(Order $order, array $data): void
+    {
+        Log::info('dispatchPrint called but not implemented yet', [
+            'order_id' => $order->id,
+            'order_reference_no' => $order->reference_no,
+            'context' => 'storePaymentMerge',
+        ]);
     }
 
     /** @inheritDoc */

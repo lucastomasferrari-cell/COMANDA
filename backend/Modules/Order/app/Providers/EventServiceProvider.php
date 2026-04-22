@@ -15,7 +15,6 @@ use Modules\Order\Listeners\DeductOrderStock;
 use Modules\Order\Listeners\HandleOrderLoyaltyPoints;
 use Modules\Order\Listeners\MarkTableAsFree;
 use Modules\Order\Listeners\OrderRefundAmount;
-use Modules\Order\Listeners\PrintKitchenTicket;
 use Modules\Order\Listeners\RestoreOrderStock;
 use Modules\Order\Listeners\StoreOrderStatusLogo;
 use Modules\Order\Listeners\UpdateOrderProductStatus;
