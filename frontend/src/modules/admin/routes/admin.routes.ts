@@ -107,33 +107,33 @@ const adminRoutes: RouteRecordRaw[] = [
     ],
   },
 
-  // Pagos hub — formas (placeholder), impuestos, motivos, caja.
+  // Cobros hub — formas (placeholder), impuestos, motivos, caja.
   {
-    path: 'pagos',
-    component: () => import('@/modules/admin/pages/admin/hubs/PagosHub.vue'),
-    meta: { title: 'admin::sidebar.pagos' },
+    path: 'cobros',
+    component: () => import('@/modules/admin/pages/admin/hubs/CobrosHub.vue'),
+    meta: { title: 'admin::sidebar.cobros' },
     children: [
-      { path: '', redirect: { name: 'admin.pagos.formas' } },
+      { path: '', redirect: { name: 'admin.cobros.formas' } },
       {
         path: 'formas-de-pago',
-        name: 'admin.pagos.formas',
+        name: 'admin.cobros.formas',
         component: () => import('@/modules/core/components/ComingSoonPlaceholder.vue'),
       },
       {
         path: 'impuestos',
-        name: 'admin.pagos.impuestos',
+        name: 'admin.cobros.impuestos',
         component: () => import('@/modules/tax/pages/admin/tax/Index.vue'),
         meta: { permission: 'admin.taxes.index' },
       },
       {
         path: 'motivos',
-        name: 'admin.pagos.motivos',
+        name: 'admin.cobros.motivos',
         component: () => import('@/modules/sale/pages/admin/reason/Index.vue'),
         meta: { permission: 'admin.reasons.index' },
       },
       {
         path: 'caja',
-        name: 'admin.pagos.caja',
+        name: 'admin.cobros.caja',
         component: () => import('@/modules/pos/pages/admin/register/Index.vue'),
         meta: { permission: 'admin.pos_registers.index' },
       },

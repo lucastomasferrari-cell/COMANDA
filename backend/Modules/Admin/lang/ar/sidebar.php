@@ -73,7 +73,7 @@ return [
     "menu" => "القائمة",
     "salon" => "صالة الطعام",
     "cocina" => "المطبخ",
-    "pagos" => "المدفوعات",
+    "cobros" => "المقبوضات",
     "personal" => "الموظفون",
     "marketing" => "التسويق",
     "configuracion" => "الإعدادات",

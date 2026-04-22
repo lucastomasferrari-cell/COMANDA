@@ -56,9 +56,9 @@ export const adminSidebar: SidebarList = {
       sort: 4,
     },
     {
-      key: 'admin.pagos',
-      label: 'admin::sidebar.pagos',
-      to: { name: 'admin.pagos.impuestos' },
+      key: 'admin.cobros',
+      label: 'admin::sidebar.cobros',
+      to: { name: 'admin.cobros.impuestos' },
       icon: 'tabler-cash',
       permission: [
         'admin.taxes.index',

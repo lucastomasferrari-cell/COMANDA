@@ -73,7 +73,7 @@ return [
     "menu" => "Menú",
     "salon" => "Salón",
     "cocina" => "Cocina",
-    "pagos" => "Pagos",
+    "cobros" => "Cobros",
     "personal" => "Personal",
     "marketing" => "Marketing",
     "configuracion" => "Configuración",
