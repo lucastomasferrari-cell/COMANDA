@@ -20,9 +20,12 @@ Base comprada para adaptarse a restaurantes argentinos e integrarse con el proye
 
 ## URLs locales
 
-- **Backend API**: `http://localhost:8000/api/v1` (via `php artisan serve`)
+- **Backend API**: `http://forkiva.test/api/v1` (vhost Apache + mod_php + opcache)
 - **Frontend SPA dev**: `http://localhost:3101` (via `yarn dev`)
-- **NO** se usa `http://forkiva.test` — el proyecto no es un vhost Laragon clásico porque el frontend es un SPA separado que consume la API.
+
+El backend corre detrás de un vhost Apache de Laragon (no `php artisan serve`)
+para que las latencias sean viables en dev (~150-400ms vs 1s+ del dev server).
+Ver "Operación local" más abajo.
 
 ## Credenciales
 
@@ -62,12 +65,19 @@ forkiva/
 ### Backend (correr desde `backend/`)
 
 ```bash
-# Levantar dev server
-php artisan serve                           # :8000
+# NO se usa "php artisan serve" - el backend vive detras del vhost
+# Apache de Laragon en http://forkiva.test (ver "Operación local").
 
 # Migraciones y seeders modulares (NO usar migrate plano)
 php artisan module:migrate -a --force
 php artisan module:seed -a --force
+
+# Queue worker (los listeners criticos son ShouldQueueAfterCommit)
+php artisan queue:work --tries=3 --backoff=10
+
+# Scheduler (cleanup diario de idempotency_keys, otros)
+php artisan schedule:work                   # foreground, dev
+# En prod: cron cada minuto -> "php artisan schedule:run"
 
 # Listar módulos
 php artisan module:list
@@ -160,3 +170,51 @@ Se puede prefijar el scope: `feat(backend):`, `fix(frontend):`, `docs(claude):`.
 
 ### Migraciones
 Usar **siempre** `php artisan module:migrate` — el vendor no usa la tabla `migrations` plana de Laravel sino el tracker de `nwidart/laravel-modules`. Misma lógica para seeders con `module:seed`.
+
+Cuando agregamos migrations propias (ej: CHECK constraints, `pase_uuid`, etc.) las ponemos bajo `Modules/<M>/database/migrations/<YYYY_MM_DD_HHMMSS>_<name>.php` con timestamp posterior a todas las del vendor. De esa forma un `module:migrate -a --force` las aplica en orden correcto y futuros updates del vendor no chocan (siempre dejamos nuestros timestamps en el futuro del último vendor).
+
+### Convenciones propias (fuera del vendor)
+
+- **`backend/app/Traits/HasPaseUuid.php`**: trait que agrega `pase_uuid` (CHAR(26) ULID) auto-generado en `creating` hook. Aplicado en `Order`, `Payment`, `Invoice`, `Product` via `use HasPaseUuid`. PASE (sistema externo) referencia los recursos por este ULID, nunca por el bigint id interno.
+- **`backend/app/Http/Middleware/`**: middlewares propios:
+  - `ReadOnlyBranchMutations`: bloquea POST/DELETE /branches (single-branch mode).
+  - `ValidateSingleBranchInvariant`: asegura `branches.count()==1` en cada request HTTP.
+  - `IdempotencyKey`: opt-in via header `X-Idempotency-Key`, cache de response 24h en tabla `idempotency_keys`.
+
+### CHECK constraints branch_id=1
+
+Las 28 tablas con `branch_id` tienen CHECK `(branch_id IS NULL OR branch_id = 1)` + FK con `ON DELETE RESTRICT`. Cualquier INSERT/UPDATE con otro branch_id falla a nivel DB. Defense in depth para el modo single-branch. Si algún día volvemos multi-branch real, hay que dropear estos constraints — pero el diseño actual asume 1 instalación = 1 sucursal física + PASE central multi-tenant.
+
+## Operación local
+
+### Apache vhost (backend)
+
+`C:\laragon\etc\apache2\sites-enabled\00-forkiva.test.conf` apunta `forkiva.test` → `backend/public/`. El prefix `00-` fuerza precedencia sobre el vhost auto-generado de Laragon (renombrado a `.disabled`).
+
+Reload Apache tras cambios en config:
+```powershell
+# desde PowerShell
+Get-Process httpd | Stop-Process -Force
+Start-Process -FilePath 'C:\laragon\bin\apache\httpd-2.4.66-260223-Win64-VS18\bin\httpd.exe' -ArgumentList '-d','C:/laragon/bin/apache/httpd-2.4.66-260223-Win64-VS18' -WindowStyle Hidden
+```
+O desde la GUI de Laragon: botón "Reload".
+
+### Opcache
+
+`C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64\php.ini`:
+- `zend_extension=opcache`
+- `opcache.enable=1`, `enable_cli=0`
+- `memory_consumption=256`, `max_accelerated_files=20000`
+- `validate_timestamps=1`, `revalidate_freq=2` (dev: 2s de lag entre edit y efecto)
+
+### CORS (dev)
+
+`.env`: `CORS_ALLOWED_ORIGINS=http://localhost:3101,http://forkiva.test`.
+Si arrancás Vite en otro puerto (3102, etc.), agregarlo al CSV.
+
+### Queue worker
+
+Los listeners críticos son `ShouldQueueAfterCommit` — sin worker corriendo, los jobs se acumulan en la tabla `jobs`. Para dev correr en terminal aparte:
+```bash
+cd backend && php artisan queue:work --tries=3 --backoff=10
+```
