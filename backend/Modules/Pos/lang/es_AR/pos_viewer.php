@@ -93,8 +93,7 @@ return [
     "actions" => [
         "table_viewer" => "Visor de mesas",
         "manage_cash_movement" => "Movimiento de efectivo",
-        "orders" => "Todas las comandas",
-        "search_order" => "Buscar comanda",
+        "orders" => "Comandas",
     ],
     "mode" => [
         "tables" => "Mesas",

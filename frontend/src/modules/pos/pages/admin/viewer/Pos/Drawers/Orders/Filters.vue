@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+  import { ref, toRefs } from 'vue'
   import { useI18n } from 'vue-i18n'
 
   const props = defineProps<{
@@ -10,13 +11,22 @@
   const { t } = useI18n()
 
   const { search, types, statuses, paymentStatuses } = toRefs(props.filters)
+  const searchInputRef = ref<any>(null)
+
+  // El padre (OrdersDrawer) llama focus() al abrir, para que el cajero
+  // tipee directo sin click intermedio.
+  defineExpose({
+    focus: () => searchInputRef.value?.focus?.(),
+  })
 </script>
 
 <template>
   <div class="mt-3 d-flex align-center ga-2">
     <VTextField
+      ref="searchInputRef"
       v-model="search"
       class="flex-grow-1"
+      clearable
       :placeholder="t('pos::pos_viewer.search_by_order_number')"
       prepend-inner-icon="tabler-search"
       :readonly="disabled"

@@ -93,8 +93,7 @@ return [
     "actions" => [
         "table_viewer" => "عارض الطاولات",
         "manage_cash_movement" => "إدارة حركة النقد",
-        "orders" => "كل الطلبات",
-        "search_order" => "البحث عن طلب",
+        "orders" => "الطلبات",
     ],
     "mode" => [
         "tables" => "طاولات",

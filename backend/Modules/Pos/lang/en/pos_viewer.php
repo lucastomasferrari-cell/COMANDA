@@ -93,8 +93,7 @@ return [
     "actions" => [
         "table_viewer" => "Table Viewer",
         "manage_cash_movement" => "Cash Movement",
-        "orders" => "All Orders",
-        "search_order" => "Search Order",
+        "orders" => "Orders",
     ],
     "mode" => [
         "tables" => "Tables",

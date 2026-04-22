@@ -40,6 +40,7 @@
 
   const tab = ref<string>('active')
   const loading = ref(false)
+  const filtersRef = ref<any>(null)
 
   const orders = ref<any[]>([])
 
@@ -66,7 +67,14 @@
   watch(
     () => props.modelValue,
     async newVal => {
-      if (newVal) await loadData({ resetFilters: true })
+      if (newVal) {
+        await loadData({ resetFilters: true })
+        // Autofocus al search despues de que el drawer termine su
+        // transicion + Filters.vue haya montado su input. setTimeout
+        // corto es suficiente; nextTick no alcanza porque el drawer
+        // slide ocurre despues.
+        setTimeout(() => filtersRef.value?.focus?.(), 150)
+      }
     },
   )
 
@@ -166,6 +174,7 @@
         <Tabs v-model="tab" :disabled="loading" @on-click="loadData({ resetFilters: true })" />
         <Filters
           v-if="orders.length>0"
+          ref="filtersRef"
           :disabled="loading"
           :filters="filters"
           :loading="loading"

@@ -19,17 +19,12 @@
   const { can } = useAuth()
   const { mode, setMode } = usePosViewerMode()
 
-  const hasDineIn = computed(() => props.meta.orderTypes?.some(type => type.id === 'dine_in'))
-
-  // Las acciones globales del viewer. "search_order" abre el mismo drawer
-  // que "orders" pero el caller decide focusear el buscador.
+  // Las acciones globales del viewer. "Visor de mesas" se removio — el
+  // plano ya es visible en el panel central cuando no hay orden activa,
+  // y el drawer se accede desde el StartOrderDialog / OrderPanel empty
+  // state. "search_order" se fusiono con "orders" — ambos abrian el
+  // mismo drawer, ahora el drawer auto-focusea su propio search.
   const actions = computed(() => [
-    {
-      id: 'table_viewer',
-      icon: 'tabler-brand-airtable',
-      label: t('pos::pos_viewer.actions.table_viewer'),
-      visible: hasDineIn.value && can('admin.tables.viewer') && mode.value === 'tables',
-    },
     {
       id: 'manage_cash_movement',
       icon: 'tabler-cash',
@@ -40,12 +35,6 @@
       id: 'orders',
       icon: 'tabler-list-details',
       label: t('pos::pos_viewer.actions.orders'),
-      visible: can('admin.orders.upcoming') || can('admin.orders.active'),
-    },
-    {
-      id: 'search_order',
-      icon: 'tabler-search',
-      label: t('pos::pos_viewer.actions.search_order'),
       visible: can('admin.orders.upcoming') || can('admin.orders.active'),
     },
   ])

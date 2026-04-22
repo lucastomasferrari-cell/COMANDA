@@ -68,7 +68,7 @@
   const onFocusMenuSearch = () => menuPanelRef.value?.focusSearch?.()
 
   const onClickAction = (action: string) => {
-    if ((action == 'orders' || action == 'search_order') && canOrders) {
+    if (action == 'orders' && canOrders) {
       showOrdersDrawer.value = true
     } else if (action == 'manage_cash_movement' && can('admin.pos_cash_movements.create')) {
       showCashMovementDrawer.value = true
