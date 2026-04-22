@@ -1,9 +1,11 @@
 <script lang="ts" setup>
   import type { CartItem, CartItemAction, UseCart } from '@/modules/cart/composables/cart.ts'
   import type { PosForm } from '@/modules/pos/contracts/posViewer.ts'
-  import { ref } from 'vue'
+  import { computed, ref } from 'vue'
   import { useI18n } from 'vue-i18n'
+  import { useToast } from 'vue-toastification'
   import BtnProductVoid from './BtnProductVoid.vue'
+  import EditQuantityDialog from './EditQuantityDialog.vue'
 
   const props = defineProps<{
     cartItem: CartItem
@@ -13,12 +15,39 @@
 
   const { updateItem, processing, deleteItem, storeAction, removeAction } = props.cart
   const { t } = useI18n()
+  const toast = useToast()
 
   const loading = ref<boolean>(false)
   const loadingDelete = ref<boolean>(false)
   const loadingDeleteAction = ref<boolean>(false)
   const loadingAction = ref<boolean>(false)
   const open = ref<boolean>(false)
+  const editQtyDialog = ref<boolean>(false)
+
+  // Estado de cocina del item: el cart devuelve cartItem.orderProduct.status
+  // en modo edit. En modo create no hay status → item pendiente de envio.
+  const kitchenStatusId = computed(() => props.cartItem.orderProduct?.status?.id ?? null)
+  const kitchenStatusMeta = computed(() => {
+    switch (kitchenStatusId.value) {
+      case 'pending':
+        return { icon: 'tabler-circle-dashed', color: 'warning', key: 'pending' }
+      case 'preparing':
+        return { icon: 'tabler-flame', color: 'warning', key: 'preparing' }
+      case 'ready':
+        return { icon: 'tabler-bell-ringing', color: 'info', key: 'ready' }
+      case 'served':
+        return { icon: 'tabler-check', color: 'success', key: 'served' }
+      case 'cancelled':
+        return { icon: 'tabler-x', color: 'error', key: 'cancelled' }
+      case 'refunded':
+        return { icon: 'tabler-arrow-back-up', color: 'error', key: 'refunded' }
+      default:
+        return { icon: 'tabler-circle-dot', color: 'grey', key: 'draft' }
+    }
+  })
+  const kitchenStatusLabel = computed(() =>
+    t(`pos::pos_viewer.item_menu.kitchen_status.${kitchenStatusMeta.value.key}`),
+  )
 
   const hasLoyaltyGift = computed(() => props.cartItem?.loyaltyGift)
   const enableEditOrRemoveItem = computed(() => !props.cartItem.orderProduct?.status || props.cartItem.orderProduct?.status?.id === 'pending')
@@ -89,6 +118,13 @@
     loadingDeleteAction.value = false
   }
 
+  function onConfirmEditQty (qty: number) {
+    updateQty(qty)
+  }
+
+  function showPlaceholder (what: string) {
+    toast.info(t(`pos::pos_viewer.item_menu.placeholders.${what}`))
+  }
 </script>
 
 <template>
@@ -102,6 +138,17 @@
       <div class="cart-item-content">
         <span class="cart-item-name ga-1">
           <VIcon v-if="cartItem.loyaltyGift" color="error" icon="tabler-gift" />
+          <VTooltip :text="kitchenStatusLabel" location="top">
+            <template #activator="{ props: tooltipProps }">
+              <VIcon
+                v-bind="tooltipProps"
+                class="status-indicator"
+                :color="kitchenStatusMeta.color"
+                :icon="kitchenStatusMeta.icon"
+                size="16"
+              />
+            </template>
+          </VTooltip>
           {{ cartItem.item.name }}
         </span>
         <VTooltip :text="t('pos::pos_viewer.price')">
@@ -166,6 +213,66 @@
             />
           </template>
         </VTooltip>
+
+        <!-- Menu contextual con mas acciones. Las opciones con backend
+             pendiente (nota, descuento por item, duplicar) muestran toast
+             "Próximamente" — se habilitan cuando los endpoints existan. -->
+        <VMenu location="bottom end" offset="4">
+          <template #activator="{ props: menuProps }">
+            <VBtn
+              v-bind="menuProps"
+              icon="tabler-dots-vertical"
+              size="small"
+              variant="text"
+              @click.stop.prevent
+            />
+          </template>
+          <VList density="compact">
+            <VListItem
+              :disabled="!enableEditOrRemoveItem"
+              @click.stop="editQtyDialog = true"
+            >
+              <template #prepend><VIcon icon="tabler-edit" /></template>
+              <VListItemTitle>
+                {{ t('pos::pos_viewer.item_menu.edit_qty') }}
+              </VListItemTitle>
+            </VListItem>
+            <VListItem @click.stop="showPlaceholder('note')">
+              <template #prepend><VIcon icon="tabler-notes" /></template>
+              <VListItemTitle>
+                {{ t('pos::pos_viewer.item_menu.add_note') }}
+              </VListItemTitle>
+              <template #append>
+                <VChip color="grey" density="compact" size="x-small">
+                  {{ t('pos::pos_viewer.item_menu.coming_soon') }}
+                </VChip>
+              </template>
+            </VListItem>
+            <VListItem @click.stop="showPlaceholder('discount')">
+              <template #prepend><VIcon icon="tabler-discount" /></template>
+              <VListItemTitle>
+                {{ t('pos::pos_viewer.item_menu.apply_discount') }}
+              </VListItemTitle>
+              <template #append>
+                <VChip color="grey" density="compact" size="x-small">
+                  {{ t('pos::pos_viewer.item_menu.coming_soon') }}
+                </VChip>
+              </template>
+            </VListItem>
+            <VListItem @click.stop="showPlaceholder('duplicate')">
+              <template #prepend><VIcon icon="tabler-copy" /></template>
+              <VListItemTitle>
+                {{ t('pos::pos_viewer.item_menu.duplicate') }}
+              </VListItemTitle>
+              <template #append>
+                <VChip color="grey" density="compact" size="x-small">
+                  {{ t('pos::pos_viewer.item_menu.coming_soon') }}
+                </VChip>
+              </template>
+            </VListItem>
+          </VList>
+        </VMenu>
+
         <BtnProductVoid
           v-if="allowCancelProduct"
           action="cancel"
@@ -217,6 +324,11 @@
 
     </VCardText>
   </VCard>
+  <EditQuantityDialog
+    v-model="editQtyDialog"
+    :initial="cartItem.qty"
+    @confirm="onConfirmEditQty"
+  />
 </template>
 
 <style lang="scss" scoped>
@@ -252,6 +364,11 @@
   align-items: center;
   font-weight: 700;
   width: 40%;
+}
+
+.status-indicator {
+  flex-shrink: 0;
+  margin-right: 0.25rem;
 }
 
 .cart-item-price {
