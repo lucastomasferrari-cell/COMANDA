@@ -1,7 +1,9 @@
 <script lang="ts" setup>
   import type { UseCart } from '@/modules/cart/composables/cart.ts'
   import type { Category, PosForm, PosMeta } from '@/modules/pos/contracts/posViewer.ts'
+  import { computed, ref } from 'vue'
   import { useI18n } from 'vue-i18n'
+  import { usePosViewerMode } from '@/modules/pos/composables/usePosViewerMode.ts'
   import Categories from './Categories/Index.vue'
   import Empty from './Empty.vue'
   import Products from './Products/Index.vue'
@@ -10,12 +12,18 @@
     form: PosForm
     meta: PosMeta
     cart: UseCart
+    hasActiveOrder: boolean
   }>()
 
   const { t } = useI18n()
+  const { mode } = usePosViewerMode()
 
   const activeCategories = ref<Category[]>([])
   const searchQuery = ref<string>('')
+
+  const promptMessage = computed(() => mode.value === 'tables'
+    ? t('pos::pos_viewer.menu_prompt.message_tables')
+    : t('pos::pos_viewer.menu_prompt.message_quick'))
 
   const onChangeRootCategory = (category?: Category | null) => {
     activeCategories.value = category ? [category] : []
@@ -24,8 +32,20 @@
 </script>
 
 <template>
-  <div class="menu-items-container" :class="{'menu-items-container-center':meta.products.length === 0}">
-    <div v-if="form.loadingMenuItems" class="loading">
+  <div
+    class="menu-items-container"
+    :class="{'menu-items-container-center': !hasActiveOrder || meta.products.length === 0}"
+  >
+    <!-- Sin orden activa: prompt contextual al user. El mensaje cambia
+         segun el modo del viewer (Mesas vs Rápido). -->
+    <div v-if="!hasActiveOrder" class="menu-prompt text-center">
+      <div class="prompt-icon mb-3">
+        <VIcon color="primary" icon="tabler-tools-kitchen-2" size="56" />
+      </div>
+      <h3 class="text-h6 mb-2">{{ t('pos::pos_viewer.menu_prompt.title') }}</h3>
+      <p class="text-body-2 text-medium-emphasis">{{ promptMessage }}</p>
+    </div>
+    <div v-else-if="form.loadingMenuItems" class="loading">
       <VProgressCircular color="primary" indeterminate size="50" />
     </div>
     <template v-else>
@@ -78,6 +98,22 @@
   align-items: center;
   height: 100%;
   width: 100%;
+}
+
+.menu-prompt {
+  max-width: 420px;
+  padding: 1rem;
+}
+
+.prompt-icon {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: rgba(var(--v-theme-primary), 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
 }
 
 </style>

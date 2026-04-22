@@ -106,6 +106,11 @@ return [
         "cta_new" => "Nueva orden",
         "cta_table" => "Abrir mesa",
     ],
+    "menu_prompt" => [
+        "title" => "Empezá una comanda",
+        "message_tables" => "Tocá una mesa del plano o creá una orden rápida para empezar a cargar productos.",
+        "message_quick" => "Tocá '+ Nueva' en la columna izquierda para abrir una tab.",
+    ],
     "active_orders" => "Pedidos activos",
     "upcoming_orders" => "Pedidos próximos",
     "no_cart_items" => [

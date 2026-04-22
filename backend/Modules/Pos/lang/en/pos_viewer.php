@@ -106,6 +106,11 @@ return [
         "cta_new" => "New order",
         "cta_table" => "Open table",
     ],
+    "menu_prompt" => [
+        "title" => "Start an order",
+        "message_tables" => "Tap a table on the floor or start a quick order to begin adding products.",
+        "message_quick" => "Tap '+ New' in the left column to open a tab.",
+    ],
     "active_orders" => "Active Orders",
     "upcoming_orders" => "Upcoming Orders",
     "no_cart_items" => [
