@@ -14,22 +14,18 @@
   }>()
 
   const { t } = useI18n()
-  const { can, canAny } = useAuth()
+  const { can } = useAuth()
 
   const hasOrderTypeDineIn = computed(() => props.meta.orderTypes?.some(type => type.id == 'dine_in'))
 
+  // "orders" se removio del quick-actions bar — ahora la lista de comandas
+  // vive en el ActiveOrdersPanel izquierdo (siempre visible, no drawer).
   const actions = [
     {
       id: 'table_viewer',
       icon: 'tabler-brand-airtable',
       visible: hasOrderTypeDineIn.value && can('admin.tables.viewer'),
       color: '#8e44ad',
-    },
-    {
-      id: 'orders',
-      icon: 'tabler-salad',
-      color: '#2980b9',
-      visible: canAny(['admin.orders.active', 'admin.orders.upcoming']),
     },
     {
       id: 'manage_cash_movement',
@@ -75,7 +71,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 30%;
+    width: 48%;
     border-radius: 10px;
     padding: 0.4rem 0;
     cursor: pointer;

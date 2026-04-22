@@ -226,25 +226,34 @@
 </script>
 
 <template>
-  <VRow style="height: 91vh;">
-    <VCol cols="12" md="7">
-      <OrderTypes
-        :cart="cart"
-        :form="form"
-        :meta="meta"
-        @on-click-action="(action:string)=>$emit('on-click-action',action)"
-      />
-      <Header :cart="cart" :form="form" :meta="meta" />
+  <!-- Layout interno del OrderPanel reorganizado a 1 columna vertical.
+       Antes era 2 sub-cols (7/5) que asumia pantalla ancha — con el nuevo
+       layout 3-cols exterior, el OrderPanel ahora ocupa ~33% de la pantalla
+       y todo tiene que ir apilado en vertical. -->
+  <div class="order-panel-stack d-flex flex-column" style="min-height: 91vh; gap: 0.5rem;">
+    <!-- Header: actions rapidas + info de orden (mozo/cliente) + canal -->
+    <Actions
+      :form="form"
+      :meta="meta"
+      @on-click-action="(action:string)=>$emit('on-click-action',action)"
+    />
+    <Header :cart="cart" :form="form" :meta="meta" />
+    <OrderTypes
+      :cart="cart"
+      :form="form"
+      :meta="meta"
+      @on-click-action="(action:string)=>$emit('on-click-action',action)"
+    />
+    <TableInfo v-if="form.table != null" :cart="cart" :form="form" :meta="meta" />
+    <AdditionalInformation :cart="cart" :form="form" />
+
+    <!-- Items del carrito — flex-grow para que ocupe el espacio disponible -->
+    <div class="flex-grow-1" style="overflow-y: auto; min-height: 100px;">
       <CartItems :cart="cart" :form="form" />
-    </VCol>
-    <VCol cols="12" md="5">
-      <Actions
-        :form="form"
-        :meta="meta"
-        @on-click-action="(action:string)=>$emit('on-click-action',action)"
-      />
-      <TableInfo v-if="form.table != null" :cart="cart" :form="form" :meta="meta" />
-      <AdditionalInformation :cart="cart" :form="form" />
+    </div>
+
+    <!-- Footer sticky: descuento + totales + botones grandes -->
+    <div class="order-panel-footer">
       <Discount :cart="cart" :meta="meta" />
       <Invoice :amount-due="amountDue" :cart="cart" :is-edit-mode="isEditMode" />
       <VRow class="mt-2" dense>
@@ -325,7 +334,14 @@
           </VBtn>
         </VCol>
       </VRow>
-    </VCol>
-  </VRow>
-
+    </div>
+  </div>
 </template>
+
+<style scoped>
+.order-panel-footer {
+  flex-shrink: 0;
+  border-top: thin solid rgba(var(--v-theme-on-surface), 0.08);
+  padding-top: 0.5rem;
+}
+</style>
