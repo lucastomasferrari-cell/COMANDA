@@ -163,6 +163,7 @@
               </VCol>
               <VCol cols="4">
                 <VCheckbox
+                  v-if="action !== 'create'"
                   v-model="form.state.is_active"
                   :label="t('tax::attributes.taxes.is_active')"
                 />

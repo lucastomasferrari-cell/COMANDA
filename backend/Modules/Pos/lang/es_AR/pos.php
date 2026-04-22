@@ -56,7 +56,7 @@ return [
     "no_matching_upcoming_orders_description" => "Ningún pedido próximo coincide con tu búsqueda o filtros.",
     "print_receipt" => "Imprimir recibo",
     "print_merged_receipt" => "Imprimir recibo unificado",
-    "order_type" => "Tipo de pedido",
+    "order_type" => "Canal de venta",
     "go_to_dashboard" => "Ir al panel",
     "manage_tables" => "Administrar mesas",
     "table_viewer" => "Visor de mesas",

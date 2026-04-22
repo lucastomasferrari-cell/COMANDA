@@ -9,7 +9,7 @@ return [
         "compound" => "Compuesto",
         "is_active" => "Activo",
         "is_global" => "Global",
-        "order_types" => "Tipos de pedido",
-        "order_types.*" => "Tipo de pedido",
+        "order_types" => "Canales de venta",
+        "order_types.*" => "Canal de venta",
     ]
 ];

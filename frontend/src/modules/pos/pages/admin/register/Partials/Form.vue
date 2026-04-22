@@ -125,6 +125,7 @@
                   </VCol>
                   <VCol cols="12">
                     <VCheckbox
+                      v-if="action !== 'create'"
                       v-model="form.state.is_active"
                       :label="t('pos::attributes.pos_registers.is_active')"
                     />

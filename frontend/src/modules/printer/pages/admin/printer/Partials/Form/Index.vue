@@ -97,6 +97,7 @@
               </VCol>
               <VCol cols="12">
                 <VCheckbox
+                  v-if="action !== 'create'"
                   v-model="form.state.is_active"
                   :label="t('printer::attributes.printers.is_active')"
                 />

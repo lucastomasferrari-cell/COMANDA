@@ -92,7 +92,7 @@
     <VRow>
       <VCol cols="12" md="7">
         <VRow>
-          <LoyaltyPromotionInformation :current-language="currentLanguage" :form="form" :meta="meta" />
+          <LoyaltyPromotionInformation :action="action" :current-language="currentLanguage" :form="form" :meta="meta" />
           <Conditions :form="form" :meta="meta" />
         </VRow>
       </VCol>

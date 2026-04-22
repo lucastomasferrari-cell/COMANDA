@@ -7,7 +7,7 @@ return [
         "start_date" => "Fecha de inicio",
         "end_date" => "Fecha de fin",
         "order_status" => "Estado del pedido",
-        "order_type" => "Tipo de pedido",
+        "order_type" => "Canal de venta",
         "payment_status" => "Estado del pago",
         "product_name" => "Nombre del producto",
         "payment_method" => "Método de pago",

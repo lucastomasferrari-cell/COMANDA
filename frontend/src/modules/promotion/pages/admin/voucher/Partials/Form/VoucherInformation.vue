@@ -82,6 +82,7 @@
             <VRow>
               <VCol cols="6">
                 <VCheckbox
+                  v-if="action !== 'create'"
                   v-model="form.state.is_active"
                   :label="t('voucher::attributes.vouchers.is_active')"
                 />

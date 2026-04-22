@@ -99,6 +99,7 @@
               </VCol>
               <VCol cols="12">
                 <VCheckbox
+                  v-if="action !== 'create'"
                   v-model="form.state.is_active"
                   :label="t('loyalty::attributes.loyalty_programs.is_active')"
                 />

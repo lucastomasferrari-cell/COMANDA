@@ -80,7 +80,7 @@ onBeforeMount(async () => {
                     rows="6" />
                 </VCol>
                 <VCol cols="12">
-                  <VCheckbox v-model="form.state.is_active" :label="t('loyalty::attributes.loyalty_tiers.is_active')" />
+                  <VCheckbox v-if="action !== 'create'" v-model="form.state.is_active" :label="t('loyalty::attributes.loyalty_tiers.is_active')" />
                 </VCol>
               </VCol>
             </VRow>

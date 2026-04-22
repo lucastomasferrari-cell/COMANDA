@@ -5,6 +5,7 @@
     form: Record<string, any>
     meta: Record<string, any>
     currentLanguage: Record<string, any>
+    action: 'update' | 'create'
   }>()
 
   const { t } = useI18n()
@@ -76,6 +77,7 @@
           </VCol>
           <VCol cols="12">
             <VCheckbox
+              v-if="action !== 'create'"
               v-model="form.state.is_active"
               :label="t('loyalty::attributes.loyalty_rewards.is_active')"
             />

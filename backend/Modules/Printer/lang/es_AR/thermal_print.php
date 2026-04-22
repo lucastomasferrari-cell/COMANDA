@@ -25,7 +25,7 @@ return [
     'notes' => 'Notas',
     'order_date' => 'Fecha del pedido',
     'order_number' => 'Número de pedido',
-    'order_type' => 'Tipo de pedido',
+    'order_type' => 'Canal de venta',
     'paid' => 'Pagado',
     'payments' => 'Pagos',
     'phone' => 'Teléfono',

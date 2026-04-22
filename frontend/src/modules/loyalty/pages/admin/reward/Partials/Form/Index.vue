@@ -116,7 +116,7 @@
     <VRow>
       <VCol cols="12" md="7">
         <VRow>
-          <LoyaltyRewardInformation :current-language="currentLanguage" :form="form" :meta="meta" />
+          <LoyaltyRewardInformation :action="action" :current-language="currentLanguage" :form="form" :meta="meta" />
           <Configuration :form="form" :meta="meta" />
           <Conditions :form="form" :meta="meta" />
         </VRow>

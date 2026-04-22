@@ -121,7 +121,7 @@ async function deleteCategory() {
                     :media="item?.logo" mime="image" />
                 </VCol>
                 <VCol cols="12">
-                  <VCheckbox v-model="form.state.is_active" :label="t('category::attributes.categories.is_active')" />
+                  <VCheckbox v-if="action !== 'create'" v-model="form.state.is_active" :label="t('category::attributes.categories.is_active')" />
                 </VCol>
               </VRow>
             </VCardText>

@@ -164,6 +164,7 @@
               </VCol>
               <VCol cols="12">
                 <VCheckbox
+                  v-if="action !== 'create'"
                   v-model="form.state.is_active"
                   :label="t('user::attributes.users.is_active')"
                 />

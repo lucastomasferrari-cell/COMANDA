@@ -1,7 +1,7 @@
 <?php
 return [
-    "pos_sessions" => "Sesiones",
-    "pos_session" => "Sesión",
+    "pos_sessions" => "Arqueos",
+    "pos_session" => "Arqueo",
     "table" => [
         "pos_register" => "Caja",
         "opened_by" => "Abierta por",
@@ -16,14 +16,14 @@ return [
         "pos_register" => " Caja",
     ],
 
-    "close_session" => "Cerrar sesión",
-    "open_session" => "Abrir sesión",
+    "close_session" => "Cerrar arqueo",
+    "open_session" => "Abrir arqueo",
 
     "show" => [
         "cards" => [
             "session_information" => [
-                "title" => "Información de la sesión",
-                "description" => "Detalles sobre la sesión de caja y quién la gestionó.",
+                "title" => "Información del arqueo",
+                "description" => "Detalles sobre el arqueo de caja y quién lo gestionó.",
             ],
             "cash_summary" => [
                 "title" => "Resumen de efectivo",
@@ -35,10 +35,10 @@ return [
             ],
             "sales_orders_summary" => [
                 "title" => "Resumen de ventas y pedidos",
-                "description" => "Rendimiento total de la sesión.",
+                "description" => "Rendimiento total del arqueo.",
             ]
         ],
-        "session_details" => "Detalles de la sesión",
+        "session_details" => "Detalles del arqueo",
         "pos_register" => "Caja",
         "opened_by" => "Abierta por",
         "closed_by" => "Cerrada por",

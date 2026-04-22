@@ -22,8 +22,8 @@ return [
         "conditions.categories.*" => "Categoría",
         "conditions.products" => "Productos",
         "conditions.products.*" => "Producto",
-        "conditions.order_types" => "Tipos de pedido",
-        "conditions.order_types.*" => "Tipo de pedido",
+        "conditions.order_types" => "Canales de venta",
+        "conditions.order_types.*" => "Canal de venta",
 
     ]
 ];

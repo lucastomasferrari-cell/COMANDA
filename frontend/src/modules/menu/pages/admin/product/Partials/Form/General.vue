@@ -1,7 +1,7 @@
 <script lang="ts" setup>
   import { useI18n } from 'vue-i18n'
 
-  defineProps<{ form: any, currentLanguage: Record<string, any>, meta: Record<string, any> }>()
+  defineProps<{ form: any, currentLanguage: Record<string, any>, meta: Record<string, any>, action: 'update' | 'create' }>()
   const { t } = useI18n()
 </script>
 
@@ -73,6 +73,7 @@
         </VCol>
         <VCol cols="12">
           <VCheckbox
+            v-if="action !== 'create'"
             v-model="form.state.is_active"
             :label="t('product::attributes.products.is_active')"
           />

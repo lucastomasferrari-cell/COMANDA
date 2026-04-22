@@ -5,6 +5,7 @@
   import { useRouter } from 'vue-router'
   import { useBranch } from '@/modules/branch/composables/branch.ts'
   import { useForm } from '@/modules/core/composables/form.ts'
+  import { useAppStore } from '@/modules/core/stores/appStore.ts'
 
   const props = defineProps<{
     item?: Record<string, any> | null
@@ -14,6 +15,7 @@
   const { t } = useI18n()
   const { getFormMeta, update, store } = useBranch()
   const router = useRouter()
+  const appStore = useAppStore()
 
   const meta = ref({
     timezones: [],
@@ -29,8 +31,9 @@
     email: props.item?.email,
     is_active: props.item?.is_active || false,
     country_code: props.item?.country_code,
-    timezone: props.item?.timezone,
-    currency: props.item?.currency,
+    // currency y timezone prefill desde settings globales al crear (single-branch).
+    timezone: props.item?.timezone ?? appStore.settings?.timezone,
+    currency: props.item?.currency ?? appStore.settings?.currency,
     latitude: props.item?.latitude,
     longitude: props.item?.longitude,
     order_types: props.item?.order_types || [],
@@ -141,6 +144,7 @@
                   </VCol>
                   <VCol cols="12">
                     <VCheckbox
+                      v-if="action !== 'create'"
                       v-model="form.state.is_active"
                       :label="t('branch::attributes.branches.is_active')"
                     />
@@ -214,7 +218,7 @@
                       :label="t('branch::attributes.branches.state')"
                     />
                   </VCol>
-                  <VCol cols="12" md="6">
+                  <VCol v-if="false" cols="12" md="6">
                     <VTextField
                       v-model="form.state.latitude"
                       clearable
@@ -223,7 +227,7 @@
                       :label="t('branch::attributes.branches.latitude')"
                     />
                   </VCol>
-                  <VCol cols="12" md="6">
+                  <VCol v-if="false" cols="12" md="6">
                     <VTextField
                       v-model="form.state.longitude"
                       clearable
@@ -306,7 +310,11 @@
               </VCardText>
             </VCard>
           </VCol>
-          <VCol cols="12">
+          <!-- Tarjeta POS settings ocultada en single-branch mode:
+               order_types/payment_methods se manejan global (hubs Pagos/Salon).
+               cash_difference_threshold + quick_pay_amounts se moveran a
+               Configuracion > Caja. Los valores siguen en form.state. -->
+          <VCol v-if="false" cols="12">
             <VCard>
               <VCardTitle class="mb-2">
                 <div class="d-flex align-center">

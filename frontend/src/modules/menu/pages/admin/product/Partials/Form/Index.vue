@@ -130,7 +130,7 @@
   >
     <VRow>
       <VCol cols="12" md="8">
-        <General :current-language="currentLanguage" :form="form" :meta="meta" />
+        <General :action="action" :current-language="currentLanguage" :form="form" :meta="meta" />
         <Ingredients :current-language="currentLanguage" :form="form" :meta="meta" />
         <Options :current-language="currentLanguage" :form="form" :meta="meta" />
       </VCol>
