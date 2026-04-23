@@ -2,6 +2,29 @@ body {
   font-family: 'Cairo', sans-serif !important;
 }
 
+/* Sprint 1.A — transición suave al togglear dark/light.
+ * Limitada a background-color / border-color / color (no shadow ni
+ * transform) y aplicada solo a body + wrappers principales de Vuetify.
+ * Evitamos el selector * que se aplica a TODO y genera lag visible en
+ * hovers/active-states que ya tienen sus propias transitions más cortas. */
+body,
+.v-application,
+.v-card,
+.v-btn,
+.v-chip,
+.v-navigation-drawer,
+.v-app-bar,
+.v-toolbar,
+.v-list,
+.v-list-item,
+.v-sheet,
+.v-dialog > .v-overlay__content {
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    color 150ms ease;
+}
+
 .v-data-table th {
   text-transform: none !important;
   font-weight: bold !important;
