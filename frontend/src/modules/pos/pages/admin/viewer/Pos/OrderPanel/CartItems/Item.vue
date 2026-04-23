@@ -403,7 +403,7 @@
 
 .qty-value {
   padding: 4px 10px;
-  background: #f3f4f6;
+  background: rgb(var(--v-theme-surface-variant));
   border-radius: 8px;
   font-weight: 600;
 }

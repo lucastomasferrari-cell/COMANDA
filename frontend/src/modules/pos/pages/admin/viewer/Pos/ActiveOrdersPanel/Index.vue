@@ -59,20 +59,24 @@
    * Color del punto segun order.status + flags bill_requested/paused.
    * bill_requested_at (rojo) y paused_at (gris) ganan sobre el status
    * base: representan un state de "alerta" o "suspension" independiente.
+   *
+   * Usa rgb(var(--v-theme-*)) para que el color respete dark/light mode
+   * automáticamente. "grey" se construye con on-surface bajado de opacidad
+   * (no hay token grey nativo dedicado para esto).
    */
   function statusColor (order: ActiveOrder): string {
-    if (order.paused_at) return '#95a5a6' // gris: en pausa
-    if (order.bill_requested_at) return '#e74c3c' // rojo: cuenta pedida
+    if (order.paused_at) return 'rgba(var(--v-theme-on-surface), 0.38)'
+    if (order.bill_requested_at) return 'rgb(var(--v-theme-error))'
     switch (order.status) {
       case 'pending':
-        return '#2ecc71' // verde: en curso
+        return 'rgb(var(--v-theme-success))' // en curso
       case 'confirmed':
       case 'preparing':
-        return '#f1c40f' // amarillo: en cocina
+        return 'rgb(var(--v-theme-warning))' // en cocina
       case 'ready':
-        return '#e67e22' // naranja: listo para servir
+        return 'rgb(var(--v-theme-table-ready))' // listo para servir (usa token custom)
       default:
-        return '#95a5a6' // gris: otros estados residuales
+        return 'rgba(var(--v-theme-on-surface), 0.38)'
     }
   }
 
@@ -225,9 +229,9 @@
           <VIcon v-bind="activator" icon="tabler-info-circle" size="14" color="grey" />
         </template>
         <div class="text-caption">
-          <div><span class="legend-dot" style="background:#2ecc71" /> {{ t('pos::pos_viewer.active_orders.legend.in_progress') }}</div>
-          <div><span class="legend-dot" style="background:#f1c40f" /> {{ t('pos::pos_viewer.active_orders.legend.in_kitchen') }}</div>
-          <div><span class="legend-dot" style="background:#e67e22" /> {{ t('pos::pos_viewer.active_orders.legend.ready_to_serve') }}</div>
+          <div><span class="legend-dot legend-dot--in-progress" /> {{ t('pos::pos_viewer.active_orders.legend.in_progress') }}</div>
+          <div><span class="legend-dot legend-dot--in-kitchen" /> {{ t('pos::pos_viewer.active_orders.legend.in_kitchen') }}</div>
+          <div><span class="legend-dot legend-dot--ready" /> {{ t('pos::pos_viewer.active_orders.legend.ready_to_serve') }}</div>
         </div>
       </VTooltip>
       <span class="text-caption text-medium-emphasis">{{ t('pos::pos_viewer.active_orders.refresh_note') }}</span>
@@ -283,6 +287,11 @@
   margin-right: 4px;
   vertical-align: middle;
 }
+/* Cada dot usa el mismo token semantic que statusColor() devuelve —
+   evita tener la paleta duplicada entre JS y CSS. */
+.legend-dot--in-progress { background: rgb(var(--v-theme-success)); }
+.legend-dot--in-kitchen  { background: rgb(var(--v-theme-warning)); }
+.legend-dot--ready       { background: rgb(var(--v-theme-table-ready)); }
 .empty-icon-wrap {
   width: 56px;
   height: 56px;

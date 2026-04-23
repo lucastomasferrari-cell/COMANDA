@@ -117,7 +117,7 @@
 }
 
 .discount-type-card {
-  border: 1px dashed #e0e0e0;
+  border: 1px dashed rgba(var(--v-theme-on-surface), 0.12);
   border-radius: 10px;
   padding: 12px 16px;
   display: flex;
@@ -144,7 +144,7 @@
   height: 19px;
   width: 19px;
   border-radius: 50%;
-  border: 1px solid #e0e0e0;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
   display: flex;
   align-items: center;
   justify-content: center;

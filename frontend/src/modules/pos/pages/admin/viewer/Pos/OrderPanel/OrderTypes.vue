@@ -122,7 +122,7 @@
 }
 
 .order-type-card {
-  border: 1px dashed #e0e0e0;
+  border: 1px dashed rgba(var(--v-theme-on-surface), 0.12);
   border-radius: 8px;
   padding: 0.5rem 1rem;
   display: flex;
