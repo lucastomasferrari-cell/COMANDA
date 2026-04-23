@@ -90,6 +90,13 @@ return [
     "kds" => "KDS",
     "jobs" => "Puestos",
     "shifts" => "Turnos",
+
+    // Bloque 6: hub Configuración rehecho.
+    "users_and_permissions" => "Usuarios y permisos",
+    "printing" => "Impresión",
+    "mail" => "Correo",
+    "support" => "Soporte técnico",
+
     "coming_soon_title" => "Próximamente",
     "coming_soon_description" => "Esta sección estará disponible en la próxima versión.",
 ];

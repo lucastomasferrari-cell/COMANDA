@@ -324,7 +324,8 @@ const adminRoutes: RouteRecordRaw[] = [
     },
   },
 
-  // Configuracion hub — general, apariencia (placeholder), AFIP (placeholder), integraciones (placeholder), herramientas.
+  // Configuracion hub — 9 tabs. Absorbe Personal (Usuarios y permisos) + Cocina (Impresión).
+  // Apariencia y PWA sacados (irrelevantes single-tenant AR).
   {
     path: 'configuracion',
     component: () => import('@/modules/admin/pages/admin/hubs/ConfiguracionHub.vue'),
@@ -334,23 +335,30 @@ const adminRoutes: RouteRecordRaw[] = [
       {
         path: 'general',
         name: 'admin.configuracion.general',
-        component: () => import('@/modules/setting/pages/admin/setting/General.vue'),
+        component: () => import('@/modules/admin/pages/admin/hubs/partials/GeneralConsolidated.vue'),
         meta: { permission: 'admin.settings.edit' },
       },
       {
-        path: 'apariencia',
-        name: 'admin.configuracion.apariencia',
-        component: () => import('@/modules/setting/pages/admin/setting/Appearance.vue'),
+        path: 'usuarios-y-permisos',
+        name: 'admin.configuracion.usuarios_permisos',
+        component: () => import('@/modules/admin/pages/admin/hubs/partials/UsuariosPermisosConsolidated.vue'),
+        meta: { permission: 'admin.users.index' },
+      },
+      {
+        path: 'impresion',
+        name: 'admin.configuracion.impresion',
+        component: () => import('@/modules/admin/pages/admin/hubs/partials/ImpresionConsolidated.vue'),
+        meta: { permission: 'admin.printers.index' },
+      },
+      {
+        path: 'correo',
+        name: 'admin.configuracion.correo',
+        component: () => import('@/modules/setting/pages/admin/setting/Mail.vue'),
         meta: { permission: 'admin.settings.edit' },
       },
       {
         path: 'afip',
         name: 'admin.configuracion.afip',
-        component: () => import('@/modules/core/components/ComingSoonPlaceholder.vue'),
-      },
-      {
-        path: 'integraciones',
-        name: 'admin.configuracion.integraciones',
         component: () => import('@/modules/core/components/ComingSoonPlaceholder.vue'),
       },
       {
@@ -360,10 +368,20 @@ const adminRoutes: RouteRecordRaw[] = [
         meta: { permission: 'admin.settings.edit' },
       },
       {
+        path: 'integraciones',
+        name: 'admin.configuracion.integraciones',
+        component: () => import('@/modules/core/components/ComingSoonPlaceholder.vue'),
+      },
+      {
         path: 'herramientas',
         name: 'admin.configuracion.herramientas',
         component: () => import('@/modules/tool/pages/admin/database/Index.vue'),
         meta: { permission: 'admin.tools.database' },
+      },
+      {
+        path: 'soporte-tecnico',
+        name: 'admin.configuracion.soporte',
+        component: () => import('@/modules/core/components/ComingSoonPlaceholder.vue'),
       },
     ],
   },

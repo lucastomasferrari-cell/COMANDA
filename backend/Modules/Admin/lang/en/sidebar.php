@@ -90,6 +90,12 @@ return [
     "kds" => "KDS",
     "jobs" => "Jobs",
     "shifts" => "Shifts",
+
+    "users_and_permissions" => "Users and permissions",
+    "printing" => "Printing",
+    "mail" => "Mail",
+    "support" => "Technical support",
+
     "coming_soon_title" => "Coming soon",
     "coming_soon_description" => "This section will be available in the next version.",
 ];
