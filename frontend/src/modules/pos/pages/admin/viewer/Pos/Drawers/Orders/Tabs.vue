@@ -31,7 +31,7 @@
     @click="$emit('on-click')"
   >
     <v-tab value="active">
-      {{ t('pos::pos_viewer.active_orders') }}
+      {{ t('pos::pos_viewer.active_orders.title') }}
     </v-tab>
     <v-tab value="upcoming">
       {{ t('pos::pos_viewer.upcoming_orders') }}

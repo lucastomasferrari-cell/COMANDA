@@ -225,7 +225,11 @@ return [
             "duplicate" => "Duplicar ítem: próximamente",
         ],
     ],
-    "active_orders" => "Pedidos activos",
+    // active_orders legacy string ELIMINADO: la key se redefinía más abajo
+    // como array (ver "Rediseño POS fase 2"), PHP sobrescribía, y el call
+    // t('pos::pos_viewer.active_orders') en Drawers/Orders/Tabs.vue recibía
+    // un array → vue-i18n mostraba la key cruda. Tabs.vue ahora usa
+    // active_orders.title.
     "upcoming_orders" => "Pedidos próximos",
     "no_cart_items" => [
         "title" => "Arrancá una comanda",

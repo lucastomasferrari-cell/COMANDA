@@ -225,7 +225,7 @@ return [
             "duplicate" => "تكرار الصنف: قريبًا",
         ],
     ],
-    "active_orders" => "الطلبات النشطة",
+    // active_orders legacy string removed — collided with array below.
     "upcoming_orders" => "الطلبات القادمة",
     "no_cart_items" => [
         "title" => "ابدأ طلبًا جديدًا",
