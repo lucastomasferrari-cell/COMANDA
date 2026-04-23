@@ -50,8 +50,30 @@
         </div>
 
         <div class="d-flex flex-column ga-3">
+          <!-- Caso con mesas: botón plain directo, sin VTooltip wrapper.
+               Antes estaba envuelto con VTooltip activator + div intermedio
+               con v-bind="tooltipProps" — los event listeners de VTooltip
+               (onMouseenter/Mouseleave/Focus) se aplicaban al div wrapper
+               y en touch screens competían con el tap del button, causando
+               que el click no dispare. El tooltip solo tiene sentido cuando
+               el botón está disabled (path else). -->
+          <button
+            v-if="hasTables"
+            type="button"
+            class="start-cta"
+            @click="pickTable"
+          >
+            <div class="cta-icon">
+              <VIcon color="primary" icon="tabler-brand-airtable" size="32" />
+            </div>
+            <div class="cta-body">
+              <div class="cta-title">{{ t('pos::pos_viewer.start_order_dialog.table.title') }}</div>
+              <div class="cta-subtitle">{{ t('pos::pos_viewer.start_order_dialog.table.subtitle') }}</div>
+            </div>
+            <VIcon icon="tabler-chevron-right" size="20" />
+          </button>
           <VTooltip
-            :disabled="hasTables"
+            v-else
             location="top"
             :text="t('pos::pos_viewer.start_order_dialog.table.no_tables_tooltip')"
           >
@@ -59,10 +81,8 @@
               <div v-bind="tooltipProps">
                 <button
                   type="button"
-                  class="start-cta"
-                  :class="{ disabled: !hasTables }"
-                  :disabled="!hasTables"
-                  @click="pickTable"
+                  class="start-cta disabled"
+                  disabled
                 >
                   <div class="cta-icon">
                     <VIcon color="primary" icon="tabler-brand-airtable" size="32" />
