@@ -17,7 +17,11 @@ class SettingDatabaseSeeder extends Seeder
             'default_country' => 'AR',
             'supported_currencies' => ["ARS"],
             'default_currency' => 'ARS',
-            'supported_locales' => ['es_AR', 'en'],
+            // COMANDA es Argentina-only. Si el array tiene >1 locale, el
+            // FormLanguageSwitcher aparece en todos los forms admin y el
+            // label concatena "(Español (Argentina))". Single-locale
+            // hidea el switcher y deja labels limpios.
+            'supported_locales' => ['es_AR'],
             'default_locale' => 'es_AR',
             'default_timezone' => 'America/Argentina/Buenos_Aires',
             'translatable' => [

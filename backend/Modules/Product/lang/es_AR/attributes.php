@@ -34,6 +34,7 @@ return [
         "ingredients.*.quantity" => "Cantidad",
         "ingredients.*.loss_pct" => "% de merma",
         "ingredients.*.note" => "Nota",
-        "sku" => "SKU"
+        "sku" => "SKU",
+        "sku_hint" => "Código único para integraciones (Rappi, PedidosYa). Se genera automático si se deja vacío.",
     ]
 ];

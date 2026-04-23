@@ -16,9 +16,13 @@
   const { getFormMeta, update, store } = useMenu()
   const router = useRouter()
 
+  // Single-branch: branch_id queda oculto y se auto-asigna al del usuario
+  // (o 1, forzado por ValidateSingleBranchInvariant middleware).
   const form = useForm({
     name: props.item?.name || {},
     description: props.item?.description || {},
+    sku: props.item?.sku,
+    sku_locked: props.item?.sku_locked || false,
     branch_id: user?.assigned_to_branch ? user.branch_id : props.item?.branch?.id,
     is_active: props.item?.is_active || false,
   })
@@ -64,23 +68,24 @@
           </VCardTitle>
           <VCardText>
             <VRow>
-              <VCol cols="12" md="6">
+              <VCol cols="12">
                 <VTextField
                   v-model="form.state.name[currentLanguage.id]"
                   :error="!!form.errors.value?.[`name.${currentLanguage.id}`]"
                   :error-messages="form.errors.value?.[`name.${currentLanguage.id}`]"
-                  :label="t('menu::attributes.menus.name') + ` ( ${currentLanguage.name} )`"
+                  :label="t('menu::attributes.menus.name')"
                 />
               </VCol>
-              <VCol v-if="false" cols="12" md="6">
-                <VSelect
-                  v-model="form.state.branch_id"
-                  :error="!!form.errors.value?.branch_id"
-                  :error-messages="form.errors.value?.branch_id"
-                  item-title="name"
-                  item-value="id"
-                  :items="meta.branches"
-                  :label="t('menu::attributes.menus.branch_id')"
+              <VCol cols="12">
+                <VTextField
+                  v-model="form.state.sku"
+                  clearable
+                  :error="!!form.errors.value?.sku"
+                  :error-messages="form.errors.value?.sku"
+                  :hint="t('menu::attributes.menus.sku_hint')"
+                  :label="t('menu::attributes.menus.sku')"
+                  persistent-hint
+                  :readonly="form.state.sku_locked"
                 />
               </VCol>
               <VCol cols="12">
@@ -91,7 +96,7 @@
                   :counter="1000"
                   :error="!!form.errors.value?.[`description.${currentLanguage.id}`]"
                   :error-messages="form.errors.value?.[`description.${currentLanguage.id}`]"
-                  :label="t('menu::attributes.menus.description') + ` ( ${currentLanguage.name} )`"
+                  :label="t('menu::attributes.menus.description')"
                   rows="4"
                 />
               </VCol>

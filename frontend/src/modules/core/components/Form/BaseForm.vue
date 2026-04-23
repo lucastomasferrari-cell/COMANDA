@@ -1,6 +1,7 @@
 <script lang="ts" setup>
   import type { RouteLocationRaw } from 'vue-router'
   import type { SupportedLanguages } from '@/modules/core/contracts/AppState.ts'
+  import { computed } from 'vue'
   import { useI18n } from 'vue-i18n'
   import FormLanguageSwitcher from '@/modules/core/components/Form/FormLanguageSwitcher.vue'
   import { useAppStore } from '@/modules/core/stores/appStore.ts'
@@ -23,10 +24,18 @@
   }>()
 
   const { t } = useI18n()
-  const { defaultLanguage } = useAppStore()
+  const appStore = useAppStore()
+  const { defaultLanguage } = appStore
   const router = useRouter()
 
   const currentLanguage = ref<SupportedLanguages>(defaultLanguage)
+
+  // El switcher solo aparece si el backend expone >1 locale. COMANDA es
+  // es_AR, así que en prod no se renderiza; dejamos el prop `hasMultipleLanguage`
+  // para compat hacia adelante (si algún día volvemos multi-idioma).
+  const showLanguageSwitcher = computed(
+    () => props.hasMultipleLanguage && (appStore.supportedLanguages?.length ?? 0) > 1,
+  )
 
   function goToBack () {
     if (props.onClickCancel) {
@@ -42,7 +51,7 @@
   <VForm @submit.prevent="$emit('submit', $event)">
     <VRow>
       <VCol class="d-flex align-center justify-start gap-2" cols="12" md="4">
-        <FormLanguageSwitcher v-if="hasMultipleLanguage" v-model="currentLanguage" />
+        <FormLanguageSwitcher v-if="showLanguageSwitcher" v-model="currentLanguage" />
       </VCol>
       <VCol class="d-flex justify-end gap-2" cols="12" md="8">
         <slot name="header-buttons" />

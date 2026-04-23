@@ -23,48 +23,7 @@
             :error="!!form.errors.value?.price"
             :error-messages="form.errors.value?.price"
             :label="t('product::attributes.products.price')"
-            :prefix=" meta.currency"
-          />
-        </VCol>
-        <VCol cols="12">
-          <VTextField
-            v-model="form.state.special_price"
-            :error="!!form.errors.value?.special_price"
-            :error-messages="form.errors.value?.special_price"
-            :label="t('product::attributes.products.special_price')"
             :prefix="meta.currency"
-          />
-        </VCol>
-        <VCol cols="12">
-          <VSelect
-            v-model="form.state.special_price_type"
-            clearable
-            :error="!!form.errors.value?.special_price_type"
-            :error-messages="form.errors.value?.special_price_type"
-            item-title="name"
-            item-value="id"
-            :items="meta.priceTypes"
-            :label="t('product::attributes.products.special_price_type')"
-          />
-        </VCol>
-        <VCol cols="12">
-          <DatePicker
-            v-model="form.state.special_price_start"
-            clearable
-            :error="!!form.errors.value?.special_price_start"
-            :error-messages="form.errors.value?.special_price_start"
-            :label="t('product::attributes.products.special_price_start')"
-            :min="new Date().toLocaleDateString('en-CA')"
-          />
-        </VCol>
-        <VCol cols="12">
-          <DatePicker
-            v-model="form.state.special_price_end"
-            clearable
-            :error="!!form.errors.value?.special_price_end"
-            :error-messages="form.errors.value?.special_price_end"
-            :label="t('product::attributes.products.special_price_end')"
-            :min="new Date().toLocaleDateString('en-CA')"
           />
         </VCol>
       </VRow>

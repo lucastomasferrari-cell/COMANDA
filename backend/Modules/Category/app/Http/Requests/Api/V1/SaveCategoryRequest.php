@@ -26,9 +26,13 @@ class SaveCategoryRequest extends Request
                 'max:255',
                 Rule::unique('categories', 'sku')->ignore($this->route('id')),
             ],
+            // Slug ahora es nullable — el Category model auto-genera desde
+            // name en el creating hook si viene vacío. Si el caller envía
+            // uno manual, validamos formato + unicidad. Permitir vacío en
+            // el body hace que el form de admin pueda omitir el campo.
             "slug" => [
                 'bail',
-                'required',
+                'nullable',
                 'string',
                 'max:255',
                 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',

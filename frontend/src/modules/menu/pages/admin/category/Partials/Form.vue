@@ -23,9 +23,13 @@ const deleteLoading = ref(false)
 const toast = useToast()
 const { can } = useAuth()
 
+// Slug ya no lo pide la UI — el backend auto-genera desde name en el
+// creating hook de Category si viene null. Queda en la tabla por compat
+// con Discount/Voucher/Loyalty que lo referencian por valor.
 const form = useForm({
   name: props.item?.name || {},
-  slug: props.item?.slug,
+  sku: props.item?.sku,
+  sku_locked: props.item?.sku_locked || false,
   menu_id: props.menuId,
   parent_id: props.parentId || props.item?.parent_id,
   files: {
@@ -124,11 +128,17 @@ async function deleteCategory() {
                   <VTextField v-model="form.state.name[currentLanguage.id]"
                     :error="!!form.errors.value?.[`name.${currentLanguage.id}`]"
                     :error-messages="form.errors.value?.[`name.${currentLanguage.id}`]"
-                    :label="t('category::attributes.categories.name') + ` ( ${currentLanguage.name} )`" />
+                    :label="t('category::attributes.categories.name')" />
                 </VCol>
                 <VCol cols="12">
-                  <VTextField v-model="form.state.slug" :error="!!form.errors.value?.slug"
-                    :error-messages="form.errors.value?.slug" :label="t('category::attributes.categories.slug')" />
+                  <VTextField v-model="form.state.sku"
+                    clearable
+                    :error="!!form.errors.value?.sku"
+                    :error-messages="form.errors.value?.sku"
+                    :hint="t('category::attributes.categories.sku_hint')"
+                    :label="t('category::attributes.categories.sku')"
+                    persistent-hint
+                    :readonly="form.state.sku_locked" />
                 </VCol>
                 <VCol cols="12">
                   <SinglePicker v-model="form.state.files.logo" :label="t('category::attributes.categories.files.logo')"

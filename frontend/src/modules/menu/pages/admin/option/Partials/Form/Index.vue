@@ -22,6 +22,9 @@
   const meta = ref({ branches: [] as Record<string, any>[], types: [], priceTypes: [] })
   const form = useForm({
     name: props.item?.name || {},
+    sku: props.item?.sku,
+    sku_locked: props.item?.sku_locked || false,
+    // Single-branch: hidden, se llena del user o del item en edit.
     branch_id: user?.assigned_to_branch ? user.branch_id : props.item?.branch?.id,
     type: props.item?.type?.id,
     is_required: props.item?.is_required || false,
@@ -99,7 +102,6 @@
           :current-language="currentLanguage"
           :form="form"
           :meta="meta"
-          :show-select-branch="action=='create' && !user?.assigned_to_branch"
         />
       </VCol>
       <VCol cols="12" md="7">

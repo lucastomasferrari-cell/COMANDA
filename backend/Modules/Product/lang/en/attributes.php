@@ -34,6 +34,7 @@ return [
         "ingredients.*.quantity" => "Quantity",
         "ingredients.*.loss_pct" => "Loss Pct",
         "ingredients.*.note" => "Note",
-        "sku" => "SKU"
+        "sku" => "SKU",
+        "sku_hint" => "Unique code for integrations (delivery providers). Auto-generated if left empty.",
     ]
 ];

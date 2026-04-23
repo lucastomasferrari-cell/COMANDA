@@ -20,7 +20,7 @@
             v-model="form.state.name[currentLanguage.id]"
             :error="!!form.errors.value?.[`name.${currentLanguage.id}`]"
             :error-messages="form.errors.value?.[`name.${currentLanguage.id}`]"
-            :label="t('product::attributes.products.name') + ` ( ${currentLanguage.name} )`"
+            :label="t('product::attributes.products.name')"
           />
         </VCol>
         <VCol cols="12">
@@ -29,7 +29,10 @@
             clearable
             :error="!!form.errors.value?.sku"
             :error-messages="form.errors.value?.sku"
+            :hint="t('product::attributes.products.sku_hint')"
             :label="t('product::attributes.products.sku')"
+            persistent-hint
+            :readonly="form.state.sku_locked"
           />
         </VCol>
         <VCol cols="12">
@@ -39,11 +42,11 @@
             clearable
             :error="!!form.errors.value?.[`description.${currentLanguage.id}`]"
             :error-messages="form.errors.value?.[`description.${currentLanguage.id}`]"
-            :label="t('product::attributes.products.description') + ` ( ${currentLanguage.name} )`"
+            :label="t('product::attributes.products.description')"
             rows="8"
           />
         </VCol>
-        <VCol cols="12" md="6">
+        <VCol cols="12">
           <VSelect
             v-model="form.state.categories"
             chips
@@ -54,20 +57,6 @@
             item-value="id"
             :items="meta.categories"
             :label="t('product::attributes.products.categories')"
-            multiple
-          />
-        </VCol>
-        <VCol cols="12" md="6">
-          <VSelect
-            v-model="form.state.taxes"
-            chips
-            clearable
-            :error="!!form.errors.value?.taxes"
-            :error-messages="form.errors.value?.taxes"
-            item-title="name"
-            item-value="id"
-            :items="meta.taxes"
-            :label="t('product::attributes.products.taxes')"
             multiple
           />
         </VCol>

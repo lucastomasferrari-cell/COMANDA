@@ -4,6 +4,8 @@ return [
     "menus" => [
         "name" => "Nombre",
         "description" => "Descripción",
+        "sku" => "SKU",
+        "sku_hint" => "Código único para integraciones. Se genera automático si se deja vacío.",
         "branch_id" => "Sucursal",
         "is_active" => "Activo",
     ],

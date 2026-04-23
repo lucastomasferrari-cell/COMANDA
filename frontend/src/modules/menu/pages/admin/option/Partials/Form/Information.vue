@@ -5,7 +5,6 @@
     form: any
     meta: Record<string, any>
     currentLanguage: Record<string, any>
-    showSelectBranch: boolean
   }>()
   const { t } = useI18n()
 
@@ -26,18 +25,19 @@
             v-model="form.state.name[currentLanguage.id]"
             :error="!!form.errors.value?.[`name.${currentLanguage.id}`]"
             :error-messages="form.errors.value?.[`name.${currentLanguage.id}`]"
-            :label="t('option::attributes.options.name') + ` ( ${currentLanguage.name} )`"
+            :label="t('option::attributes.options.name')"
           />
         </VCol>
-        <VCol v-if="showSelectBranch" cols="12">
-          <VSelect
-            v-model="form.state.branch_id"
-            :error="!!form.errors.value?.branch_id"
-            :error-messages="form.errors.value?.branch_id"
-            item-title="name"
-            item-value="id"
-            :items="meta.branches"
-            :label="t('option::attributes.options.branch_id')"
+        <VCol cols="12">
+          <VTextField
+            v-model="form.state.sku"
+            clearable
+            :error="!!form.errors.value?.sku"
+            :error-messages="form.errors.value?.sku"
+            :hint="t('option::attributes.options.sku_hint')"
+            :label="t('option::attributes.options.sku')"
+            persistent-hint
+            :readonly="form.state.sku_locked"
           />
         </VCol>
         <VCol cols="12">

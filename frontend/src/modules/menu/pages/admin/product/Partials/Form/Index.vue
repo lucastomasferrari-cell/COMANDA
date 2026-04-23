@@ -5,7 +5,6 @@
   import { useToast } from 'vue-toastification'
   import { useForm } from '@/modules/core/composables/form.ts'
   import { useProduct } from '@/modules/menu/composables/product.ts'
-  import Additional from './Additional.vue'
   import General from './General.vue'
   import Ingredients from './Ingredient/Index.vue'
   import Media from './Media.vue'
@@ -23,21 +22,22 @@
   const menuId = (route.params as Record<string, any>)?.menuId
   const toast = useToast()
   const { t } = useI18n()
+  // Campos removidos post-refactor Fix 3:
+  // - taxes: IVA se maneja a nivel fiscal (AFIP WSFE futuro), no por producto.
+  // - special_price*: descuentos viven en Marketing > Descuentos.
+  // - new_from/new_to: no hay menú digital que muestre badge "Nuevo".
+  // Las columnas siguen en DB (nullable) por compat con el vendor; al no
+  // enviarse, el backend guarda null y todo sigue funcionando. Las rules
+  // ya son `nullable` en SaveProductRequest.
   const form = useForm({
     name: props.item?.name || {},
     description: !props.item?.description || Array.isArray(props.item?.description) ? {} : props.item?.description,
     categories: props.item?.categories || [],
-    taxes: props.item?.taxes || [],
     is_active: props.item?.is_active || false,
     menu_id: menuId,
     sku: props.item?.sku,
+    sku_locked: props.item?.sku_locked || false,
     price: props.item?.price?.amount,
-    special_price: props.item?.special_price,
-    special_price_type: props.item?.special_price_type || 'fixed',
-    special_price_start: props.item?.special_price_start,
-    special_price_end: props.item?.special_price_end,
-    new_from: props.item?.new_from,
-    new_to: props.item?.new_to,
     options: (props.item?.options || []).map((option: Record<string, any>) => ({
       ...option,
       type: option.type.id,
@@ -63,9 +63,7 @@
   })
 
   const meta = ref({
-    taxes: [],
     categories: [],
-    priceTypes: [],
     optionTypes: [],
     optionTemplates: [],
     ingredients: [],
@@ -89,9 +87,7 @@
   onBeforeMount(async () => {
     try {
       const response = (await getFormMeta(menuId)).data.body
-      meta.value.taxes = response.taxes
       meta.value.categories = response.categories
-      meta.value.priceTypes = response.price_types
       meta.value.optionTypes = response.option_types
       meta.value.optionTemplates = response.option_templates
       meta.value.ingredients = response.ingredients
@@ -137,7 +133,6 @@
       <VCol cols="12" md="4">
         <Media :form="form" :item="item" />
         <Pricing :form="form" :meta="meta" />
-        <Additional :form="form" />
       </VCol>
     </VRow>
   </BaseForm>

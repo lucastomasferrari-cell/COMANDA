@@ -68,14 +68,32 @@ class Category extends Model
     ];
 
     /**
-     * Auto-asigna SKU secuencial si no se proveyó. Ver Product::booted()
-     * para detalle — mismo patrón aplicado a las 4 entidades con SKU.
+     * Creating hooks:
+     * - SKU auto-gen (ver Product::booted()).
+     * - Slug auto-gen desde name si viene null. El slug sigue siendo
+     *   obligatorio en DB pero ya no lo pide el form admin (Fix 3);
+     *   Discount/Voucher/Loyalty lo referencian por valor.
      */
     protected static function booted(): void
     {
         static::creating(function (Category $category) {
             if (empty($category->sku)) {
                 $category->sku = SkuAllocator::next('categories');
+            }
+            if (empty($category->slug)) {
+                // Default locale first, fallback to any available name.
+                $baseName = is_array($category->getRawOriginal('name'))
+                    ? null
+                    : $category->getAttribute('name');
+                if (empty($baseName)) {
+                    $translations = json_decode($category->getRawOriginal('name') ?? '[]', true) ?: [];
+                    $baseName = $translations[config('app.locale')]
+                        ?? $translations[config('app.fallback_locale')]
+                        ?? reset($translations);
+                }
+                if (!empty($baseName)) {
+                    $category->slug = str($baseName)->slug()->toString();
+                }
             }
         });
     }
