@@ -3,7 +3,10 @@
   import type { TargetName } from '@/modules/core/contracts/Target.ts'
   import Footer from '@/app/layouts/components/Footer.vue'
   import HeaderPage from '@/app/layouts/components/HeaderPage.vue'
-  import KitchenViewer from '@/app/layouts/components/KitchenViewer.vue'
+  // KitchenViewer (chef-hat) sacado del topbar en bloque 7: el topbar queda
+  // con un solo shortcut (cash-register → POS). El KDS sigue accesible por
+  // URL directa /admin/kds (alias definido en admin.routes.ts).
+  // import KitchenViewer from '@/app/layouts/components/KitchenViewer.vue'
   import NavbarAction from '@/app/layouts/components/NavbarAction.vue'
   import NavbarFullscreenSwitcher from '@/app/layouts/components/NavbarFullscreenSwitcher.vue'
   // Selector de idioma desmontado: COMANDA es mercado argentino, el
@@ -51,10 +54,6 @@
         <template
           v-if="!['admin.pos.kitchen_viewer','admin.pos.index'].includes((route?.name as string))"
         >
-          <KitchenViewer
-            v-if="can('admin.pos.kitchen_viewer')"
-            class="me-2"
-          />
           <NavbarViewPos v-if="can('admin.pos.index')" class="me-2" />
         </template>
         <NavbarAntifraudAlerts class="me-2" />
