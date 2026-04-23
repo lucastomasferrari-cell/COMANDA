@@ -320,6 +320,7 @@ const adminRoutes: RouteRecordRaw[] = [
   },
   {
     path: 'configuracion/operacion',
+    name: 'admin.configuracion.operacion',
     component: () => import('@/modules/admin/pages/admin/hubs/configuracion/OperacionSubHub.vue'),
     meta: { title: 'admin::admin.configuracion_landing.cards.operacion.title' },
     redirect: { name: 'admin.configuracion.operacion.formas' },
@@ -346,6 +347,7 @@ const adminRoutes: RouteRecordRaw[] = [
   },
   {
     path: 'configuracion/usuarios-y-seguridad',
+    name: 'admin.configuracion.usuarios_seguridad',
     component: () => import('@/modules/admin/pages/admin/hubs/configuracion/UsuariosSeguridadSubHub.vue'),
     meta: { title: 'admin::admin.configuracion_landing.cards.users_and_security.title' },
     redirect: { name: 'admin.configuracion.usuarios_seguridad.usuarios_permisos' },
@@ -366,6 +368,7 @@ const adminRoutes: RouteRecordRaw[] = [
   },
   {
     path: 'configuracion/sistema',
+    name: 'admin.configuracion.sistema',
     component: () => import('@/modules/admin/pages/admin/hubs/configuracion/SistemaSubHub.vue'),
     meta: { title: 'admin::admin.configuracion_landing.cards.system.title' },
     redirect: { name: 'admin.configuracion.sistema.correo' },

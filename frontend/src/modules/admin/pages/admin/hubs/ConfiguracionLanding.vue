@@ -9,6 +9,13 @@
   // cognitiva y deja espacio para que cada grupo crezca.
   // La Formas de cobro también vive acá ahora (Cobros se eliminó
   // del sidebar top-level).
+  // Las cards apuntan al CHILD default de cada sub-hub (no al parent).
+  // Razón: los parents operacion/usuarios_seguridad/sistema eran routes
+  // sin `name:` propio (solo redirect + children con name), entonces
+  // { name: 'admin.configuracion.operacion' } no resolvía → Vue Router
+  // tiraba exception al armar el href del VCard → pantalla en blanco +
+  // router stuck en transición. Apuntar al child default bypasea
+  // el indirect lookup y es más honesto: la URL refleja dónde aterriza.
   const cards = [
     {
       key: 'restaurante',
@@ -18,17 +25,17 @@
     {
       key: 'operacion',
       icon: 'tabler-briefcase',
-      to: { name: 'admin.configuracion.operacion' },
+      to: { name: 'admin.configuracion.operacion.formas' },
     },
     {
       key: 'users_and_security',
       icon: 'tabler-user-shield',
-      to: { name: 'admin.configuracion.usuarios_seguridad' },
+      to: { name: 'admin.configuracion.usuarios_seguridad.usuarios_permisos' },
     },
     {
       key: 'system',
       icon: 'tabler-plug-connected',
-      to: { name: 'admin.configuracion.sistema' },
+      to: { name: 'admin.configuracion.sistema.correo' },
     },
   ] as const
 </script>
