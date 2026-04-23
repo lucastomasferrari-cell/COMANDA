@@ -11,25 +11,58 @@ const adminRoutes: RouteRecordRaw[] = [
     },
   },
 
-  // Menu hub — 4 tabs (Productos, Categorias, Opciones, Menus).
+  // Menu hub — 4 tabs. Cada tab ahora tiene sub-rutas create/edit
+  // anidadas para que el hub (con las tabs visibles) se mantenga al
+  // editar. El router-view de PageTabs renderiza el Form.vue en vez
+  // del Index.vue cuando la ruta es create/:id/edit. VTabs de Vuetify
+  // detecta activo por prefijo de path, así que la tab sigue highlight.
+  // Las rutas standalone (admin.products.*, admin.options.*, etc.)
+  // viven todavía en modules/menu/routes/admin.routes.ts pero ahora
+  // solo como redirects a estas anidadas — ver ese archivo.
   {
     path: 'menu',
     component: () => import('@/modules/admin/pages/admin/hubs/MenuHub.vue'),
     meta: { title: 'admin::sidebar.menu' },
     children: [
       { path: '', redirect: { name: 'admin.menu.productos' } },
+
+      // Tab Menús
       {
-        path: 'productos',
-        name: 'admin.menu.productos',
-        component: () => import('@/modules/menu/pages/admin/product/Index.vue'),
-        meta: { permission: 'admin.products.index' },
+        path: 'menus',
+        name: 'admin.menu.menus',
+        component: () => import('@/modules/menu/pages/admin/menu/Index.vue'),
+        meta: { permission: 'admin.menus.index' },
       },
+      {
+        path: 'menus/create',
+        name: 'admin.menu.menus.create',
+        component: () => import('@/modules/menu/pages/admin/menu/Create.vue'),
+        meta: {
+          title: 'admin::resource.create',
+          transParam: { resource: 'menu::menus.menu' },
+          permission: 'admin.menus.create',
+        },
+      },
+      {
+        path: 'menus/:id/edit',
+        name: 'admin.menu.menus.edit',
+        component: () => import('@/modules/menu/pages/admin/menu/Edit.vue'),
+        meta: {
+          title: 'admin::resource.edit',
+          transParam: { resource: 'menu::menus.menu' },
+          permission: 'admin.menus.edit',
+        },
+      },
+
+      // Tab Categorías
       {
         path: 'categorias',
         name: 'admin.menu.categorias',
         component: () => import('@/modules/menu/pages/admin/category/Index.vue'),
         meta: { permission: 'admin.categories.index' },
       },
+
+      // Tab Opciones
       {
         path: 'opciones',
         name: 'admin.menu.opciones',
@@ -37,10 +70,52 @@ const adminRoutes: RouteRecordRaw[] = [
         meta: { permission: 'admin.options.index' },
       },
       {
-        path: 'menus',
-        name: 'admin.menu.menus',
-        component: () => import('@/modules/menu/pages/admin/menu/Index.vue'),
-        meta: { permission: 'admin.menus.index' },
+        path: 'opciones/create',
+        name: 'admin.menu.opciones.create',
+        component: () => import('@/modules/menu/pages/admin/option/Create.vue'),
+        meta: {
+          title: 'admin::resource.create',
+          transParam: { resource: 'option::options.option' },
+          permission: 'admin.options.create',
+        },
+      },
+      {
+        path: 'opciones/:id/edit',
+        name: 'admin.menu.opciones.edit',
+        component: () => import('@/modules/menu/pages/admin/option/Edit.vue'),
+        meta: {
+          title: 'admin::resource.edit',
+          transParam: { resource: 'option::options.option' },
+          permission: 'admin.options.edit',
+        },
+      },
+
+      // Tab Productos
+      {
+        path: 'productos',
+        name: 'admin.menu.productos',
+        component: () => import('@/modules/menu/pages/admin/product/Index.vue'),
+        meta: { permission: 'admin.products.index' },
+      },
+      {
+        path: 'productos/create',
+        name: 'admin.menu.productos.create',
+        component: () => import('@/modules/menu/pages/admin/product/Create.vue'),
+        meta: {
+          title: 'admin::resource.create',
+          transParam: { resource: 'product::products.product' },
+          permission: 'admin.products.create',
+        },
+      },
+      {
+        path: 'productos/:id/edit',
+        name: 'admin.menu.productos.edit',
+        component: () => import('@/modules/menu/pages/admin/product/Edit.vue'),
+        meta: {
+          title: 'admin::resource.edit',
+          transParam: { resource: 'product::products.product' },
+          permission: 'admin.products.edit',
+        },
       },
     ],
   },

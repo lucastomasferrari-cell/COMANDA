@@ -1,5 +1,14 @@
 import type { RouteRecordRaw } from 'vue-router'
 
+// Las rutas standalone de Products/Options/Categories quedaron del vendor
+// original con 4 árboles paralelos a /admin/menus/. Post-refactor Fix 3
+// parte E, el flujo canónico es /admin/menu/<tab>/create|edit (hub visible
+// con tabs). Estas rutas se convierten en redirects para preservar cualquier
+// link viejo (emails, bookmarks, copy-paste de URL del usuario).
+//
+// Lo que sí conserva lógica propia: /admin/menus (CRUD de menús standalone
+// con drilldown a productos de un menú específico) y /admin/online-menus.
+
 const adminRoutes: RouteRecordRaw[] = [
   {
     path: 'menus',
@@ -12,30 +21,17 @@ const adminRoutes: RouteRecordRaw[] = [
       {
         path: '',
         name: 'admin.menus.index',
-        component: () => import('@/modules/menu/pages/admin/menu/Index.vue'),
-        meta: {
-          permission: 'admin.menus.index',
-        },
+        redirect: { name: 'admin.menu.menus' },
       },
       {
         path: 'create',
         name: 'admin.menus.create',
-        component: () => import('@/modules/menu/pages/admin/menu/Create.vue'),
-        meta: {
-          title: 'admin::resource.create',
-          transParam: { resource: 'menu::menus.menu' },
-          permission: 'admin.menus.create',
-        },
+        redirect: { name: 'admin.menu.menus.create' },
       },
       {
         path: ':id/edit',
         name: 'admin.menus.edit',
-        component: () => import('@/modules/menu/pages/admin/menu/Edit.vue'),
-        meta: {
-          title: 'admin::resource.edit',
-          transParam: { resource: 'menu::menus.menu' },
-          permission: 'admin.menus.edit',
-        },
+        redirect: to => ({ name: 'admin.menu.menus.edit', params: { id: to.params.id } }),
       },
       {
         path: ':id/categories',
@@ -48,6 +44,10 @@ const adminRoutes: RouteRecordRaw[] = [
         },
       },
       {
+        // Drilldown: productos de un menú específico. Preserva el flujo
+        // original del vendor (TableViewer del menú → crear producto
+        // con ese menú pre-seleccionado). No se redirige al hub porque
+        // el menuId sería ambiguo y el hub no soporta drilldown per-menu.
         path: ':menuId/products',
         name: 'admin.menus.products',
         meta: {
@@ -128,94 +128,53 @@ const adminRoutes: RouteRecordRaw[] = [
   {
     path: 'categories',
     name: 'admin.categories',
-    meta: {
-      title: 'admin::sidebar.categories',
-      icon: 'tabler-folders',
-    },
     children: [
       {
         path: '',
         name: 'admin.categories.index',
-        component: () => import('@/modules/menu/pages/admin/category/Index.vue'),
-        meta: {
-          permission: 'admin.categories.index',
-        },
+        redirect: { name: 'admin.menu.categorias' },
       },
     ],
   },
   {
     path: 'products',
     name: 'admin.products',
-    meta: {
-      title: 'admin::sidebar.products',
-      icon: 'tabler-package',
-    },
     children: [
       {
         path: '',
         name: 'admin.products.index',
-        component: () => import('@/modules/menu/pages/admin/product/Index.vue'),
-        meta: {
-          permission: 'admin.products.index',
-        },
+        redirect: { name: 'admin.menu.productos' },
       },
       {
         path: 'create',
         name: 'admin.products.create',
-        component: () => import('@/modules/menu/pages/admin/product/Create.vue'),
-        meta: {
-          title: 'admin::resource.create',
-          transParam: { resource: 'product::products.product' },
-          permission: 'admin.products.create',
-        },
+        redirect: { name: 'admin.menu.productos.create' },
       },
       {
         path: ':id/edit',
         name: 'admin.products.edit',
-        component: () => import('@/modules/menu/pages/admin/product/Edit.vue'),
-        meta: {
-          title: 'admin::resource.edit',
-          transParam: { resource: 'product::products.product' },
-          permission: 'admin.products.edit',
-        },
+        redirect: to => ({ name: 'admin.menu.productos.edit', params: { id: to.params.id } }),
       },
     ],
   },
   {
     path: 'options',
     name: 'admin.options',
-    meta: {
-      title: 'admin::sidebar.options',
-      icon: 'tabler-adjustments',
-    },
     children: [
       {
         path: '',
         name: 'admin.options.index',
-        component: () => import('@/modules/menu/pages/admin/option/Index.vue'),
-        meta: {
-          permission: 'admin.options.index',
-        },
+        redirect: { name: 'admin.menu.opciones' },
       },
       {
         path: 'create',
         name: 'admin.options.create',
-        component: () => import('@/modules/menu/pages/admin/option/Create.vue'),
-        meta: {
-          title: 'admin::resource.create',
-          transParam: { resource: 'option::options.option' },
-          permission: 'admin.options.create',
-        },
+        redirect: { name: 'admin.menu.opciones.create' },
       },
       {
         path: ':id/edit',
         name: 'admin.options.edit',
-        component: () => import('@/modules/menu/pages/admin/option/Edit.vue'),
-        meta: {
-          title: 'admin::resource.edit',
-          transParam: { resource: 'option::options.option' },
-          permission: 'admin.options.edit',
-        },
+        redirect: to => ({ name: 'admin.menu.opciones.edit', params: { id: to.params.id } }),
       },
     ],
   },
