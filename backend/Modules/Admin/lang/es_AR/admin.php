@@ -100,6 +100,28 @@ return [
         "profile_photo" => "Subí una imagen JPG o PNG (máx. 5MB).",
     ],
 
+    // Landing de /admin/configuracion — 4 cards agrupadas.
+    "configuracion_landing" => [
+        "cards" => [
+            "restaurante" => [
+                "title" => "Restaurante",
+                "subtitle" => "Datos del local, logo, contacto",
+            ],
+            "operacion" => [
+                "title" => "Operación",
+                "subtitle" => "Formas de cobro, impresión, KDS",
+            ],
+            "users_and_security" => [
+                "title" => "Usuarios y seguridad",
+                "subtitle" => "Usuarios, permisos, anti-fraude",
+            ],
+            "system" => [
+                "title" => "Sistema",
+                "subtitle" => "Correo, AFIP, integraciones, herramientas",
+            ],
+        ],
+    ],
+
     'delete' => [
         'confirmation_message' => '¿Seguro que querés eliminar?',
         'confirm_button_text' => "Eliminar",

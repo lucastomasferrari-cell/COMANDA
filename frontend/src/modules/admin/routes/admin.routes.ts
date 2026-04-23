@@ -182,38 +182,13 @@ const adminRoutes: RouteRecordRaw[] = [
     ],
   },
 
-  // Cobros hub — formas (placeholder), impuestos, motivos, caja.
+  // Cobros hub ELIMINADO: Formas de cobro vive ahora en Configuración > Operación.
+  // Los paths viejos redirigen para no romper bookmarks. Cualquier /admin/cobros/*
+  // (formas-de-pago, impuestos, motivos, caja) cae en la nueva ubicación.
   {
-    path: 'cobros',
-    component: () => import('@/modules/admin/pages/admin/hubs/CobrosHub.vue'),
-    meta: { title: 'admin::sidebar.cobros' },
-    children: [
-      { path: '', redirect: { name: 'admin.cobros.formas' } },
-      {
-        path: 'formas-de-pago',
-        name: 'admin.cobros.formas',
-        component: () => import('@/modules/payment/pages/admin/paymentMethod/Index.vue'),
-        meta: { permission: 'admin.payment_methods.index' },
-      },
-      {
-        path: 'impuestos',
-        name: 'admin.cobros.impuestos',
-        component: () => import('@/modules/tax/pages/admin/tax/Index.vue'),
-        meta: { permission: 'admin.taxes.index' },
-      },
-      {
-        path: 'motivos',
-        name: 'admin.cobros.motivos',
-        component: () => import('@/modules/sale/pages/admin/reason/Index.vue'),
-        meta: { permission: 'admin.reasons.index' },
-      },
-      {
-        path: 'caja',
-        name: 'admin.cobros.caja',
-        component: () => import('@/modules/pos/pages/admin/register/Index.vue'),
-        meta: { permission: 'admin.pos_registers.index' },
-      },
-    ],
+    path: 'cobros/:pathMatch(.*)*',
+    name: 'admin.cobros.legacy_redirect',
+    redirect: { name: 'admin.configuracion.operacion.formas' },
   },
 
   // Personal hub — usuarios, jobs (placeholder), permisos, turnos (placeholder).
@@ -324,67 +299,118 @@ const adminRoutes: RouteRecordRaw[] = [
     },
   },
 
-  // Configuracion hub — 9 tabs. Absorbe Personal (Usuarios y permisos) + Cocina (Impresión).
-  // Apariencia y PWA sacados (irrelevantes single-tenant AR).
+  // Configuración reorganizada: landing con 4 cards (Restaurante / Operación /
+  // Usuarios y seguridad / Sistema) y sub-hubs con tabs por grupo.
+  // Rutas flat porque el parent no puede ser a la vez landing + pass-through.
+  // Cualquier /admin/configuracion/* viejo queda en redirects catch-all abajo.
   {
     path: 'configuracion',
-    component: () => import('@/modules/admin/pages/admin/hubs/ConfiguracionHub.vue'),
+    name: 'admin.configuracion',
+    component: () => import('@/modules/admin/pages/admin/hubs/ConfiguracionLanding.vue'),
     meta: { title: 'admin::sidebar.configuracion' },
+  },
+  {
+    path: 'configuracion/restaurante',
+    name: 'admin.configuracion.restaurante',
+    component: () => import('@/modules/admin/pages/admin/hubs/configuracion/RestauranteSubHub.vue'),
+    meta: {
+      title: 'admin::admin.configuracion_landing.cards.restaurante.title',
+      permission: 'admin.settings.edit',
+    },
+  },
+  {
+    path: 'configuracion/operacion',
+    component: () => import('@/modules/admin/pages/admin/hubs/configuracion/OperacionSubHub.vue'),
+    meta: { title: 'admin::admin.configuracion_landing.cards.operacion.title' },
+    redirect: { name: 'admin.configuracion.operacion.formas' },
     children: [
-      { path: '', redirect: { name: 'admin.configuracion.general' } },
       {
-        path: 'general',
-        name: 'admin.configuracion.general',
-        component: () => import('@/modules/admin/pages/admin/hubs/partials/GeneralConsolidated.vue'),
-        meta: { permission: 'admin.settings.edit' },
-      },
-      {
-        path: 'usuarios-y-permisos',
-        name: 'admin.configuracion.usuarios_permisos',
-        component: () => import('@/modules/admin/pages/admin/hubs/partials/UsuariosPermisosConsolidated.vue'),
-        meta: { permission: 'admin.users.index' },
+        path: 'formas-de-cobro',
+        name: 'admin.configuracion.operacion.formas',
+        component: () => import('@/modules/payment/pages/admin/paymentMethod/Index.vue'),
+        meta: { permission: 'admin.payment_methods.index' },
       },
       {
         path: 'impresion',
-        name: 'admin.configuracion.impresion',
+        name: 'admin.configuracion.operacion.impresion',
         component: () => import('@/modules/admin/pages/admin/hubs/partials/ImpresionConsolidated.vue'),
         meta: { permission: 'admin.printers.index' },
       },
       {
+        path: 'kds',
+        name: 'admin.configuracion.operacion.kds',
+        component: () => import('@/modules/setting/pages/admin/setting/Kitchen.vue'),
+        meta: { permission: 'admin.settings.edit' },
+      },
+    ],
+  },
+  {
+    path: 'configuracion/usuarios-y-seguridad',
+    component: () => import('@/modules/admin/pages/admin/hubs/configuracion/UsuariosSeguridadSubHub.vue'),
+    meta: { title: 'admin::admin.configuracion_landing.cards.users_and_security.title' },
+    redirect: { name: 'admin.configuracion.usuarios_seguridad.usuarios_permisos' },
+    children: [
+      {
+        path: 'usuarios-y-permisos',
+        name: 'admin.configuracion.usuarios_seguridad.usuarios_permisos',
+        component: () => import('@/modules/admin/pages/admin/hubs/partials/UsuariosPermisosConsolidated.vue'),
+        meta: { permission: 'admin.users.index' },
+      },
+      {
+        path: 'antifraud',
+        name: 'admin.configuracion.usuarios_seguridad.antifraud',
+        component: () => import('@/modules/setting/pages/admin/setting/Antifraud.vue'),
+        meta: { permission: 'admin.settings.edit' },
+      },
+    ],
+  },
+  {
+    path: 'configuracion/sistema',
+    component: () => import('@/modules/admin/pages/admin/hubs/configuracion/SistemaSubHub.vue'),
+    meta: { title: 'admin::admin.configuracion_landing.cards.system.title' },
+    redirect: { name: 'admin.configuracion.sistema.correo' },
+    children: [
+      {
         path: 'correo',
-        name: 'admin.configuracion.correo',
+        name: 'admin.configuracion.sistema.correo',
         component: () => import('@/modules/setting/pages/admin/setting/Mail.vue'),
         meta: { permission: 'admin.settings.edit' },
       },
       {
         path: 'afip',
-        name: 'admin.configuracion.afip',
+        name: 'admin.configuracion.sistema.afip',
         component: () => import('@/modules/core/components/ComingSoonPlaceholder.vue'),
       },
       {
-        path: 'antifraud',
-        name: 'admin.configuracion.antifraud',
-        component: () => import('@/modules/setting/pages/admin/setting/Antifraud.vue'),
-        meta: { permission: 'admin.settings.edit' },
-      },
-      {
         path: 'integraciones',
-        name: 'admin.configuracion.integraciones',
+        name: 'admin.configuracion.sistema.integraciones',
         component: () => import('@/modules/core/components/ComingSoonPlaceholder.vue'),
       },
       {
         path: 'herramientas',
-        name: 'admin.configuracion.herramientas',
+        name: 'admin.configuracion.sistema.herramientas',
         component: () => import('@/modules/tool/pages/admin/database/Index.vue'),
         meta: { permission: 'admin.tools.database' },
       },
       {
         path: 'soporte-tecnico',
-        name: 'admin.configuracion.soporte',
+        name: 'admin.configuracion.sistema.soporte',
         component: () => import('@/modules/core/components/ComingSoonPlaceholder.vue'),
       },
     ],
   },
+
+  // Redirects desde rutas legacy (bloque 6) — si alguien bookmarked alguna tab
+  // vieja de Configuración, la mandamos al nuevo hogar más cercano.
+  { path: 'configuracion/general', redirect: { name: 'admin.configuracion.restaurante' } },
+  { path: 'configuracion/usuarios-y-permisos', redirect: { name: 'admin.configuracion.usuarios_seguridad.usuarios_permisos' } },
+  { path: 'configuracion/impresion', redirect: { name: 'admin.configuracion.operacion.impresion' } },
+  { path: 'configuracion/correo', redirect: { name: 'admin.configuracion.sistema.correo' } },
+  { path: 'configuracion/afip', redirect: { name: 'admin.configuracion.sistema.afip' } },
+  { path: 'configuracion/antifraud', redirect: { name: 'admin.configuracion.usuarios_seguridad.antifraud' } },
+  { path: 'configuracion/integraciones', redirect: { name: 'admin.configuracion.sistema.integraciones' } },
+  { path: 'configuracion/herramientas', redirect: { name: 'admin.configuracion.sistema.herramientas' } },
+  { path: 'configuracion/soporte-tecnico', redirect: { name: 'admin.configuracion.sistema.soporte' } },
 ]
 
 export default adminRoutes

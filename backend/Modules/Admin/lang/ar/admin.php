@@ -102,6 +102,27 @@ return [
         "profile_photo" => "يرجى تحميل صورة بصيغة JPG أو PNG بحجم أقصى 5 ميجابايت.",
     ],
 
+    "configuracion_landing" => [
+        "cards" => [
+            "restaurante" => [
+                "title" => "المطعم",
+                "subtitle" => "بيانات الفرع والشعار والتواصل",
+            ],
+            "operacion" => [
+                "title" => "العمليات",
+                "subtitle" => "طرق الدفع والطباعة وشاشة المطبخ",
+            ],
+            "users_and_security" => [
+                "title" => "المستخدمون والأمان",
+                "subtitle" => "المستخدمون والصلاحيات ومكافحة الاحتيال",
+            ],
+            "system" => [
+                "title" => "النظام",
+                "subtitle" => "البريد، AFIP، التكاملات، الأدوات",
+            ],
+        ],
+    ],
+
     'delete' => [
         'confirmation_message' => 'هل أنت متأكد أنك تريد الحذف؟',
         'confirm_button_text' => "حذف",

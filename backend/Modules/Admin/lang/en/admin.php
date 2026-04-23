@@ -100,6 +100,27 @@ return [
         "profile_photo" => "Please upload a JPG or PNG image (max 5MB).",
     ],
 
+    "configuracion_landing" => [
+        "cards" => [
+            "restaurante" => [
+                "title" => "Restaurant",
+                "subtitle" => "Business details, logo, contact",
+            ],
+            "operacion" => [
+                "title" => "Operations",
+                "subtitle" => "Payment methods, printing, KDS",
+            ],
+            "users_and_security" => [
+                "title" => "Users and security",
+                "subtitle" => "Users, permissions, anti-fraud",
+            ],
+            "system" => [
+                "title" => "System",
+                "subtitle" => "Mail, AFIP, integrations, tools",
+            ],
+        ],
+    ],
+
     'delete' => [
         'confirmation_message' => 'Are you sure you want to delete?',
         'confirm_button_text' => "Delete",
