@@ -86,6 +86,8 @@ const icon = computed(() => meta.value.icon ?? null)
 // ya dicen dónde está el user — repetirlo en un h1 + breadcrumb arriba
 // es ruido visual. Si alguna pantalla necesita título dinámico (ej.
 // Reports con nombre del reporte), se setea `meta.pageHeader = true`.
+// (El resto de Batch A — teleport de CTAs al row de tabs — fue revertido
+// porque rompía la navegación del router-view. Ver commit del revert.)
 const hiddenBreadcrumb = computed(() => meta.value.breadcrumb !== true)
 const hiddenPageHeader = computed(() => meta.value.pageHeader !== true)
 
