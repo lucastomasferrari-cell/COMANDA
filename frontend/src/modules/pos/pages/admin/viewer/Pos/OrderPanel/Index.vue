@@ -310,7 +310,10 @@
       {{ t('pos::pos_viewer.no_active_order.description') }}
     </p>
   </div>
-  <div v-else class="order-panel-stack d-flex flex-column" style="gap: 0.5rem;">
+  <!-- order-panel-stack con height:100% para que los children flex calculen
+       espacio real. El items-container (flex-grow + overflow-y:auto) se come
+       el espacio disponible y el footer queda sticky al pie. -->
+  <div v-else class="order-panel-stack d-flex flex-column" style="gap: 0.5rem; height: 100%;">
     <!-- Header: info de orden (mozo/cliente) + canal.
          Las acciones globales (visor mesas, cash movement, comandas) viven
          ahora en TopActionsBar a nivel del viewer, no dentro del OrderPanel. -->
@@ -324,8 +327,10 @@
     <TableInfo v-if="form.table != null" :cart="cart" :form="form" :meta="meta" />
     <AdditionalInformation :cart="cart" :form="form" />
 
-    <!-- Items del carrito — flex-grow para que ocupe el espacio disponible -->
-    <div class="flex-grow-1" style="overflow-y: auto; min-height: 100px;">
+    <!-- Items del carrito — único scroll vertical del panel. flex-grow + min-height:0
+         para que shrink sin colapsar, y overflow-y:auto para el scroll cuando la
+         comanda crece. -->
+    <div class="order-items-scroll flex-grow-1" style="overflow-y: auto; min-height: 0;">
       <CartItems :cart="cart" :form="form" />
     </div>
 

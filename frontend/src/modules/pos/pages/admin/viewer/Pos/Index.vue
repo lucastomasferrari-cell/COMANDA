@@ -352,9 +352,16 @@
   flex-direction: column;
   overflow: hidden;
 }
+/* El v-card-text NO scrollea: es solo el contenedor flex para que el
+   OrderPanel/ActiveOrdersPanel adentro controlen su propio scroll interno
+   (items-container) con el footer sticky. Si ponemos overflow-y:auto acá,
+   los botones Marchar/Cobrar se scrollean fuera del viewport cuando la
+   orden tiene muchos items. */
 .pos-col-card > :deep(.v-card-text) {
   flex: 1;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   min-height: 0;
+  overflow: hidden;
 }
 </style>
