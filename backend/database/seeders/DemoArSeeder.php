@@ -42,11 +42,21 @@ class DemoArSeeder extends Seeder
             ->where('username', 'admin')
             ->firstOrFail()
             ->id;
-        $this->menuId = Menu::withOutGlobalBranchPermission()
+
+        $menu = Menu::withOutGlobalBranchPermission()
             ->where('branch_id', $this->branchId)
             ->where('is_active', true)
-            ->firstOrFail()
-            ->id;
+            ->firstOrFail();
+        $this->menuId = $menu->id;
+
+        // Normalizar nombre del menú activo. En algunos ambientes quedó
+        // con typo de mayúsculas ("Menu pRUEBA") — editado desde la UI
+        // con el caps trabado o algo. Lo corregimos acá idempotente.
+        if ($menu->getTranslation('name', 'es_AR', false) !== 'Menú Prueba') {
+            $menu->setTranslation('name', 'es_AR', 'Menú Prueba');
+            $menu->setTranslation('name', 'en', 'Test Menu');
+            $menu->save();
+        }
 
         $this->command->info('→ Usuarios cajero + mozo');
         $this->seedUsers();
