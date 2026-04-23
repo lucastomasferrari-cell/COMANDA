@@ -138,12 +138,16 @@ const adminRoutes: RouteRecordRaw[] = [
         name: 'admin.salon.canales',
         component: () => import('@/modules/core/components/ComingSoonPlaceholder.vue'),
       },
-      {
-        path: 'notificaciones',
-        name: 'admin.salon.notificaciones',
-        component: () => import('@/modules/core/components/ComingSoonPlaceholder.vue'),
-      },
     ],
+  },
+
+  // Alias corto: /admin/kds → full-screen KDS viewer (admin.pos.kitchen_viewer).
+  // La ruta full-screen vive en modules/pos/routes/admin.routes.ts (/admin/pos/kitchen-viewer).
+  // El alias existe para que el jefe de cocina pueda pegar /admin/kds en el browser sin
+  // tener que recordar el path largo. No aparece en sidebar (el icono está en el topbar).
+  {
+    path: 'kds',
+    redirect: { name: 'admin.pos.kitchen_viewer' },
   },
 
   // Cocina hub — impresoras + KDS + reglas (placeholder).

@@ -44,40 +44,23 @@ export const adminSidebar: SidebarList = {
       permission: 'admin.tables.index',
       sort: 3,
     },
-    {
-      key: 'admin.cocina',
-      label: 'admin::sidebar.cocina',
-      to: { name: 'admin.cocina.impresoras' },
-      icon: 'tabler-chef-hat',
-      permission: [
-        'admin.printers.index',
-        'admin.pos.kitchen_viewer',
-      ],
-      sort: 4,
-    },
+    // Cocina: removido del sidebar. Impresoras/Reglas se migran a
+    // Configuración > Impresión (bloque 6). El KDS full-screen sigue
+    // accesible por /admin/kds (alias) y por el icono del topbar.
+    // Personal: removido del sidebar. Usuarios/Permisos se migran a
+    // Configuración > Usuarios y permisos (bloque 6).
     {
       key: 'admin.cobros',
       label: 'admin::sidebar.cobros',
-      to: { name: 'admin.cobros.impuestos' },
+      to: { name: 'admin.cobros.formas' },
       icon: 'tabler-cash',
       permission: [
+        'admin.payment_methods.index',
         'admin.taxes.index',
         'admin.reasons.index',
         'admin.pos_registers.index',
       ],
       sort: 5,
-    },
-    {
-      key: 'admin.personal',
-      label: 'admin::sidebar.personal',
-      to: { name: 'admin.personal.usuarios' },
-      icon: 'tabler-users-group',
-      permission: [
-        'admin.users.index',
-        'admin.roles.index',
-        'admin.pos_sessions.index',
-      ],
-      sort: 6,
     },
     {
       key: 'admin.marketing',

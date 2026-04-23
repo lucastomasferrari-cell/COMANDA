@@ -23,8 +23,11 @@
     modes: [],
   })
 
+  // auto_refresh_enabled hardcodeado a true: un KDS sin auto-refresh no
+  // tiene sentido operativo (el cocinero no va a estar apretando F5).
+  // El cajero no puede apagarlo por UI; el modo + intervalo sí son editables.
   const form = useForm<KitchenSettings>({
-    auto_refresh_enabled: false,
+    auto_refresh_enabled: true,
     auto_refresh_mode: null,
     auto_refresh_interval: null,
     auto_refresh_pause_on_idle: false,
@@ -34,15 +37,6 @@
   function submit () {
     form.submit(() => update('kitchen', form.state))
   }
-
-  watch(() => form.state.auto_refresh_enabled, newValue => {
-    if (!newValue) {
-      form.state.auto_refresh_mode = null
-      form.state.auto_refresh_interval = null
-      form.state.auto_refresh_pause_on_idle = false
-      form.state.auto_refresh_idle_timeout = null
-    }
-  })
 </script>
 
 <template>
@@ -52,14 +46,7 @@
       <VCol cols="12" md="8">
         <VRow>
           <VCol cols="12">
-            <VCheckbox
-              v-model="form.state.auto_refresh_enabled"
-              :label="t('setting::attributes.settings.auto_refresh_enabled')"
-            />
-          </VCol>
-          <VCol cols="12">
             <VSelect
-              v-if="form.state.auto_refresh_enabled"
               v-model="form.state.auto_refresh_mode"
               :error="!!form.errors.value?.auto_refresh_mode"
               :error-messages="form.errors.value?.auto_refresh_mode"
@@ -70,7 +57,7 @@
             />
           </VCol>
           <template
-            v-if="form.state.auto_refresh_enabled && form.state.auto_refresh_mode==='smart_polling'"
+            v-if="form.state.auto_refresh_mode==='smart_polling'"
           >
             <VCol cols="12">
               <VTextField
