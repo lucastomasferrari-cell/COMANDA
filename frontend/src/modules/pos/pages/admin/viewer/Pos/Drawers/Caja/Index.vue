@@ -60,7 +60,12 @@
         listMovements({ pos_session_id: props.sessionId, per_page: 50 }),
       ])
       session.value = sRes.data ?? null
-      movements.value = mRes.data.body?.items ?? mRes.data.body ?? []
+      // ApiResponse::pagination serializa como { body: { data: [...], pagination } }.
+      // Algunos endpoints legacy usaban { body: { items } } o { body: [...] }
+      // — tolerar los tres, garantizar siempre array.
+      const body = mRes.data?.body
+      const items = body?.data ?? body?.items ?? (Array.isArray(body) ? body : [])
+      movements.value = Array.isArray(items) ? items : []
     } catch {
       toast.error(t('core::errors.an_unexpected_error_occurred'))
     } finally {
@@ -71,13 +76,14 @@
   watch(() => props.modelValue, val => { if (val) refresh() })
 
   // Totales por dirección. El backend envía amount como objeto Money.
+  const movementList = computed(() => Array.isArray(movements.value) ? movements.value : [])
   const totalIn = computed(() =>
-    movements.value
+    movementList.value
       .filter(m => m.direction === 'in' || m.direction?.id === 'in')
       .reduce((sum, m) => sum + Number(m.amount?.amount ?? m.amount ?? 0), 0),
   )
   const totalOut = computed(() =>
-    movements.value
+    movementList.value
       .filter(m => m.direction === 'out' || m.direction?.id === 'out')
       .reduce((sum, m) => sum + Number(m.amount?.amount ?? m.amount ?? 0), 0),
   )
@@ -323,16 +329,16 @@
           <div class="d-flex justify-space-between align-center mb-2">
             <div class="text-subtitle-2">
               {{ t('pos::pos_viewer.caja.movements_title') }}
-              <span v-if="movements.length" class="text-caption text-medium-emphasis ms-1">
-                ({{ movements.length }})
+              <span v-if="movementList.length" class="text-caption text-medium-emphasis ms-1">
+                ({{ movementList.length }})
               </span>
             </div>
           </div>
-          <div v-if="movements.length === 0" class="text-center py-4 text-medium-emphasis text-caption">
+          <div v-if="movementList.length === 0" class="text-center py-4 text-medium-emphasis text-caption">
             {{ t('pos::pos_viewer.caja.no_movements') }}
           </div>
           <VCard
-            v-for="m in movements"
+            v-for="m in movementList"
             :key="m.id"
             class="mb-1 pa-2"
             variant="outlined"
