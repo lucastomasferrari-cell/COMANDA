@@ -16,7 +16,7 @@
   const form = useForm({
     name: props.item?.name || {},
     type: props.item?.type?.id,
-    is_active: props.item?.is_active || false,
+    is_active: props.item?.is_active ?? true,
   })
 
   const meta = ref({ types: [] })

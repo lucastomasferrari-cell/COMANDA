@@ -21,7 +21,7 @@
     redemption_rate: props.item?.redemption_rate?.amount || 0.001,
     min_redeem_points: props.item?.min_redeem_points || 1,
     points_expire_after: props.item?.points_expire_after,
-    is_active: props.item?.is_active || false,
+    is_active: props.item?.is_active ?? true,
   })
 
   const submit = async () => {

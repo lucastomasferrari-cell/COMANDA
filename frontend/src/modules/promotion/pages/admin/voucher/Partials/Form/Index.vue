@@ -39,7 +39,7 @@
       products: props.item?.conditions?.products,
       order_types: props.item?.conditions?.order_types,
     },
-    is_active: props.item?.is_active || false,
+    is_active: props.item?.is_active ?? true,
   })
 
   const meta = ref({

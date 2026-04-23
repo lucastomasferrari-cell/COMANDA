@@ -38,7 +38,7 @@ const form = useForm({
   files: {
     logo: props.item?.logo?.id || null,
   },
-  is_active: props.item?.is_active || false,
+  is_active: props.item?.is_active ?? true,
   color: props.item?.color || null,
 })
 

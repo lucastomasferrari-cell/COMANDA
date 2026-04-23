@@ -23,7 +23,7 @@
     rate: props.item?.rate,
     compound: props.item?.compound || false,
     is_global: props.item?.is_global || false,
-    is_active: props.item?.is_active || false,
+    is_active: props.item?.is_active ?? true,
     order_types: props.item?.order_types || [],
   })
 

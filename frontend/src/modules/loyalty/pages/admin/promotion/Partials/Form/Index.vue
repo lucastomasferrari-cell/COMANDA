@@ -34,7 +34,7 @@
       valid_days: props.item?.conditions?.valid_days,
     },
     meta: {},
-    is_active: props.item?.is_active || false,
+    is_active: props.item?.is_active ?? true,
   })
 
   const submit = async () => {

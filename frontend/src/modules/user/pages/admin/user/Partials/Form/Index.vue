@@ -41,7 +41,7 @@
     email: props.item?.email,
     gender: props.item?.gender.id,
     role: props.item?.role?.id,
-    is_active: props.item?.is_active || false,
+    is_active: props.item?.is_active ?? true,
     password: null,
     password_confirmation: null,
     printer_id: props.item?.printer?.id,

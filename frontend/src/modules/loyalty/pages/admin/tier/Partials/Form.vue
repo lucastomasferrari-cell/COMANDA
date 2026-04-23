@@ -24,7 +24,7 @@ const form = useForm({
   min_spend: props.item?.min_spend?.amount,
   multiplier: props.item?.multiplier || 1,
   order: props.item?.order,
-  is_active: props.item?.is_active || false,
+  is_active: props.item?.is_active ?? true,
   files: {
     icon: props.item?.icon?.id || null,
   },

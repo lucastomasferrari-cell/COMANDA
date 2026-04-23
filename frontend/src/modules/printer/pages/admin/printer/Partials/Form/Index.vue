@@ -24,7 +24,7 @@
       paper_size: '80mm',
       ...props.item?.options,
     },
-    is_active: props.item?.is_active || false,
+    is_active: props.item?.is_active ?? true,
   })
 
   const meta = ref({

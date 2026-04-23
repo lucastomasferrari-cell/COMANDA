@@ -19,7 +19,8 @@ return [
         "cards" => [
             "table_information" => "معلومات الطاولة",
             "location" => "الموقع"
-        ]
+        ],
+        "advanced_options" => "خيارات متقدمة",
     ],
 
     "filters" => [

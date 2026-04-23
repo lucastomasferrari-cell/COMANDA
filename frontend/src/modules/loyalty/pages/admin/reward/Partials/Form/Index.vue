@@ -50,7 +50,7 @@
     files: {
       icon: props.item?.icon?.id || null,
     },
-    is_active: props.item?.is_active || false,
+    is_active: props.item?.is_active ?? true,
   })
 
   const submit = async () => {

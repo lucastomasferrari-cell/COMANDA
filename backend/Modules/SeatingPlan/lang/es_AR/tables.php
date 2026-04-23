@@ -19,7 +19,8 @@ return [
         "cards" => [
             "table_information" => "Información de la mesa",
             "location" => "Ubicación"
-        ]
+        ],
+        "advanced_options" => "Opciones avanzadas",
     ],
 
     "filters" => [

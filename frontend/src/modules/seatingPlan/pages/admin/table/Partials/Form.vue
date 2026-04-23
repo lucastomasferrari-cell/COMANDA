@@ -15,17 +15,22 @@
   const { getFormMeta, update, store } = useTable()
   const router = useRouter()
 
+  // Post-Fix 8 bloque 1: form simplificado. Capacity y floor_id se ocultan
+  // de la UI (siempre requeridos por SaveTableRequest — se auto-llenan con
+  // defaults / primer floor disponible). Shape queda en Opciones avanzadas
+  // colapsable con default 'circle'. Lo único visible en uso común:
+  // Nombre + Zona + toggle Activo (edit).
   const form = useForm({
     name: props.item?.name || {},
     branch_id: user?.assigned_to_branch ? user.branch_id : props.item?.branch?.id,
-    floor_id: props.item?.floor.id,
-    zone_id: props.item?.zone.id,
-    shape: props.item?.shape?.id,
-    capacity: props.item?.capacity,
-    is_active: props.item?.is_active || false,
+    floor_id: props.item?.floor?.id ?? null,
+    zone_id: props.item?.zone?.id ?? null,
+    shape: props.item?.shape?.id ?? 'circle',
+    capacity: props.item?.capacity ?? 4,
+    is_active: props.item?.is_active ?? true,
   })
 
-  const meta = ref({ branches: [], shapes: [], floors: [], zones: [] })
+  const meta = ref({ branches: [], shapes: [], floors: [] as Record<string, any>[], zones: [] })
 
   const submit = async () => {
     if (
@@ -52,6 +57,11 @@
         meta.value.zones = response.zones
       } else if (branchId) {
         meta.value.floors = response.floors
+        // Single-floor setup (mayoría de restaurantes AR): auto-asignar
+        // al primero para que el form no pida input que el user no sabe.
+        if (!form.state.floor_id && meta.value.floors.length > 0) {
+          form.state.floor_id = meta.value.floors[0]?.id
+        }
       }
     } catch {
     /* Empty */
@@ -69,7 +79,9 @@
   watch(() => form.state.floor_id, newValue => {
     form.state.zone_id = null
     meta.value.zones = []
-    loadFormData(form.state.branch_id, newValue)
+    if (newValue) {
+      loadFormData(form.state.branch_id, newValue)
+    }
   })
 </script>
 
@@ -98,69 +110,7 @@
                   v-model="form.state.name[currentLanguage.id]"
                   :error="!!form.errors.value?.[`name.${currentLanguage.id}`]"
                   :error-messages="form.errors.value?.[`name.${currentLanguage.id}`]"
-                  :label="t('seatingplan::attributes.tables.name') + ` ( ${currentLanguage.name} )`"
-                />
-              </VCol>
-              <VCol cols="12" md="6">
-                <VSelect
-                  v-model="form.state.shape"
-                  :error="!!form.errors.value?.shape"
-                  :error-messages="form.errors.value?.shape"
-                  item-title="name"
-                  item-value="id"
-                  :items="meta.shapes"
-                  :label="t('seatingplan::attributes.tables.shape')"
-                />
-              </VCol>
-              <VCol cols="12" md="6">
-                <VTextField
-                  v-model="form.state.capacity"
-                  :error="!!form.errors.value?.capacity"
-                  :error-messages="form.errors.value?.capacity"
-                  :label="t('seatingplan::attributes.tables.capacity')"
-                />
-              </VCol>
-              <VCol cols="12">
-                <VCheckbox
-                  v-if="action !== 'create'"
-                  v-model="form.state.is_active"
-                  :label="t('seatingplan::attributes.tables.is_active')"
-                />
-              </VCol>
-            </VRow>
-          </VCardText>
-        </VCard>
-      </VCol>
-      <VCol cols="12" md="4">
-        <VCard>
-          <VCardTitle class="d-flex justify-space-between align-center mb-2">
-            <div class="d-flex align-center">
-              <VIcon class="me-2" icon="tabler-building" size="20" />
-              <span>{{ t('seatingplan::tables.form.cards.location') }}</span>
-            </div>
-          </VCardTitle>
-          <VCardText>
-            <VRow>
-              <VCol v-if="false" cols="12" md="12">
-                <VSelect
-                  v-model="form.state.branch_id"
-                  :error="!!form.errors.value?.branch_id"
-                  :error-messages="form.errors.value?.branch_id"
-                  item-title="name"
-                  item-value="id"
-                  :items="meta.branches"
-                  :label="t('seatingplan::attributes.tables.branch_id')"
-                />
-              </VCol>
-              <VCol cols="12" md="6">
-                <VSelect
-                  v-model="form.state.floor_id"
-                  :error="!!form.errors.value?.floor_id"
-                  :error-messages="form.errors.value?.floor_id"
-                  item-title="name"
-                  item-value="id"
-                  :items="meta.floors"
-                  :label="t('seatingplan::attributes.tables.floor_id')"
+                  :label="t('seatingplan::attributes.tables.name')"
                 />
               </VCol>
               <VCol cols="12" md="6">
@@ -174,7 +124,41 @@
                   :label="t('seatingplan::attributes.tables.zone_id')"
                 />
               </VCol>
+              <VCol cols="12">
+                <VCheckbox
+                  v-if="action !== 'create'"
+                  v-model="form.state.is_active"
+                  :label="t('seatingplan::attributes.tables.is_active')"
+                />
+              </VCol>
             </VRow>
+
+            <!-- Opciones avanzadas: Shape colapsable. Capacity queda
+                 oculto con default 4 (valor típico restaurante AR),
+                 Floor también hidden con auto-asignación. -->
+            <VExpansionPanels class="mt-3" flat variant="accordion">
+              <VExpansionPanel>
+                <VExpansionPanelTitle>
+                  <VIcon class="me-2" icon="tabler-adjustments" size="18" />
+                  {{ t('seatingplan::tables.form.advanced_options') }}
+                </VExpansionPanelTitle>
+                <VExpansionPanelText>
+                  <VRow>
+                    <VCol cols="12" md="6">
+                      <VSelect
+                        v-model="form.state.shape"
+                        :error="!!form.errors.value?.shape"
+                        :error-messages="form.errors.value?.shape"
+                        item-title="name"
+                        item-value="id"
+                        :items="meta.shapes"
+                        :label="t('seatingplan::attributes.tables.shape')"
+                      />
+                    </VCol>
+                  </VRow>
+                </VExpansionPanelText>
+              </VExpansionPanel>
+            </VExpansionPanels>
           </VCardText>
         </VCard>
       </VCol>

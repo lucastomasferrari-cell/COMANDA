@@ -38,7 +38,7 @@
     note: props.item?.note || null,
     registration_number: props.item?.registration_number || null,
     vat_tin: props.item?.vat_tin || null,
-    is_active: props.item?.is_active || false,
+    is_active: props.item?.is_active ?? true,
     password: null,
     password_confirmation: null,
     profile_photo: null as File | null,

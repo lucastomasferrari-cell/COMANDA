@@ -19,7 +19,8 @@ return [
         "cards" => [
             "table_information" => "Table information",
             "location" => "Location"
-        ]
+        ],
+        "advanced_options" => "Advanced options",
     ],
 
     "filters" => [

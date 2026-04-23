@@ -33,7 +33,7 @@
     name: props.item?.name || {},
     description: !props.item?.description || Array.isArray(props.item?.description) ? {} : props.item?.description,
     categories: props.item?.categories || [],
-    is_active: props.item?.is_active || false,
+    is_active: props.item?.is_active ?? true,
     menu_id: menuId,
     sku: props.item?.sku,
     sku_locked: props.item?.sku_locked || false,

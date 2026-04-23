@@ -29,7 +29,7 @@
     registration_number: props.item?.registration_number,
     phone: props.item?.phone,
     email: props.item?.email,
-    is_active: props.item?.is_active || false,
+    is_active: props.item?.is_active ?? true,
     country_code: props.item?.country_code,
     // currency y timezone prefill desde settings globales al crear (single-branch).
     timezone: props.item?.timezone ?? appStore.settings?.timezone,

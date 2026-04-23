@@ -18,7 +18,7 @@
   const form = useForm({
     name: props.item?.name || {},
     branch_id: user?.assigned_to_branch ? user.branch_id : props.item?.branch?.id,
-    is_active: props.item?.is_active || false,
+    is_active: props.item?.is_active ?? true,
   })
 
   const meta = ref({ branches: [] })
