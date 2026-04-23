@@ -331,11 +331,55 @@ const adminRoutes: RouteRecordRaw[] = [
         component: () => import('@/modules/payment/pages/admin/paymentMethod/Index.vue'),
         meta: { permission: 'admin.payment_methods.index' },
       },
+      // Create/Edit anidados bajo formas-de-cobro: cuando estás en estas rutas,
+      // OperacionSubHub sigue montado con PageTabs visibles (la tab "Formas"
+      // queda active porque el path starts con formas-de-cobro). Al submit/cancel
+      // el form vuelve al Index siblings-mismo-sub-hub sin perder contexto.
+      {
+        path: 'formas-de-cobro/create',
+        name: 'admin.configuracion.operacion.formas.create',
+        component: () => import('@/modules/payment/pages/admin/paymentMethod/Create.vue'),
+        meta: {
+          title: 'admin::resource.create',
+          transParam: { resource: 'payment::payment_methods.payment_method' },
+          permission: 'admin.payment_methods.create',
+        },
+      },
+      {
+        path: 'formas-de-cobro/:id/edit',
+        name: 'admin.configuracion.operacion.formas.edit',
+        component: () => import('@/modules/payment/pages/admin/paymentMethod/Edit.vue'),
+        meta: {
+          title: 'admin::resource.edit',
+          transParam: { resource: 'payment::payment_methods.payment_method' },
+          permission: 'admin.payment_methods.edit',
+        },
+      },
       {
         path: 'impresion',
         name: 'admin.configuracion.operacion.impresion',
         component: () => import('@/modules/admin/pages/admin/hubs/partials/ImpresionConsolidated.vue'),
         meta: { permission: 'admin.printers.index' },
+      },
+      {
+        path: 'impresion/create',
+        name: 'admin.configuracion.operacion.impresion.create',
+        component: () => import('@/modules/printer/pages/admin/printer/Create.vue'),
+        meta: {
+          title: 'admin::resource.create',
+          transParam: { resource: 'printer::printers.printer' },
+          permission: 'admin.printers.create',
+        },
+      },
+      {
+        path: 'impresion/:id/edit',
+        name: 'admin.configuracion.operacion.impresion.edit',
+        component: () => import('@/modules/printer/pages/admin/printer/Edit.vue'),
+        meta: {
+          title: 'admin::resource.edit',
+          transParam: { resource: 'printer::printers.printer' },
+          permission: 'admin.printers.edit',
+        },
       },
       {
         path: 'kds',
@@ -357,6 +401,49 @@ const adminRoutes: RouteRecordRaw[] = [
         name: 'admin.configuracion.usuarios_seguridad.usuarios_permisos',
         component: () => import('@/modules/admin/pages/admin/hubs/partials/UsuariosPermisosConsolidated.vue'),
         meta: { permission: 'admin.users.index' },
+      },
+      // Create/Edit anidados separados por entidad (users / roles) porque
+      // UsuariosPermisosConsolidated stackea ambos Index y cada uno tiene su
+      // own CRUD. Sufijo en el path lo discrimina.
+      {
+        path: 'usuarios-y-permisos/users/create',
+        name: 'admin.configuracion.usuarios_seguridad.users.create',
+        component: () => import('@/modules/user/pages/admin/user/Create.vue'),
+        meta: {
+          title: 'admin::resource.create',
+          transParam: { resource: 'user::users.user' },
+          permission: 'admin.users.create',
+        },
+      },
+      {
+        path: 'usuarios-y-permisos/users/:id/edit',
+        name: 'admin.configuracion.usuarios_seguridad.users.edit',
+        component: () => import('@/modules/user/pages/admin/user/Edit.vue'),
+        meta: {
+          title: 'admin::resource.edit',
+          transParam: { resource: 'user::users.user' },
+          permission: 'admin.users.edit',
+        },
+      },
+      {
+        path: 'usuarios-y-permisos/roles/create',
+        name: 'admin.configuracion.usuarios_seguridad.roles.create',
+        component: () => import('@/modules/user/pages/admin/role/Create.vue'),
+        meta: {
+          title: 'admin::resource.create',
+          transParam: { resource: 'user::roles.role' },
+          permission: 'admin.roles.create',
+        },
+      },
+      {
+        path: 'usuarios-y-permisos/roles/:id/edit',
+        name: 'admin.configuracion.usuarios_seguridad.roles.edit',
+        component: () => import('@/modules/user/pages/admin/role/Edit.vue'),
+        meta: {
+          title: 'admin::resource.edit',
+          transParam: { resource: 'user::roles.role' },
+          permission: 'admin.roles.edit',
+        },
       },
       {
         path: 'antifraud',

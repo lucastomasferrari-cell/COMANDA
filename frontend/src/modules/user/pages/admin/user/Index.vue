@@ -2,11 +2,13 @@
 
 import type {TableAction, TableHeader} from '@/modules/core/contracts/Table.ts'
 import {useI18n} from 'vue-i18n'
+import {useRouter} from 'vue-router'
 import {useAuth} from '@/modules/auth/composables/auth.ts'
 import TableName from './Partials/TableName.vue'
 
 const {t} = useI18n()
 const {user} = useAuth()
+const router = useRouter()
 
 const headers: TableHeader[] = [
   {title: t('user::users.table.name'), value: 'name', sortable: true},
@@ -23,14 +25,29 @@ const headers: TableHeader[] = [
   {title: t('admin::admin.table.updated_at'), value: 'updated_at', sortable: true},
 ]
 
+// Override edit + create para navegar a la URL anidada del sub-hub Usuarios y seguridad.
 const actions: TableAction[] = [
-  {key: 'edit'},
+  {
+    key: 'edit',
+    onClick: item => {
+      router.push({ name: 'admin.configuracion.usuarios_seguridad.users.edit', params: { id: item.id } })
+    },
+  },
   {
     key: 'destroy',
     hidden: item => item.is_main_user,
     confirm: {
       message: t('admin::admin.delete.confirmation_message'),
       confirmButtonText: t('admin::admin.delete.confirm_button_text'),
+    },
+  },
+]
+
+const headerActions: TableAction[] = [
+  {
+    key: 'create',
+    onClick: () => {
+      router.push({ name: 'admin.configuracion.usuarios_seguridad.users.create' })
     },
   },
 ]
@@ -59,7 +76,7 @@ const bulkActions: TableAction[] = [
       :actions="actions"
       :bulk-actions="bulkActions"
       :cell-components="cellComponents"
-      :header-actions="[{ key: 'create' }]"
+      :header-actions="headerActions"
       :headers="headers"
       api-uri="/v1/users"
       module="user"

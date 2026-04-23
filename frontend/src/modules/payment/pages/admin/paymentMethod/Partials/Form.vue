@@ -44,12 +44,12 @@
       !form.loading.value
       && await form.submit(() => props.action == 'create' ? store(form.state) : update(props.item?.id, form.state))
     ) {
-      await router.push({ name: 'admin.cobros.formas' } as unknown as RouteLocationRaw)
+      await router.push({ name: 'admin.configuracion.operacion.formas' } as unknown as RouteLocationRaw)
     }
   }
 
   const goBack = async () => {
-    await router.push({ name: 'admin.cobros.formas' } as unknown as RouteLocationRaw)
+    await router.push({ name: 'admin.configuracion.operacion.formas' } as unknown as RouteLocationRaw)
   }
 
   onBeforeMount(async () => {

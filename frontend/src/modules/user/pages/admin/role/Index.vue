@@ -2,10 +2,12 @@
 
   import type { TableAction, TableHeader } from '@/modules/core/contracts/Table.ts'
   import { useI18n } from 'vue-i18n'
+  import { useRouter } from 'vue-router'
 
   import TableRoleType from './Partials/TableRoleType.vue'
 
   const { t } = useI18n()
+  const router = useRouter()
 
   const headers: TableHeader[] = [
     { title: t('user::roles.table.name'), value: 'name', sortable: true },
@@ -14,14 +16,29 @@
     { title: t('admin::admin.table.updated_at'), value: 'updated_at', sortable: true },
   ]
 
+  // Override edit + create para navegar a la URL anidada del sub-hub Usuarios y seguridad.
   const actions: TableAction[] = [
-    { key: 'edit' },
+    {
+      key: 'edit',
+      onClick: item => {
+        router.push({ name: 'admin.configuracion.usuarios_seguridad.roles.edit', params: { id: item.id } })
+      },
+    },
     {
       key: 'destroy',
       hidden: item => item.built_in,
       confirm: {
         message: t('admin::admin.delete.confirmation_message'),
         confirmButtonText: t('admin::admin.delete.confirm_button_text'),
+      },
+    },
+  ]
+
+  const headerActions: TableAction[] = [
+    {
+      key: 'create',
+      onClick: () => {
+        router.push({ name: 'admin.configuracion.usuarios_seguridad.roles.create' })
       },
     },
   ]
@@ -50,7 +67,7 @@
     api-uri="/v1/roles"
     :bulk-actions="bulkActions"
     :cell-components="cellComponents"
-    :header-actions="[{ key: 'create' }]"
+    :header-actions="headerActions"
     :headers="headers"
     module="user"
     name="role"

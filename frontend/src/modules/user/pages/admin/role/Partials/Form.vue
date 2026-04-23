@@ -25,7 +25,7 @@
       !form.loading.value
       && await form.submit(() => props.action == 'create' ? store(form.state) : update(props.item?.id, form.state))
     ) {
-      await router.push({ name: 'admin.roles.index' } as unknown as RouteLocationRaw)
+      await router.push({ name: 'admin.configuracion.usuarios_seguridad.usuarios_permisos' } as unknown as RouteLocationRaw)
     }
   }
 
