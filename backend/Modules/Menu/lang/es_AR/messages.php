@@ -1,5 +1,4 @@
 <?php
 return [
-    'category_order_updated' => 'Se actualizó el orden de las categorías',
     'sku_locked' => 'El SKU está bloqueado por sincronización con una integración externa y no puede modificarse.',
 ];

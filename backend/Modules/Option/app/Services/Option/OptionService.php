@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Modules\Branch\Models\Branch;
 use Modules\Option\Enums\OptionType;
 use Modules\Option\Models\Option;
+use Modules\Product\Services\SkuAllocator;
 use Modules\Support\Enums\PriceType;
 use Modules\Support\GlobalStructureFilters;
 
@@ -79,6 +80,7 @@ class OptionService implements OptionServiceInterface
     public function update(int $id, array $data): Option
     {
         $option = $this->findOrFail($id);
+        SkuAllocator::assertNotLocked($option, $data, 'option::messages.sku_locked');
 
         $option->update(Arr::except($data, ['values']));
 

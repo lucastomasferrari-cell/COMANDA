@@ -52,14 +52,16 @@ class SaveProductRequest extends Request
                 'description' => "nullable|string|max:1000",
             ]),
             ...$this->getMenuRule(),
+            // SKU: nullable (se auto-genera en Product::creating si viene
+            // vacío) + unique GLOBAL (antes era compuesto con menu_id;
+            // cambio en migration 2026_04_23_001005). Integraciones
+            // delivery esperan SKU único por restaurante.
             "sku" => [
                 'bail',
                 'nullable',
                 'string',
                 'max:255',
-                Rule::unique('products', 'sku')
-                    ->where('menu_id', $this->menu_id)
-                    ->ignore($this->route('id')),
+                Rule::unique('products', 'sku')->ignore($this->route('id')),
             ],
             "taxes" => "nullable|array",
             "taxes.*" => "bail|required|exists:taxes,id,deleted_at,NULL,is_global,0",

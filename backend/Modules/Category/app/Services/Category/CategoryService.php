@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Modules\Category\Models\Category;
+use Modules\Product\Services\SkuAllocator;
 
 class CategoryService implements CategoryServiceInterface
 {
@@ -74,6 +75,8 @@ class CategoryService implements CategoryServiceInterface
     public function update(int $id, array $data): Category
     {
         $category = $this->findOrFail($id);
+        SkuAllocator::assertNotLocked($category, $data, 'category::messages.sku_locked');
+
         $category->update($data);
 
         return $category;

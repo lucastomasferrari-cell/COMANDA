@@ -21,6 +21,7 @@ use Modules\Menu\Models\Menu;
 use Modules\Menu\Traits\HasMenu;
 use Modules\Option\Models\Option;
 use Modules\Product\Database\Factories\ProductFactory;
+use Modules\Product\Services\SkuAllocator;
 use Modules\Product\Traits\HasSpecialPrice;
 use Modules\Product\Traits\IsNew;
 use Modules\Support\Eloquent\Model;
@@ -88,9 +89,24 @@ class Product extends Model
         'new_from',
         'new_to',
         'sku',
+        'sku_locked',
         self::ACTIVE_COLUMN_NAME,
         self::MENU_COLUMN_NAME
     ];
+
+    /**
+     * Auto-asigna SKU secuencial si el caller no lo proveyó. Los que
+     * llegan con SKU explícito del user (endpoint /v1/products) pasan
+     * la validación uniqueness ANTES de llegar acá vía FormRequest.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (Product $product) {
+            if (empty($product->sku)) {
+                $product->sku = SkuAllocator::next('products');
+            }
+        });
+    }
 
     /**
      * The relations to eager load on every query.
@@ -290,6 +306,7 @@ class Product extends Model
             'new_to' => "datetime",
             'special_price_start' => "datetime",
             'special_price_end' => "datetime",
+            'sku_locked' => "boolean",
             self::ACTIVE_COLUMN_NAME => "boolean",
         ];
     }

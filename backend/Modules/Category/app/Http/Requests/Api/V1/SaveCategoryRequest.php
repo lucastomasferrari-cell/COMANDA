@@ -19,6 +19,13 @@ class SaveCategoryRequest extends Request
         return [
             ...$this->getTranslationRules(['name' => "required|string|max:255"]),
             ...$this->getMenuRule(),
+            "sku" => [
+                'bail',
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('categories', 'sku')->ignore($this->route('id')),
+            ],
             "slug" => [
                 'bail',
                 'required',

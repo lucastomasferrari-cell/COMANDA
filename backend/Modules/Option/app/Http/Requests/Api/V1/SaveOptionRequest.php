@@ -20,6 +20,13 @@ class SaveOptionRequest extends Request
                 'values.*.label' => 'required_if:type,select,checkbox,radio,multiple_select|nullable',
             ]),
             ...$this->getBranchRule(),
+            "sku" => [
+                'bail',
+                'nullable',
+                'string',
+                'max:255',
+                Rule::unique('options', 'sku')->ignore($this->route('id')),
+            ],
             'type' => ['required', Rule::enum(OptionType::class)],
             'is_required' => 'required|boolean',
             'values.*.id' => 'nullable|numeric',

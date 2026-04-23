@@ -16,6 +16,7 @@ use Modules\Media\Models\Media;
 use Modules\Media\Traits\HasMedia;
 use Modules\Menu\Traits\HasMenu;
 use Modules\Product\Models\Product;
+use Modules\Product\Services\SkuAllocator;
 use Modules\Support\Eloquent\Model;
 use Modules\Support\Traits\HasActiveStatus;
 use Modules\Support\Traits\HasCreatedBy;
@@ -60,9 +61,24 @@ class Category extends Model
         'parent_id',
         'slug',
         'color',
+        'sku',
+        'sku_locked',
         self::MENU_COLUMN_NAME,
         self::ACTIVE_COLUMN_NAME,
     ];
+
+    /**
+     * Auto-asigna SKU secuencial si no se proveyó. Ver Product::booted()
+     * para detalle — mismo patrón aplicado a las 4 entidades con SKU.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (Category $category) {
+            if (empty($category->sku)) {
+                $category->sku = SkuAllocator::next('categories');
+            }
+        });
+    }
 
     /**
      * The attributes that are translatable.
@@ -359,6 +375,7 @@ class Category extends Model
     protected function casts(): array
     {
         return [
+            'sku_locked' => "boolean",
             self::ACTIVE_COLUMN_NAME => "boolean",
         ];
     }

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Cache;
 use Modules\ActivityLog\Traits\HasActivityLog;
 use Modules\Branch\Traits\HasBranch;
 use Modules\Menu\Database\Factories\MenuFactory;
+use Modules\Product\Services\SkuAllocator;
 use Modules\Support\Eloquent\Model;
 use Modules\Support\Traits\HasActiveStatus;
 use Modules\Support\Traits\HasCreatedBy;
@@ -48,6 +49,8 @@ class Menu extends Model
     protected $fillable = [
         'name',
         'description',
+        'sku',
+        'sku_locked',
         self::ACTIVE_COLUMN_NAME,
         self::BRANCH_COLUMN_NAME
     ];
@@ -117,6 +120,14 @@ class Menu extends Model
      */
     protected static function booted(): void
     {
+        // Auto-asigna SKU secuencial si el caller no lo proveyó. Ver
+        // Product::booted() para detalle del patrón.
+        static::creating(function (Menu $menu) {
+            if (empty($menu->sku)) {
+                $menu->sku = SkuAllocator::next('menus');
+            }
+        });
+
         static::saved(fn(Menu $menu) => $menu->syncActiveMenu());
     }
 
@@ -206,6 +217,7 @@ class Menu extends Model
     protected function casts(): array
     {
         return [
+            'sku_locked' => "boolean",
             self::ACTIVE_COLUMN_NAME => "boolean",
         ];
     }

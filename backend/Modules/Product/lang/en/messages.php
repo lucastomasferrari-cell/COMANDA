@@ -1,5 +1,4 @@
 <?php
 return [
-    'category_order_updated' => 'Category order updated',
     'sku_locked' => 'SKU is locked by external integration sync and cannot be modified.',
 ];

@@ -17,6 +17,8 @@ class CategoryResource extends JsonResource
     {
         return [
             "id" => $this->id,
+            "sku" => $this->sku,
+            "sku_locked" => (bool)$this->sku_locked,
             "name" => $this->name,
             "logo" => $this->logo != null ? new MediaSimpleResource($this->logo) : null,
             "is_active" => $this->is_active,

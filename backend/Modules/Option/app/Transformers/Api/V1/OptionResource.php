@@ -16,6 +16,8 @@ class OptionResource extends JsonResource
     {
         return [
             "id" => $this->id,
+            "sku" => $this->sku,
+            "sku_locked" => (bool)$this->sku_locked,
             "name" => $this->name,
             "branch" => [
                 "id" => $this->branch_id,

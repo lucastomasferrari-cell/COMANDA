@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Modules\Branch\Models\Branch;
 use Modules\Menu\Models\Menu;
+use Modules\Product\Services\SkuAllocator;
 use Modules\Support\GlobalStructureFilters;
 
 class MenuService implements MenuServiceInterface
@@ -55,6 +56,8 @@ class MenuService implements MenuServiceInterface
     public function update(int $id, array $data): Menu
     {
         $menu = $this->findOrFail($id);
+        SkuAllocator::assertNotLocked($menu, $data, 'menu::messages.sku_locked');
+
         $menu->update($data);
 
         return $menu;

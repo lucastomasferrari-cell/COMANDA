@@ -14,6 +14,7 @@ use Modules\Option\Enums\OptionType;
 use Modules\Option\Models\Option;
 use Modules\Product\Enums\IngredientOperation;
 use Modules\Product\Models\Product;
+use Modules\Product\Services\SkuAllocator;
 use Modules\Support\Enums\PriceType;
 use Modules\Support\GlobalStructureFilters;
 use Modules\Tax\Models\Tax;
@@ -99,6 +100,8 @@ class ProductService implements ProductServiceInterface
     public function update(int $id, array $data): Product
     {
         $product = $this->findOrFail($id);
+        SkuAllocator::assertNotLocked($product, $data, 'product::messages.sku_locked');
+
         $product->update(
             Arr::except(
                 $data,

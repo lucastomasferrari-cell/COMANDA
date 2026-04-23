@@ -18,6 +18,7 @@ class ProductResource extends JsonResource
         return [
             "id" => $this->id,
             "sku" => $this->sku,
+            "sku_locked" => (bool)$this->sku_locked,
             "name" => $this->name,
             "price" => $this->price,
             "selling_price" => $this->selling_price,

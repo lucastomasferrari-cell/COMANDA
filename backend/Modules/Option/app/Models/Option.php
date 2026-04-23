@@ -15,6 +15,7 @@ use Modules\Branch\Traits\HasBranch;
 use Modules\Option\Database\Factories\OptionFactory;
 use Modules\Option\Enums\OptionType;
 use Modules\Product\Services\ProductIngredient\ProductIngredientService;
+use Modules\Product\Services\SkuAllocator;
 use Modules\Product\Services\ProductIngredient\ProductIngredientServiceInterface;
 use Modules\Support\Eloquent\Model;
 use Modules\Support\Traits\HasCreatedBy;
@@ -60,9 +61,23 @@ class Option extends Model
         'type',
         'is_required',
         'is_global',
+        'sku',
+        'sku_locked',
         self::BRANCH_COLUMN_NAME,
         self::ORDER_COLUMN_NAME,
     ];
+
+    /**
+     * Auto-asigna SKU secuencial si no se proveyó. Ver Product::booted().
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (Option $option) {
+            if (empty($option->sku)) {
+                $option->sku = SkuAllocator::next('options');
+            }
+        });
+    }
 
     /**
      * The attributes that are translatable.
@@ -217,6 +232,7 @@ class Option extends Model
         return [
             'is_global' => 'boolean',
             'is_required' => 'boolean',
+            'sku_locked' => 'boolean',
             "type" => OptionType::class,
         ];
     }
