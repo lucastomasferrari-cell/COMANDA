@@ -113,6 +113,19 @@ class SaveSettingRequest extends Request
                 'pwa_background_color' => ['required_if:pwa_enabled,1', 'nullable', 'regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/'],
                 'pwa_theme_color' => ['required_if:pwa_enabled,1', 'nullable', 'regex:/^#(?:[0-9a-fA-F]{3}){1,2}$/'],
                 'pwa_description' => 'nullable|string|max:500',
+            ],
+            SettingSection::Antifraud => [
+                'antifraud.discount_cashier_max_percent' => 'required|numeric|min:0|max:100',
+                'antifraud.discount_manager_max_percent' => 'required|numeric|min:0|max:100',
+                'antifraud.open_item_max_per_shift' => 'required|integer|min:0|max:999',
+                'antifraud.open_item_max_amount_each' => 'required|numeric|min:0|max:9999999',
+                'antifraud.open_item_max_total_per_shift' => 'required|numeric|min:0|max:9999999',
+                'antifraud.session_close_justification_threshold' => 'required|numeric|min:0|max:9999999',
+                'antifraud.session_close_manager_required_percent' => 'required|numeric|min:0|max:100',
+                'antifraud.daily_report_enabled' => 'required|boolean',
+                'antifraud.owner_alert_email' => 'nullable|email',
+                'antifraud.daily_report_hour' => 'required|integer|min:0|max:23',
+                'antifraud.allow_pending_without_manager' => 'required|boolean',
             ]
         };
     }

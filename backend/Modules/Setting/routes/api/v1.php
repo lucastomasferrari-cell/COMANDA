@@ -14,4 +14,7 @@ Route::controller(SettingController::class)
                 Route::get('/', "index");
                 Route::put('/update', "update");
             });
+
+        Route::post('settings/antifraud/send-test-report', "sendAntifraudTestReport")
+            ->middleware(['can:admin.settings.edit']);
     });

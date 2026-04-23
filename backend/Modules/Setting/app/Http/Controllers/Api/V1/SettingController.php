@@ -3,6 +3,7 @@
 namespace Modules\Setting\Http\Controllers\Api\V1;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Artisan;
 use Modules\Core\Http\Controllers\Controller;
 use Modules\Setting\Enums\SettingSection;
 use Modules\Setting\Http\Requests\Api\V1\SaveSettingRequest;
@@ -82,5 +83,19 @@ class SettingController extends Controller
             'settings_version' => $this->service->getAppSettingsVersion(),
             'translations_version' => $this->translationService->getAppTranslationsVersion(),
         ]);
+    }
+
+    /**
+     * Disparo manual del reporte anti-fraude (para testear config
+     * email del dueño desde la UI). Usa los datos de hoy — el cron
+     * sigue enviando el de ayer como es lo normal.
+     */
+    public function sendAntifraudTestReport(): JsonResponse
+    {
+        Artisan::call('reports:daily-antifraud', ['--date' => now()->toDateString()]);
+        return ApiResponse::success(
+            body: ['output' => Artisan::output()],
+            message: __('setting::antifraud.test_sent'),
+        );
     }
 }

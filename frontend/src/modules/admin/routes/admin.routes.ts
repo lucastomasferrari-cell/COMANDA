@@ -274,6 +274,12 @@ const adminRoutes: RouteRecordRaw[] = [
         component: () => import('@/modules/core/components/ComingSoonPlaceholder.vue'),
       },
       {
+        path: 'antifraud',
+        name: 'admin.configuracion.antifraud',
+        component: () => import('@/modules/setting/pages/admin/setting/Antifraud.vue'),
+        meta: { permission: 'admin.settings.edit' },
+      },
+      {
         path: 'herramientas',
         name: 'admin.configuracion.herramientas',
         component: () => import('@/modules/tool/pages/admin/database/Index.vue'),

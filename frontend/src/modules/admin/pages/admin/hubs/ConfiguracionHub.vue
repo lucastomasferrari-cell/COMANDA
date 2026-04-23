@@ -10,6 +10,7 @@
     { label: t('admin::sidebar.appearance'), to: { name: 'admin.configuracion.apariencia' } },
     { label: t('admin::sidebar.afip'), to: { name: 'admin.configuracion.afip' } },
     { label: t('admin::sidebar.integrations'), to: { name: 'admin.configuracion.integraciones' } },
+    { label: t('admin::sidebar.antifraud'), to: { name: 'admin.configuracion.antifraud' } },
     { label: t('admin::sidebar.tools'), to: { name: 'admin.configuracion.herramientas' } },
   ])
 </script>

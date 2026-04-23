@@ -17,5 +17,6 @@ enum SettingSection: string
     case Appearance = "appearance";
     case Kitchen = "kitchen";
     case Pwa = "pwa";
+    case Antifraud = "antifraud";
 
 }
