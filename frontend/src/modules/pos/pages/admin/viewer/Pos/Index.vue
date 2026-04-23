@@ -15,6 +15,7 @@
   import OrdersDrawer from '@/modules/pos/pages/admin/viewer/Pos/Drawers/Orders/Index.vue'
   import OrderPrintDialog from './Dialogs/OrderPrint/Index.vue'
   import RefundCancelDialog from './Dialogs/RefundCancelDialog.vue'
+  import StartOrderDialog from './Dialogs/StartOrderDialog.vue'
   import ActiveOrdersPanel from './ActiveOrdersPanel/Index.vue'
   import CajaDrawer from './Drawers/Caja/Index.vue'
   import TableViewerDrawer from './Drawers/TableViewer/Index.vue'
@@ -44,8 +45,12 @@
   const showOrdersDrawer = ref(false)
   const showCajaDrawer = ref(false)
   const showTableViewerDrawer = ref(false)
+  const showStartOrderDialog = ref(false)
   const showPlanoGuestCountDialog = ref(false)
   const pendingPlanoTable = ref<PlanoTable | null>(null)
+  // Count emitido por TablePlano tras fetch. Lo usa el StartOrderDialog
+  // para disabiliar "Abrir mesa" con tooltip cuando no hay mesas cargadas.
+  const tablesCount = ref(0)
 
   // Responsive: lg+ mantiene las 3 columnas inline; md-and-down mueve el
   // ActiveOrdersPanel a un drawer lateral invocado con boton del TopBar.
@@ -84,10 +89,21 @@
     }
   }
 
-  // "+ Nueva" dispara una orden rapida directa. Si el cajero queria
-  // abrir mesa, usa el plano del centro (click en mesa libre) —
-  // eliminamos el dialog intermedio porque duplicaba la decision.
-  const onNewOrder = () => props.startNewOrder()
+  // "+ Nueva" abre el dialog bifurcador (Abrir mesa / Orden rapida).
+  // Importante: NO disparamos startNewOrder aqui — si lo hicieramos, el
+  // panel derecho se llenaria con controles antes de que el user elija
+  // como arrancar (regresion historica, ver commit de consolidacion).
+  const onNewOrder = () => { showStartOrderDialog.value = true }
+
+  // "Orden rapida" del dialog → crea orden sin mesa, canal default
+  // takeaway/para-llevar (lo decide OrderTypes.watch con el primer
+  // non-dine_in disponible).
+  const onStartOrderQuick = () => props.startNewOrder()
+
+  // "Abrir mesa" del dialog → cerramos el dialog y dejamos que el user
+  // clickee una mesa en el plano central. El flujo mesa-libre ya existe
+  // (onPlanoPickFree abre GuestCountDialog). No creamos orden aca.
+  const onStartOrderOpenTable = () => { /* noop: flujo natural del plano */ }
 
   // Mesa libre clickeada desde el plano: pedimos comensales antes de abrir.
   const onPlanoPickFree = (table: PlanoTable) => {
@@ -199,6 +215,7 @@
             @init-order="(response:Record<string, any>) => $emit('init-order', response)"
             @pick-table-free="onPlanoPickFree"
             @pick-table-occupied="onPlanoPickOccupied"
+            @tables-count="(count:number) => tablesCount = count"
           />
         </VCardText>
       </VCard>
@@ -213,7 +230,6 @@
             :meta="meta"
             :qintrix="qintrix"
             @focus-menu-search="onFocusMenuSearch"
-            @new-order="onNewOrder"
             @on-click-action="onClickAction"
             @reset="(cartData?:Cart)=>$emit('reset',cartData)"
             @store-payment="storePayment"
@@ -239,6 +255,12 @@
       @new-order="() => { showActiveOrdersDrawer = false; onNewOrder() }"
     />
   </VNavigationDrawer>
+  <StartOrderDialog
+    v-model="showStartOrderDialog"
+    :has-tables="tablesCount > 0"
+    @open-table="onStartOrderOpenTable"
+    @quick="onStartOrderQuick"
+  />
   <GuestCountDialog
     v-model="showPlanoGuestCountDialog"
     :initial="1"

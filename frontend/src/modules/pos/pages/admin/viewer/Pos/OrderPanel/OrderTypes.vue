@@ -2,6 +2,9 @@
   import type { UseCart } from '@/modules/cart/composables/cart.ts'
   import type { PosForm, PosMeta } from '@/modules/pos/contracts/posViewer.ts'
   import { computed, ref, toRefs, watch } from 'vue'
+  import { useI18n } from 'vue-i18n'
+
+  const { t } = useI18n()
 
   const props = defineProps<{
     meta: PosMeta
@@ -60,9 +63,22 @@
 </script>
 
 <template>
-  <!-- Con mesa asignada: canal queda fijo en dine_in; no renderizamos tabs.
-       TableInfo.vue ya muestra la mesa (piso / zona / nombre) arriba. -->
-  <div v-if="!hasTable && nonDineInTypes.length > 0" class="order-type-scroll">
+  <!-- Con mesa asignada: canal fijo en dine_in. Renderizamos una chip
+       visual bloqueada para que el cajero vea que la orden es de Salon
+       y que ese canal no es editable (pistas visuales > texto explicativo).
+       TableInfo.vue muestra piso / zona / nombre de la mesa debajo. -->
+  <div v-if="hasTable" class="order-type-scroll">
+    <div class="scroll-container">
+      <div class="order-type-card active locked">
+        <div class="type-info">
+          <VIcon color="primary" icon="tabler-brand-airtable" />
+          <span class="name">{{ t('pos::pos_viewer.order_types.dine_in_locked') }}</span>
+          <VIcon class="lock-icon" icon="tabler-lock" size="14" />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div v-else-if="nonDineInTypes.length > 0" class="order-type-scroll">
     <div class="scroll-container">
       <div
         v-for="type in nonDineInTypes"
@@ -137,6 +153,20 @@
 .order-type-card.active {
   border-color: rgb(var(--v-theme-primary));
   background-color: rgba(var(--v-theme-primary), 0.08);
+}
+
+.order-type-card.locked {
+  cursor: not-allowed;
+
+  &:hover {
+    border-color: rgb(var(--v-theme-primary));
+    background-color: rgba(var(--v-theme-primary), 0.08);
+  }
+
+  .lock-icon {
+    margin-inline-start: 4px;
+    color: rgba(var(--v-theme-on-surface), 0.45);
+  }
 }
 
 .order-type-card-loading {

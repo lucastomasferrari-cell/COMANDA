@@ -13,6 +13,7 @@
   const emit = defineEmits<{
     (e: 'pick-free', table: PlanoTable): void
     (e: 'pick-occupied', table: PlanoTable): void
+    (e: 'tables-count', count: number): void
   }>()
 
   const { t } = useI18n()
@@ -52,6 +53,7 @@
           active_order: activeOrder,
         }
       })
+      emit('tables-count', tables.value.length)
     } catch {
       // silencioso: el polling no interrumpe al usuario
     } finally {

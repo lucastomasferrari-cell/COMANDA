@@ -65,11 +65,15 @@
 
 <template>
   <div class="mt-2 d-flex align-center ga-2">
+    <!-- El vendor original forzaba width=100px a los autocompletes y
+         el placeholder "Seleccioná el mozo/cliente" se truncaba a "Sel".
+         flex-grow-1 + basis:0 les da reparto equitativo del ancho
+         disponible y min-width=0 evita el desborde por labels largos. -->
     <VAutocomplete
       v-if="!hasRole('waiter')"
       v-model="form.waiter"
       autocomplete="off"
-      class=" flex-grow-1"
+      class="waiter-customer-select flex-grow-1"
       clearable
       item-title="name"
       item-value="id"
@@ -78,12 +82,11 @@
       :placeholder="t('pos::pos_viewer.select_waiter')"
       prepend-inner-icon="tabler-user-pentagon"
       return-object
-      width="100px"
     />
     <VAutocomplete
       v-model="data.customer"
       autocomplete="off"
-      class=" flex-grow-1"
+      class="waiter-customer-select flex-grow-1"
       :clearable="!processing"
       item-title="name"
       item-value="id"
@@ -93,7 +96,6 @@
       prepend-inner-icon="tabler-users"
       :readonly="processing"
       return-object
-      width="100px"
     />
     <VBtn
       v-if="can('admin.customers.create')"
@@ -108,7 +110,6 @@
         <VBtn
           color="error"
           :disabled="processing || !data.customer"
-          style="width: 130px"
           v-bind="menuProps"
         >
           <VIcon icon="tabler-gift" start />
@@ -154,3 +155,10 @@
     @created="onCustomerCreated"
   />
 </template>
+
+<style lang="scss" scoped>
+.waiter-customer-select {
+  flex-basis: 0;
+  min-width: 0;
+}
+</style>

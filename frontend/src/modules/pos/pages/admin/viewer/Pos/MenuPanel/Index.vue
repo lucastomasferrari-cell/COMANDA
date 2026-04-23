@@ -22,6 +22,7 @@
     (e: 'pick-table-free', table: PlanoTable): void
     (e: 'pick-table-occupied', table: PlanoTable): void
     (e: 'init-order', response: Record<string, any>): void
+    (e: 'tables-count', count: number): void
   }>()
 
   const { t } = useI18n()
@@ -76,6 +77,7 @@
       :branch-id="form.branchId"
       @pick-free="(table: PlanoTable) => $emit('pick-table-free', table)"
       @pick-occupied="(table: PlanoTable) => $emit('pick-table-occupied', table)"
+      @tables-count="(count: number) => $emit('tables-count', count)"
     />
     <div v-else-if="form.loadingMenuItems" class="loading">
       <VProgressCircular color="primary" indeterminate size="50" />

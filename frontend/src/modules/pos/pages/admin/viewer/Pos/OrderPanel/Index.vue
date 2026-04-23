@@ -29,7 +29,6 @@
     (e: 'on-click-action', value: string): void
     (e: 'store-payment', value: string | number): void
     (e: 'reset', cart?: Cart): void
-    (e: 'new-order'): void
     (e: 'focus-menu-search'): void
   }>()
 
@@ -293,6 +292,10 @@
        Antes era 2 sub-cols (7/5) que asumia pantalla ancha — con el nuevo
        layout 3-cols exterior, el OrderPanel ahora ocupa ~33% de la pantalla
        y todo tiene que ir apilado en vertical. -->
+  <!-- Sin orden activa: solo empty state, sin CTA duplicado. El "+ Nueva"
+       vive en ActiveOrdersPanel (columna izquierda) y es el unico
+       punto de entrada; duplicarlo aca confundia al cajero (pensaba
+       que eran dos flujos distintos). -->
   <div
     v-if="!hasActiveOrder"
     class="order-panel-empty d-flex flex-column align-center text-center h-100 px-4 pt-10"
@@ -303,18 +306,11 @@
     <h3 class="text-subtitle-1 font-weight-medium mb-1">
       {{ t('pos::pos_viewer.no_active_order.title') }}
     </h3>
-    <p class="text-body-2 text-medium-emphasis mb-4">
+    <p class="text-body-2 text-medium-emphasis">
       {{ t('pos::pos_viewer.no_active_order.description') }}
     </p>
-    <VBtn
-      color="primary"
-      prepend-icon="tabler-plus"
-      @click="$emit('new-order')"
-    >
-      {{ t('pos::pos_viewer.no_active_order.cta_new') }}
-    </VBtn>
   </div>
-  <div v-else class="order-panel-stack d-flex flex-column" style="min-height: 91vh; gap: 0.5rem;">
+  <div v-else class="order-panel-stack d-flex flex-column" style="gap: 0.5rem;">
     <!-- Header: info de orden (mozo/cliente) + canal.
          Las acciones globales (visor mesas, cash movement, comandas) viven
          ahora en TopActionsBar a nivel del viewer, no dentro del OrderPanel. -->

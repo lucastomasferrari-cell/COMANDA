@@ -98,8 +98,23 @@ return [
     ],
     "no_active_order" => [
         "title" => "Sin comanda activa",
-        "description" => "Tocá una mesa del plano o clickeá + Nueva para arrancar",
+        "description" => "Tocá una mesa del plano o clickeá + Nueva en la columna izquierda para arrancar",
         "cta_new" => "Nueva orden",
+    ],
+    "start_order_dialog" => [
+        "title" => "¿Cómo querés arrancar?",
+        "table" => [
+            "title" => "Abrir mesa (Salón)",
+            "subtitle" => "Elegí una mesa del plano para abrirla",
+            "no_tables_tooltip" => "Creá mesas en Admin > Salón para habilitar esta opción",
+        ],
+        "quick" => [
+            "title" => "Orden rápida",
+            "subtitle" => "Para llevar / retiro en local, sin mesa asignada",
+        ],
+    ],
+    "order_types" => [
+        "dine_in_locked" => "Salón",
     ],
     "guest_count_dialog" => [
         "title" => "¿Cuántos comensales?",

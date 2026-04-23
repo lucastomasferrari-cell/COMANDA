@@ -98,8 +98,23 @@ return [
     ],
     "no_active_order" => [
         "title" => "No active order",
-        "description" => "Tap a table on the plan or click + New to start",
+        "description" => "Tap a table on the plan or click + New in the left column to start",
         "cta_new" => "New order",
+    ],
+    "start_order_dialog" => [
+        "title" => "How do you want to start?",
+        "table" => [
+            "title" => "Open table (Dine-in)",
+            "subtitle" => "Pick a table from the floor plan to open it",
+            "no_tables_tooltip" => "Create tables in Admin > Floor to enable this option",
+        ],
+        "quick" => [
+            "title" => "Quick order",
+            "subtitle" => "Takeaway / pickup, no table assigned",
+        ],
+    ],
+    "order_types" => [
+        "dine_in_locked" => "Dine-in",
     ],
     "guest_count_dialog" => [
         "title" => "How many guests?",
