@@ -19,18 +19,17 @@
 
   // El toggle Mesas/Rapido se removio. El flujo es directo: click en
   // mesa del plano = orden con mesa; boton "+ Nueva" = orden rapida.
+  // Action 'orders' REMOVIDO (Sprint 1.A): era redundante con
+  // ActiveOrdersPanel permanente izquierdo — dos vistas del mismo dato
+  // confundía al cajero. El componente Drawers/Orders/Index.vue queda
+  // huérfano por si se lo quiere reactivar en una vista dedicada tipo
+  // /admin/pos/comandas (historial completo con filtros).
   const actions = computed(() => [
     {
       id: 'manage_cash_movement',
       icon: 'tabler-cash',
       label: t('pos::pos_viewer.actions.manage_cash_movement'),
       visible: can('admin.pos_cash_movements.create'),
-    },
-    {
-      id: 'orders',
-      icon: 'tabler-list-details',
-      label: t('pos::pos_viewer.actions.orders'),
-      visible: can('admin.orders.upcoming') || can('admin.orders.active'),
     },
   ])
 </script>

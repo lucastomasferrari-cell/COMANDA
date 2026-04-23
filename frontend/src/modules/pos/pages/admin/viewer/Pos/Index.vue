@@ -12,7 +12,9 @@
   import GuestCountDialog from './Dialogs/GuestCountDialog.vue'
   import OrderDetailsDialog from '@/modules/pos/pages/admin/viewer/Pos/Dialogs/OrderDetails/Index.vue'
   import PaymentDialog from '@/modules/pos/pages/admin/viewer/Pos/Dialogs/Payment/Index.vue'
-  import OrdersDrawer from '@/modules/pos/pages/admin/viewer/Pos/Drawers/Orders/Index.vue'
+  // OrdersDrawer removido del mount (Sprint 1.A): ActiveOrdersPanel
+  // izquierdo permanente cumple la misma función. Archivo vive huérfano
+  // por si se reactiva en una vista dedicada (/admin/pos/comandas).
   import OrderPrintDialog from './Dialogs/OrderPrint/Index.vue'
   import RefundCancelDialog from './Dialogs/RefundCancelDialog.vue'
   import StartOrderDialog from './Dialogs/StartOrderDialog.vue'
@@ -41,8 +43,6 @@
   const toast = useToast()
   const { edit: editOrder } = useOrder()
 
-  const canOrders = can('admin.orders.upcoming') || can('admin.orders.active')
-  const showOrdersDrawer = ref(false)
   const showCajaDrawer = ref(false)
   const showTableViewerDrawer = ref(false)
   const showStartOrderDialog = ref(false)
@@ -62,16 +62,13 @@
   const refundCancelDialog = ref<Record<string, any>>({ orderId: null, open: false })
   const viewOrderDetailsDialog = ref<Record<string, any>>({ orderId: null, open: false })
   const showOrderPrintDialog = ref<Record<string, any>>({ orderId: null, open: false })
-  const ordersDrawerRef = ref()
   const tableViewerDrawerRef = ref()
   const menuPanelRef = ref<any>(null)
 
   const onFocusMenuSearch = () => menuPanelRef.value?.focusSearch?.()
 
   const onClickAction = (action: string) => {
-    if (action == 'orders' && canOrders) {
-      showOrdersDrawer.value = true
-    } else if (action == 'manage_cash_movement' && can('admin.pos_cash_movements.create')) {
+    if (action == 'manage_cash_movement' && can('admin.pos_cash_movements.create')) {
       showCajaDrawer.value = true
     } else if (action == 'table_viewer' && can('admin.tables.viewer')) {
       showTableViewerDrawer.value = true
@@ -144,9 +141,7 @@
   }
 
   const paymentAdded = () => {
-    if (showOrdersDrawer.value) {
-      ordersDrawerRef.value?.refresh()
-    } else if (showTableViewerDrawer.value) {
+    if (showTableViewerDrawer.value) {
       tableViewerDrawerRef.value?.refreshTableDetails()
     }
   }
@@ -173,9 +168,7 @@
   }
 
   const resolvedRefundCancel = () => {
-    if (showOrdersDrawer.value) {
-      ordersDrawerRef.value?.refresh()
-    } else if (showTableViewerDrawer.value) {
+    if (showTableViewerDrawer.value) {
       tableViewerDrawerRef.value?.refreshTableDetails()
     }
   }
@@ -294,20 +287,7 @@
     @store-payment="storePayment"
     @view-order="(orderId:number|string)=>viewOrderDetails(orderId)"
   />
-  <OrdersDrawer
-    v-if="canOrders"
-    ref="ordersDrawerRef"
-    v-model="showOrdersDrawer"
-    :branch-id="form.branchId"
-    :cart-id="cart.cartId"
-    :qintrix="qintrix"
-    @cancel-order="(orderId:number|string)=>refundCancel('cancel',orderId)"
-    @init-order="(response:Record<string, any>)=>$emit('init-order',response)"
-    @print-order="(orderId:number|string)=>orderPrint(orderId)"
-    @refund-order="(orderId:number|string)=>refundCancel('refund',orderId)"
-    @store-payment="storePayment"
-    @view-order="(orderId:number|string)=>viewOrderDetails(orderId)"
-  />
+  <!-- OrdersDrawer mount removido Sprint 1.A — componente huérfano preservado -->
   <PaymentDialog
     v-if="can('admin.orders.receive_payment') && form.sessionId && form.registerId && paymentDialog.orderId != null && paymentDialog.open"
     v-model="paymentDialog.open"
