@@ -94,7 +94,20 @@ export const useAppStore = defineStore('app', {
       const mode = appValues[THEME_MODE_STORAGE_KEY]
       const currentLocale = appValues[CURRENT_LOCALE_STORAGE_KEY]
 
-      this.themeMode = mode === 'dark' || mode === 'light' ? mode : 'light'
+      // Prefers-color-scheme: si el usuario nunca seteó manualmente el tema
+      // (primer load), respetamos la preferencia del sistema operativo. Solo
+      // aplica cuando localStorage está vacío — si el user eligió explícito,
+      // ese valor gana sobre el system preference.
+      if (mode === 'dark' || mode === 'light') {
+        this.themeMode = mode
+      } else if (typeof window !== 'undefined'
+        && window.matchMedia
+        && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        this.themeMode = 'dark'
+      } else {
+        this.themeMode = 'light'
+      }
+
       this.currentLocale = currentLocale || 'es_AR'
       this.syncDocumentLanguageDirection(this.currentLocale)
     },

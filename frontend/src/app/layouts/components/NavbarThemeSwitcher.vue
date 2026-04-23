@@ -1,42 +1,16 @@
 <script lang="ts" setup>
-  import type { Theme } from '@/modules/core/contracts/Theme.ts'
   import { computed } from 'vue'
   import { useI18n } from 'vue-i18n'
-  import { useTheme } from 'vuetify'
   import NavbarAction from '@/app/layouts/components/NavbarAction.vue'
-  import { useAppStore } from '@/modules/core/stores/appStore.ts'
+  import { useAppTheme } from '@/modules/core/composables/appTheme.ts'
 
-  const themes: Theme[] = [
-    {
-      name: 'light',
-      icon: 'tabler-sun',
-    },
-    {
-      name: 'dark',
-      icon: 'tabler-moon',
-    },
-  ]
-
-  const { name: themeName, global: globalTheme, change } = useTheme()
-  const {
-    state: currentThemeName,
-    next: getNextThemeName,
-    index: currentThemeIndex,
-  } = useCycleList(themes.map(t => t.name), { initialValue: themeName })
-  const currentTheme = computed<Theme>(() => themes[currentThemeIndex.value ?? 0] ?? themes[0] ?? { name: 'light', icon: 'tabler-sun' })
-  const appStore = useAppStore()
-
-  function changeTheme () {
-    change(getNextThemeName())
-    if (globalTheme.name.value === 'light' || globalTheme.name.value === 'dark') {
-      appStore.setThemeMode(globalTheme.name.value)
-    }
-  }
-
-  watch(() => globalTheme.name.value, val => {
-    currentThemeName.value = val
-  })
+  // Usa useAppTheme que envuelve Vuetify + persistencia en appStore. Antes
+  // había useCycleList + lógica de next/change dispersa; esto concentra
+  // todo en el composable (un único punto de mutación del tema).
+  const { isDark, currentMode, toggleTheme } = useAppTheme()
   const { t } = useI18n()
+
+  const icon = computed(() => (isDark.value ? 'tabler-moon' : 'tabler-sun'))
 </script>
 
 <template>
@@ -45,13 +19,13 @@
       <template #activator="{ props:tooltipProps }">
         <VBtn
           color="default"
-          :icon="currentTheme.icon"
+          :icon="icon"
           v-bind="tooltipProps"
           variant="text"
-          @click="changeTheme"
+          @click="toggleTheme"
         />
       </template>
-      <span>{{ t(`admin::navbar.theme_modes.${currentThemeName.toLowerCase()}`) }}</span>
+      <span>{{ t(`admin::navbar.theme_modes.${currentMode}`) }}</span>
     </VTooltip>
   </NavbarAction>
 </template>
