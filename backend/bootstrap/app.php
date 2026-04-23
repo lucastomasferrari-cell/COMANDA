@@ -40,6 +40,12 @@ return Application::configure(basePath: dirname(__DIR__))
             ->dailyAt('03:15')
             ->name('audit_logs.cleanup')
             ->onOneServer();
+
+        // Marca pending_approvals > 7 días como expired.
+        $schedule->command('antifraud:expire-pending-approvals')
+            ->dailyAt('03:30')
+            ->name('antifraud.expire_pending_approvals')
+            ->onOneServer();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (NotFoundHttpException $exception, Request $request) {
