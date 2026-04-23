@@ -65,9 +65,18 @@ class EventServiceProvider extends ServiceProvider
             RestoreTableOnResume::class,
         ],
         OrderPaymentMethodChanged::class => [
-            // El AuditLogger ya se llamó dentro del service. Este
-            // event se declara para que Bloque 11 (mail al dueño) y
-            // otros listeners futuros puedan engancharse.
+            // Notifica al owner por email de forma inmediata. El
+            // AuditLog ya lo registró el service. Respeta los
+            // settings antifraud.real_time_alerts.*.
+            \Modules\Order\Listeners\NotifyOwnerOfPaymentMethodChange::class,
         ],
     ];
+
+    public function boot(): void
+    {
+        parent::boot();
+        // Registra el namespace de vistas 'order' para que Mail
+        // pueda usar view('order::mail.payment_method_changed_alert').
+        $this->loadViewsFrom(__DIR__ . '/../../resources/views', 'order');
+    }
 }

@@ -141,11 +141,13 @@
 
   async function confirmCloseSession () {
     if (closeIsDisabled.value || !props.sessionId || closeForm.loading.value) return
+    // El backend acepta declared_cash (campo vendor) + justification +
+    // manager_approval_token opcional. El interceptor global
+    // reemplaza el 403 con code=manager_approval_required por el token
+    // real via GlobalManagerPinDialog automáticamente.
     const ok = await closeForm.submit(() => closeSession(props.sessionId!, {
-      cash_actual: Number(closeForm.state.cash_actual),
-      notes: closeForm.state.notes,
-      expected_cash: expectedCash.value,
-      difference: closeDifference.value,
+      declared_cash: Number(closeForm.state.cash_actual),
+      justification: closeForm.state.notes,
     }))
     if (ok) {
       toast.success(t('pos::pos_viewer.caja.closed_ok'))
