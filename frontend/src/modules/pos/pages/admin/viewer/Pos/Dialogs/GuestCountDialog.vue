@@ -89,27 +89,32 @@
             @click="increment"
           />
         </div>
-
-        <div class="d-flex ga-2">
-          <VBtn
-            block
-            color="grey-500"
-            size="large"
-            variant="tonal"
-            @click="onCancel"
-          >
-            {{ t('pos::pos_viewer.guest_count_dialog.cancel') }}
-          </VBtn>
-          <VBtn
-            block
-            color="primary"
-            size="large"
-            @click="onConfirm"
-          >
-            {{ t('pos::pos_viewer.guest_count_dialog.confirm') }}
-          </VBtn>
-        </div>
       </VCardText>
+
+      <!-- Footer de 2 botones 50/50 — antes estaba dentro de VCardText con
+           2 VBtn block side-by-side, cada uno width:100% → el confirmar
+           se cortaba fuera del dialog (max-width 360 - pa-5 = 320 útil,
+           2x100% + gap no entra). Ahora VCardActions con flex 1 a cada btn
+           (sin block) los reparte equitativamente. -->
+      <VCardActions class="px-5 pb-5 pt-0 ga-2">
+        <VBtn
+          class="flex-1"
+          color="grey-500"
+          size="large"
+          variant="tonal"
+          @click="onCancel"
+        >
+          {{ t('pos::pos_viewer.guest_count_dialog.cancel') }}
+        </VBtn>
+        <VBtn
+          class="flex-1"
+          color="primary"
+          size="large"
+          @click="onConfirm"
+        >
+          {{ t('pos::pos_viewer.guest_count_dialog.confirm') }}
+        </VBtn>
+      </VCardActions>
     </VCard>
   </VDialog>
 </template>
@@ -140,5 +145,10 @@
 .guest-input :deep(input::-webkit-inner-spin-button) {
   -webkit-appearance: none;
   margin: 0;
+}
+
+.flex-1 {
+  flex: 1 1 0;
+  min-width: 0;
 }
 </style>
