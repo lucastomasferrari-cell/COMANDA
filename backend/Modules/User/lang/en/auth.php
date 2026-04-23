@@ -5,4 +5,5 @@ return [
     "description" => "Welcome back! Sign in to access {app_name}.",
     "login" => "Login",
     "return_to_dashboard" => "Return to dashboard",
+    "manager_pin_title" => "Manager authorization",
 ];

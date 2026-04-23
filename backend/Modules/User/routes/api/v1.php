@@ -3,6 +3,7 @@
 use Modules\User\Http\Controllers\Api\V1\AccountController;
 use Modules\User\Http\Controllers\Api\V1\AuthController;
 use Modules\User\Http\Controllers\Api\V1\CustomerController;
+use Modules\User\Http\Controllers\Api\V1\ManagerPinController;
 use Modules\User\Http\Controllers\Api\V1\RoleController;
 use Modules\User\Http\Controllers\Api\V1\UserController;
 
@@ -16,6 +17,14 @@ Route::controller(AuthController::class)
 
         Route::post('logout', "logout");
         Route::post('check', action: "check");
+    });
+
+Route::controller(ManagerPinController::class)
+    ->prefix('auth/manager-pin')
+    ->group(function () {
+        Route::post('verify', 'verify')
+            ->middleware('throttle:6,1'); // 6 intentos por minuto por IP — el lockout real vive en el service por user
+        Route::post('self', 'setSelf'); // setear/actualizar mi propio PIN
     });
 
 Route::controller(RoleController::class)

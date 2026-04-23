@@ -97,6 +97,9 @@ class User extends Authenticatable
         'profile_photo_path',
         'category_slugs',
         'printer_id',
+        'manager_pin_hash',
+        'manager_pin_lockout_until',
+        'manager_pin_failed_attempts',
         self::BRANCH_COLUMN_NAME,
         self::ACTIVE_COLUMN_NAME,
     ];
@@ -108,7 +111,8 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'remember_token'
+        'remember_token',
+        'manager_pin_hash',
     ];
 
     /**
@@ -336,6 +340,7 @@ class User extends Authenticatable
             'birthdate' => 'date:Y-m-d',
             'profile_photo_path' => 'array',
             'category_slugs' => 'array',
+            'manager_pin_lockout_until' => 'datetime',
         ];
     }
 }

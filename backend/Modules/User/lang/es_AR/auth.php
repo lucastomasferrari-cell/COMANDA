@@ -5,4 +5,5 @@ return [
     "description" => "¡Bienvenido de nuevo! Iniciá sesión para acceder a {app_name}.",
     "login" => "Iniciar sesión",
     "return_to_dashboard" => "Volver al panel",
+    "manager_pin_title" => "Autorización del encargado",
 ];

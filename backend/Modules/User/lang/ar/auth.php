@@ -5,4 +5,5 @@ return [
     "description" => "مرحبًا بعودتك! سجل الدخول للوصول إلى {app_name}.",
     "login" => "تسجيل الدخول",
     "return_to_dashboard" => "العودة إلى لوحة التحكم",
+    "manager_pin_title" => "تصريح المدير",
 ];
