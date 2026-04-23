@@ -6,6 +6,7 @@ namespace Modules\Currency\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Modules\Currency\Services\CurrencyRateExchanger;
 use Modules\Support\Eloquent\Model;
 use Modules\Support\Traits\HasFilters;
@@ -61,14 +62,28 @@ class CurrencyRate extends Model
     /**
      * Get currency rate for the given currency.
      *
+     * Si no existe la fila correspondiente (caso típico: tabla sin seeder
+     * corrido, o moneda agregada a setting sin crear el rate), retorna 1.0
+     * con un warning en logs en vez de propagar null. Antes con return
+     * type strict int|float, este path tiraba un "TypeError: must be of
+     * type int|float, null returned" y bloqueaba el flujo completo del POS.
+     * El warning deja rastro para que el seeder/admin lo corrija.
+     *
      * @param string $currency
-     * @return int|float
+     * @return float
      */
-    public static function for(string $currency): int|float
+    public static function for(string $currency): float
     {
-        return Cache::rememberForever(md5("currency_rate.$currency"), function () use ($currency) {
+        $rate = Cache::rememberForever(md5("currency_rate.$currency"), function () use ($currency) {
             return static::where('currency', $currency)->value('rate');
         });
+
+        if ($rate === null) {
+            Log::warning("CurrencyRate::for({$currency}) returned null — no row found, falling back to 1.0. Run CurrencyDatabaseSeeder or create the row manually.");
+            return 1.0;
+        }
+
+        return (float) $rate;
     }
 
     /**
