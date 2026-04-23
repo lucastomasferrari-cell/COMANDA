@@ -1,12 +1,12 @@
 <?php
 return [
     "option_types" => [
-        'text' => 'Text',
-        'textarea' => 'Textarea',
-        'select' => 'Select',
-        'multiple_select' => 'Multiple Select',
-        'checkbox' => 'Checkbox',
-        'radio' => 'Radio Button',
+        'text' => 'Free text',
+        'textarea' => 'Free text (long)',
+        'select' => 'Pick one (dropdown)',
+        'multiple_select' => 'Pick multiple (dropdown)',
+        'checkbox' => 'Pick multiple (checkbox)',
+        'radio' => 'Pick one (buttons)',
         'date' => 'Date',
         'time' => 'Time',
     ]
