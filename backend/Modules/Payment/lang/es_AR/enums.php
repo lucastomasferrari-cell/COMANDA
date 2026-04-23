@@ -6,6 +6,8 @@ return [
         "bank_transfer" => "Transferencia bancaria",
         "mobile_wallet" => "Billetera virtual",
         "gift_card" => "Tarjeta de regalo",
+        "credit_account" => "Cuenta corriente",
+        "other" => "Otro",
     ],
 
     "payment_statuses" => [

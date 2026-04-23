@@ -6,6 +6,8 @@ return [
         "bank_transfer" => "تحويل بنكي",
         "mobile_wallet" => "محفظة إلكترونية",
         "gift_card" => "بطاقة هدية",
+        "credit_account" => "حساب جاري",
+        "other" => "أخرى",
     ],
 
     "payment_statuses" => [

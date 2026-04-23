@@ -188,7 +188,8 @@ const adminRoutes: RouteRecordRaw[] = [
       {
         path: 'formas-de-pago',
         name: 'admin.cobros.formas',
-        component: () => import('@/modules/core/components/ComingSoonPlaceholder.vue'),
+        component: () => import('@/modules/payment/pages/admin/paymentMethod/Index.vue'),
+        meta: { permission: 'admin.payment_methods.index' },
       },
       {
         path: 'impuestos',

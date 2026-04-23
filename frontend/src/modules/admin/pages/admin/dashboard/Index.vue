@@ -11,6 +11,7 @@
   import Overview from './Partials/Overview.vue'
   import PaymentsOverview from './Partials/PaymentsOverview.vue'
   import SalesAnalytics from './Partials/SalesAnalytics.vue'
+  import SalesByPaymentMethodToday from './Partials/SalesByPaymentMethodToday.vue'
   import TopSellingProducts from './Partials/TopSellingProducts.vue'
 
   const { can, hasPermission } = useAuth()
@@ -93,6 +94,9 @@
     </VCol>
     <VCol v-if="can('admin.dashboards.payments_overview')" cols="12" md="4" sm="6">
       <PaymentsOverview :filters="globalFilters" />
+    </VCol>
+    <VCol v-if="can('admin.payment_methods.index')" cols="12" md="4" sm="6">
+      <SalesByPaymentMethodToday />
     </VCol>
   </VRow>
 </template>

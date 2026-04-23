@@ -14,6 +14,9 @@ enum PaymentMethod: string
     case BankTransfer = 'bank_transfer';
     case MobileWallet = 'mobile_wallet';
     case GiftCard = 'gift_card';
+    // Agregados post-Fix 8: cuenta corriente (fiado) y fallback.
+    case CreditAccount = 'credit_account';
+    case Other = 'other';
 
 
     /** @inheritDoc */
@@ -53,7 +56,8 @@ enum PaymentMethod: string
             PaymentMethod::BankTransfer->value => 'tabler-building-bank',
             PaymentMethod::MobileWallet->value => 'tabler-device-mobile-dollar',
             PaymentMethod::GiftCard->value => 'tabler-gift-card',
-
+            PaymentMethod::CreditAccount->value => 'tabler-notebook',
+            PaymentMethod::Other->value => 'tabler-currency',
         };
     }
 
@@ -71,6 +75,8 @@ enum PaymentMethod: string
             PaymentMethod::BankTransfer->value => '#0abde3',
             PaymentMethod::MobileWallet->value => '#01a3a4',
             PaymentMethod::GiftCard->value => '#f39c12',
+            PaymentMethod::CreditAccount->value => '#a29bfe',
+            PaymentMethod::Other->value => '#95a5a6',
         };
     }
 

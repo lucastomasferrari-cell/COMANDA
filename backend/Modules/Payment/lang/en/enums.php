@@ -6,6 +6,8 @@ return [
         "bank_transfer" => "Bank Transfer",
         "mobile_wallet" => "Mobile Wallet",
         "gift_card" => "Gift Card",
+        "credit_account" => "Credit Account",
+        "other" => "Other",
     ],
 
     "payment_statuses" => [
