@@ -46,6 +46,14 @@ return Application::configure(basePath: dirname(__DIR__))
             ->dailyAt('03:30')
             ->name('antifraud.expire_pending_approvals')
             ->onOneServer();
+
+        // Reporte diario al owner_alert_email. Hora configurable via
+        // setting antifraud.daily_report_hour (default 6).
+        $reportHour = (int) setting('antifraud.daily_report_hour', 6);
+        $schedule->command('reports:daily-antifraud')
+            ->dailyAt(sprintf('%02d:00', max(0, min(23, $reportHour))))
+            ->name('antifraud.daily_report')
+            ->onOneServer();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (NotFoundHttpException $exception, Request $request) {
