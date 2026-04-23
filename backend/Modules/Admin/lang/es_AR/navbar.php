@@ -1,6 +1,7 @@
 <?php
 
 return [
+    "antifraud_alerts" => "Alertas anti-fraude",
     "my_account" => "Mi cuenta",
     "update_password" => "Actualizar contraseña",
     "logout" => "Cerrar sesión",

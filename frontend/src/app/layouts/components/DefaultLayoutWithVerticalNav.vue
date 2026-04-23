@@ -14,6 +14,7 @@
   import NavbarThemeSwitcher from '@/app/layouts/components/NavbarThemeSwitcher.vue'
   import NavbarViewPos from '@/app/layouts/components/NavbarViewPos.vue'
   import NavItems from '@/app/layouts/components/NavItems.vue'
+  import NavbarAntifraudAlerts from '@/app/layouts/components/NavbarAntifraudAlerts.vue'
   import UserProfile from '@/app/layouts/components/UserProfile/Index.vue'
   import VerticalNavLayout from '@/app/layouts/components/VerticalNavLayout.vue'
   import GlobalManagerPinDialog from '@/modules/auth/components/GlobalManagerPinDialog.vue'
@@ -56,6 +57,7 @@
           />
           <NavbarViewPos v-if="can('admin.pos.index')" class="me-2" />
         </template>
+        <NavbarAntifraudAlerts class="me-2" />
         <NavbarFullscreenSwitcher class="me-2" />
         <NavbarThemeSwitcher class="me-2" />
         <!-- <NavbarLanguageSwitcher class="me-2" /> -->

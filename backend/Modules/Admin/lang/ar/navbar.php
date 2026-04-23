@@ -1,6 +1,7 @@
 <?php
 
 return [
+    "antifraud_alerts" => "تنبيهات مكافحة الاحتيال",
     "my_account" => "حسابي",
     "update_password" => "تحديث كلمة المرور",
     "logout" => "تسجيل الخروج",
