@@ -92,6 +92,10 @@ return [
 
     "inactive" => "Inactive",
 
+    "yes" => "Yes",
+
+    "no" => "No",
+
     "hints" => [
         "profile_photo" => "Please upload a JPG or PNG image (max 5MB).",
     ],
