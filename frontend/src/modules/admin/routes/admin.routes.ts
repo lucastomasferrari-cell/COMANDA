@@ -24,9 +24,9 @@ const adminRoutes: RouteRecordRaw[] = [
     component: () => import('@/modules/admin/pages/admin/hubs/MenuHub.vue'),
     meta: { title: 'admin::sidebar.menu' },
     children: [
-      { path: '', redirect: { name: 'admin.menu.productos' } },
+      { path: '', redirect: { name: 'admin.menu.menus' } },
 
-      // Tab Menús
+      // Tab Menús (default)
       {
         path: 'menus',
         name: 'admin.menu.menus',

@@ -19,7 +19,6 @@
   const isNotFound = ref(false)
   const data = ref<Record<string, any> | null>(null)
   const activeCategory = ref<Record<string, any> | null>(null)
-  const parentId = ref(null)
   const action = ref<'update' | 'create'>('create')
   const treeViewKey = ref(`tree-view`)
   const formKey = ref(`form`)
@@ -61,16 +60,9 @@
     }
   }
 
-  const addSubCategory = () => {
-    if (activeCategory.value) {
-      parentId.value = activeCategory.value?.id
-      action.value = 'create'
-      reloadForm()
-    }
-  }
+  // Post-Fix 3 parte C: solo categorías plana. addSubCategory eliminado.
   const addRootCategory = () => {
     activeCategory.value = null
-    parentId.value = null
     action.value = 'create'
     reloadForm()
   }
@@ -100,7 +92,6 @@
           :menu-id="data.menu.id"
           :refreshing="refreshing"
           @add-root-category="addRootCategory"
-          @add-sub-category="addSubCategory"
           @click-category="onClickCategory"
         />
       </VCol>
@@ -108,9 +99,8 @@
         <From
           :key="formKey"
           :action="action"
-          :item="parentId?null: activeCategory"
+          :item="activeCategory"
           :menu-id="data.menu.id"
-          :parent-id="parentId"
           @on-success="onSuccess"
         />
       </VCol>

@@ -4,14 +4,16 @@ return [
     "categories" => "Categories",
 
     "buttons" => [
-        "add_root_category" => "Add Root Category",
-        "add_sub_category" => "Add Sub Category",
+        "add_category" => "Add Category",
+        "add_root_category" => "Add Category",
+        "add_sub_category" => "Add Category",
         "expand_all" => "Expand All",
         "collapse_all" => "Collapse All",
     ],
 
     "form" => [
-        "create_root_category" => "Create Root Category",
-        "create_sub_category" => "Create Sub Category",
+        "create_category" => "Create Category",
+        "create_root_category" => "Create Category",
+        "create_sub_category" => "Create Category",
     ],
 ];

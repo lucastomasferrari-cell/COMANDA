@@ -12,7 +12,6 @@ import { useCategory } from '@/modules/menu/composables/category.ts'
 const props = defineProps<{
   item?: Record<string, any> | null
   menuId: number
-  parentId: number | null
   action: 'update' | 'create'
 }>()
 const emit = defineEmits(['on-success'])
@@ -31,7 +30,11 @@ const form = useForm({
   sku: props.item?.sku,
   sku_locked: props.item?.sku_locked || false,
   menu_id: props.menuId,
-  parent_id: props.parentId || props.item?.parent_id,
+  // parent_id siempre null post-Fix 3 parte C. Las categorías existentes
+  // con parent_id se conservan en DB (y en Discount/Voucher condiciones)
+  // pero la UI solo crea root. En edit, mantenemos el parent_id original
+  // para no nullear accidentalmente jerarquías pre-existentes.
+  parent_id: props.item?.parent_id ?? null,
   files: {
     logo: props.item?.logo?.id || null,
   },
@@ -111,12 +114,7 @@ async function deleteCategory() {
           <VCard>
             <VCardTitle class="mb-2">
               <span v-if="action == 'create'">
-                <span v-if="parentId">
-                  {{ t('category::categories.form.create_sub_category') }}
-                </span>
-                <span v-else>
-                  {{ t('category::categories.form.create_root_category') }}
-                </span>
+                {{ t('category::categories.form.create_category') }}
               </span>
               <span v-else-if="action == 'update'">
                 {{ t('admin::resource.edit', { resource: t('category::categories.category') }) }}

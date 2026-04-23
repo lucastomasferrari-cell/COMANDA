@@ -12,52 +12,47 @@
     refreshing: boolean
   }>()
 
-  const emit = defineEmits(['click-category', 'add-sub-category', 'add-root-category'])
+  const emit = defineEmits(['click-category', 'add-root-category'])
 
   const { t } = useI18n()
   const toast = useToast()
   const {
     flatToTree,
     flattenTree,
-    updateExpansion,
     findTargetNode,
     findAndRemove,
     updateTree,
   } = useCategory()
   const tree = ref(flatToTree(props.categories))
 
+  // Post-refactor Fix 3 parte C: la estructura de categorías es plana.
+  // Solo aceptamos moves entre siblings (BEFORE/AFTER). Los positions
+  // FIRST_CHILD / LAST_CHILD —que crearían jerarquía— se convierten a
+  // AFTER target. El vendor dejó subcategorías en DB por si algún día
+  // se reactivan, pero la UI no las genera ni permite anidar nuevos.
   async function handleMove (event: Record<string, any>) {
-    const { id, targetId, position } = event
+    const { id, targetId, position: rawPosition } = event
+    const position = rawPosition === 'FIRST_CHILD' || rawPosition === 'LAST_CHILD'
+      ? 'AFTER'
+      : rawPosition
 
     const movedNode = findAndRemove(tree.value, id)
     if (!movedNode) return
 
-    if (position === 'FIRST_CHILD') {
-      const target = findTargetNode(tree.value, targetId)
-      if (!target.children) target.children = []
-      movedNode.parent = target.id
-      target.children.unshift(movedNode)
-    } else if (position === 'LAST_CHILD') {
-      const target = findTargetNode(tree.value, targetId)
-      if (!target.children) target.children = []
-      movedNode.parent = target.id
-      target.children.push(movedNode)
-    } else {
-      const insertAt = (nodes: Record<string, any>[]) => {
-        for (let i = 0; i < nodes.length; i++) {
-          const node = nodes[i]
-          if (!node) continue
-          if (node.id === targetId) {
-            const insertIndex = position === 'BEFORE' ? i : i + 1
-            movedNode.parent = nodes === tree.value ? '#' : null
-            nodes.splice(insertIndex, 0, movedNode)
-            return true
-          }
-          if (node.children && insertAt(node.children)) return true
+    const insertAt = (nodes: Record<string, any>[]) => {
+      for (let i = 0; i < nodes.length; i++) {
+        const node = nodes[i]
+        if (!node) continue
+        if (node.id === targetId) {
+          const insertIndex = position === 'BEFORE' ? i : i + 1
+          movedNode.parent = nodes === tree.value ? '#' : null
+          nodes.splice(insertIndex, 0, movedNode)
+          return true
         }
+        if (node.children && insertAt(node.children)) return true
       }
-      insertAt(tree.value)
     }
+    insertAt(tree.value)
     await updateCategories()
   }
 
@@ -77,49 +72,28 @@
     },
   })
 
-  function collapseAll () {
-    updateExpansion(tree.value, false)
-  }
-
-  function expandAll () {
-    updateExpansion(tree.value, true)
-  }
-
   async function updateCategories () {
     try {
       const response = await updateTree(props.menuId, flattenTree(tree.value))
       toast.success(response.data.message)
     } catch {}
   }
+
+  // findTargetNode queda importado para compat; hoy no se usa porque
+  // eliminamos la lógica de FIRST_CHILD / LAST_CHILD. Referencia para
+  // suprimir el warning de unused import si el linter lo flaggea:
+  void findTargetNode
 </script>
 
 <template>
   <VCard min-height="350px">
     <VCardTitle class="d-flex align-center">
-      <VBtn class="me-2" size="small" @click="emit('add-root-category')">
+      <VBtn size="small" @click="emit('add-root-category')">
         <VIcon icon="tabler-plus" start />
-        {{ t('category::categories.buttons.add_root_category') }}
-      </VBtn>
-      <VBtn
-        color="secondary"
-        :disabled="activeCategory==null"
-        size="small"
-        @click="emit('add-sub-category')"
-      >
-        <VIcon icon="tabler-playlist-add" start />
-        {{ t('category::categories.buttons.add_sub_category') }}
+        {{ t('category::categories.buttons.add_category') }}
       </VBtn>
     </VCardTitle>
     <VCardText>
-      <div class="mb-2 tree-actions">
-        <VBtn size="small" variant="text" @click="expandAll">
-          {{ t('category::categories.buttons.expand_all') }}
-        </VBtn>
-        |
-        <VBtn size="small" variant="text" @click="collapseAll">
-          {{ t('category::categories.buttons.collapse_all') }}
-        </VBtn>
-      </div>
       <VueTreeDnd
         v-model="tree"
         :component="NodeWrapper"

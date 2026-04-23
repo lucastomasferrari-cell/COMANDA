@@ -5,14 +5,16 @@ return [
     "categories" => "التصنيفات",
 
     "buttons" => [
-        "add_root_category" => "إضافة تصنيف رئيسي",
-        "add_sub_category" => "إضافة تصنيف فرعي",
+        "add_category" => "إضافة تصنيف",
+        "add_root_category" => "إضافة تصنيف",
+        "add_sub_category" => "إضافة تصنيف",
         "expand_all" => "توسيع الكل",
         "collapse_all" => "طي الكل",
     ],
 
     "form" => [
-        "create_root_category" => "إنشاء تصنيف رئيسي",
-        "create_sub_category" => "إنشاء تصنيف فرعي",
+        "create_category" => "إنشاء تصنيف",
+        "create_root_category" => "إنشاء تصنيف",
+        "create_sub_category" => "إنشاء تصنيف",
     ],
 ];
