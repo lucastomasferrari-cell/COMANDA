@@ -28,4 +28,7 @@ return [
     "void_note_required_for_other" => "Con el motivo \"Otro\", la observación es obligatoria (mínimo 20 caracteres).",
     "void_reason_required_after_fire" => "Tenés que elegir un motivo para anular un ítem ya enviado a cocina.",
     "item_voided_successfully" => "Ítem anulado correctamente.",
+    "open_item_over_limit" => "Alcanzaste el límite de ítems sueltos del turno ({count}/{max}) o el tope acumulado ({accumulated}/{max_total}). Se requiere autorización del encargado.",
+    "open_item_over_limit_token_invalid" => "El token de autorización no es válido o expiró.",
+    "open_item_over_limit_approver_lacks_permission" => "El usuario que autorizó no tiene permiso para ítems sueltos sobre el límite.",
 ];

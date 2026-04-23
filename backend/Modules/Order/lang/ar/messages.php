@@ -26,4 +26,7 @@ return [
     "void_note_required_for_other" => "مع السبب \"أخرى\"، الملاحظة إلزامية (20 حرفًا كحد أدنى).",
     "void_reason_required_after_fire" => "يجب اختيار سبب لإلغاء صنف تم إرساله إلى المطبخ.",
     "item_voided_successfully" => "تم إلغاء الصنف بنجاح.",
+    "open_item_over_limit" => "وصلت إلى حد الأصناف الحرة لهذه الوردية ({count}/{max}) أو السقف التراكمي ({accumulated}/{max_total}). مطلوب تصريح المدير.",
+    "open_item_over_limit_token_invalid" => "رمز التصريح غير صالح أو انتهت صلاحيته.",
+    "open_item_over_limit_approver_lacks_permission" => "المستخدم المصرّح لا يملك صلاحية الأصناف الحرة فوق الحد.",
 ];

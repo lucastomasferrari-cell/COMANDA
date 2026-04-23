@@ -27,6 +27,8 @@ use Modules\Order\Models\Reason;
 use Modules\Order\Models\VoidReason;
 use Modules\Payment\Enums\RefundPaymentMethod;
 use Modules\Pos\Models\PosRegister;
+use Modules\User\Models\User;
+use Modules\User\Services\Auth\ManagerPinService;
 use Modules\Printer\app\Factories\PrintContentFactory;
 use Modules\Printer\Enum\PrintContentType;
 use Modules\Printer\Enum\PrinterPaperSize;
@@ -628,10 +630,18 @@ class OrderService implements OrderServiceInterface
             $price = (float) $data["custom_price"];
             $subtotal = $price * $quantity;
 
+            // Enforcement anti-fraude (Bloque 5): 3 umbrales sobre custom
+            // items por turno (pos_session_id de la orden). Si alguno se
+            // supera, requiere manager_approval_token con permiso
+            // admin.orders.custom_item_over_limit. enforceOpenItemLimits
+            // devuelve el approver_id si consumió un token, null si no
+            // hacía falta approval.
+            $approverUserId = $this->enforceOpenItemLimits($order, $price, $subtotal, $data);
+
             // Custom items no heredan taxes del catalogo — el precio ingresado
             // es el total por unidad que el cajero quiere cobrar. Si en el
             // futuro queremos aplicar IVA, agregamos un param include_tax.
-            OrderProduct::create([
+            $orderProduct = OrderProduct::create([
                 "order_id" => $order->id,
                 "product_id" => null,
                 "custom_name" => $data["custom_name"],
@@ -649,6 +659,22 @@ class OrderService implements OrderServiceInterface
 
             $order->recalculate();
             $order->refreshDueAmount();
+
+            AuditLogger::log('custom_item_added', $orderProduct, [
+                'reason' => $data['custom_name'],
+                'new_values' => [
+                    'custom_name' => $data['custom_name'],
+                    'custom_price' => $price,
+                    'quantity' => $quantity,
+                    'subtotal' => $subtotal,
+                ],
+                'metadata' => [
+                    'order_id' => $order->id,
+                    'pos_session_id' => $order->pos_session_id,
+                    'description' => $data['custom_description'] ?? null,
+                ],
+                'approved_by' => $approverUserId,
+            ]);
 
             return $order->fresh();
         });
@@ -697,6 +723,64 @@ class OrderService implements OrderServiceInterface
         event(new OrderPaused($order->fresh()));
 
         return $order->fresh();
+    }
+
+    /**
+     * Enforce de umbrales configurables de open items por turno.
+     * Settings leidas via helper setting(); defaults embebidos.
+     *
+     * Si alguno de los 3 caps se excede Y no hay manager_approval_token
+     * valido, aborta 403. Si el token es valido pero el approver no
+     * tiene admin.orders.custom_item_over_limit, aborta 403.
+     */
+    protected function enforceOpenItemLimits(Order $order, float $price, float $subtotal, array $data): ?int
+    {
+        $maxPerShift = (int) setting('antifraud.open_item_max_per_shift', 5);
+        $maxAmountEach = (float) setting('antifraud.open_item_max_amount_each', 5000);
+        $maxTotalPerShift = (float) setting('antifraud.open_item_max_total_per_shift', 20000);
+
+        $sessionCountsQuery = OrderProduct::query()
+            ->whereNotNull('custom_name')
+            ->whereHas('order', fn($q) => $q->where('pos_session_id', $order->pos_session_id));
+
+        $count = (clone $sessionCountsQuery)->count();
+        $accumulated = (float) (clone $sessionCountsQuery)->sum('total');
+
+        $overCount = $count + 1 > $maxPerShift;
+        $overEach = $price > $maxAmountEach;
+        $overTotal = ($accumulated + $subtotal) > $maxTotalPerShift;
+
+        if (!$overCount && !$overEach && !$overTotal) {
+            return null; // dentro de limites — cajero puede solo.
+        }
+
+        $token = $data['manager_approval_token'] ?? null;
+        abort_unless(
+            $token,
+            403,
+            __('order::messages.open_item_over_limit', [
+                'count' => $count,
+                'max' => $maxPerShift,
+                'accumulated' => $accumulated,
+                'max_total' => $maxTotalPerShift,
+            ]),
+        );
+
+        $payload = app(ManagerPinService::class)->consumeToken($token);
+        abort_unless(
+            $payload && !empty($payload['user_id']),
+            403,
+            __('order::messages.open_item_over_limit_token_invalid'),
+        );
+
+        $approver = User::find($payload['user_id']);
+        abort_unless(
+            $approver && $approver->can('admin.orders.custom_item_over_limit'),
+            403,
+            __('order::messages.open_item_over_limit_approver_lacks_permission'),
+        );
+
+        return $approver->id;
     }
 
     /** @inheritDoc */

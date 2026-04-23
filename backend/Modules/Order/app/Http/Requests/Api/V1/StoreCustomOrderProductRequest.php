@@ -21,6 +21,7 @@ class StoreCustomOrderProductRequest extends Request
             "custom_price" => "required|numeric|min:0|max:9999999.99",
             "custom_description" => "nullable|string|max:2000",
             "quantity" => "required|integer|min:1|max:999",
+            "manager_approval_token" => "nullable|string",
         ];
     }
 

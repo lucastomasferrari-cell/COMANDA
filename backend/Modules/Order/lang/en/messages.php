@@ -28,4 +28,7 @@ return [
     "void_note_required_for_other" => "With reason \"Other\", the note is required (minimum 20 characters).",
     "void_reason_required_after_fire" => "You must pick a reason to void an item that was already sent to the kitchen.",
     "item_voided_successfully" => "Item voided successfully.",
+    "open_item_over_limit" => "You reached the open-item limit for this shift ({count}/{max}) or accumulated cap ({accumulated}/{max_total}). Manager approval required.",
+    "open_item_over_limit_token_invalid" => "The approval token is invalid or expired.",
+    "open_item_over_limit_approver_lacks_permission" => "The approver lacks permission for open items over the limit.",
 ];
