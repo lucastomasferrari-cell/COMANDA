@@ -13,4 +13,9 @@ return [
     "cash_over_short_note_short" => 'Faltante: se declaró menos efectivo del esperado',
     "cannot_close_session_cash_difference" => "No se puede cerrar la sesión: Efectivo declarado (:declared) vs Esperado (:expected). Diferencia: :difference supera el umbral: :threshold.",
     "menu_is_not_active" => "No tenés ningún menú activo",
+    "session_close_blocked_by_open_orders" => "No se puede cerrar la caja: hay {count} órdenes abiertas. Resolvé esas órdenes antes de cerrar.",
+    "session_close_justification_required" => "La diferencia de caja ({diff}) requiere justificación (mínimo 20 caracteres).",
+    "session_close_manager_required" => "La diferencia ({diff}) supera el umbral del encargado ({threshold}). Se requiere autorización.",
+    "session_close_token_invalid" => "El token de autorización no es válido o expiró.",
+    "session_close_approver_lacks_permission" => "El usuario que autorizó no tiene permiso para cerrar la caja con diferencia.",
 ];

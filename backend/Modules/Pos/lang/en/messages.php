@@ -13,4 +13,9 @@ return [
     "cash_over_short_note_short" => 'Short: declared less cash than expected',
     "cannot_close_session_cash_difference" => "Cannot close session: Declared cash (:declared) vs Expected (:expected). Difference: :difference exceeds threshold: :threshold.",
     "menu_is_not_active" => "You no have any menu active",
+    "session_close_blocked_by_open_orders" => "Cannot close drawer: {count} open orders remaining. Resolve them before closing.",
+    "session_close_justification_required" => "Cash difference ({diff}) requires a justification (min 20 characters).",
+    "session_close_manager_required" => "Difference ({diff}) exceeds manager threshold ({threshold}). Approval required.",
+    "session_close_token_invalid" => "The approval token is invalid or expired.",
+    "session_close_approver_lacks_permission" => "The approver lacks permission to close the drawer with a difference.",
 ];

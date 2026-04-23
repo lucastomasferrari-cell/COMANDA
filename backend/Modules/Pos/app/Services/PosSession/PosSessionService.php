@@ -10,8 +10,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
+use Modules\AuditLog\Services\AuditLogger;
 use Modules\Branch\Models\Branch;
+use Modules\Order\Enums\OrderStatus;
+use Modules\Order\Models\Order;
 use Modules\Pos\Enums\PosSessionStatus;
+use Modules\User\Models\User;
+use Modules\User\Services\Auth\ManagerPinService;
 use Modules\Pos\Events\ClosePosSession;
 use Modules\Pos\Events\OpenPosSession;
 use Modules\Pos\Models\PosRegister;
@@ -140,6 +145,24 @@ class PosSessionService implements PosSessionServiceInterface
 
             abort_if($session->status !== PosSessionStatus::Open, 400, __('pos::messages.session_closed'));
 
+            // Hard lock: no cerrar session si hay ordenes abiertas en el
+            // register. El cajero debe resolver (cobrar / anular / mover).
+            $openOrdersCount = Order::query()
+                ->where('pos_register_id', $session->pos_register_id)
+                ->whereNotIn('status', [
+                    OrderStatus::Completed,
+                    OrderStatus::Cancelled,
+                    OrderStatus::Refunded,
+                    OrderStatus::Merged,
+                ])
+                ->count();
+
+            abort_if(
+                $openOrdersCount > 0,
+                422,
+                __('pos::messages.session_close_blocked_by_open_orders', ['count' => $openOrdersCount]),
+            );
+
             $session->declared_cash = $data['declared_cash'];
 
             try {
@@ -150,12 +173,84 @@ class PosSessionService implements PosSessionServiceInterface
                 ]);
             }
 
+            // Validacion anti-fraude (Bloque 12):
+            // - |diff| > justification_threshold → justification 20+ chars obligatoria.
+            // - |diff| > manager_threshold → manager_approval_token obligatorio.
+            // El branch.cash_difference_threshold ya aborta el cierre antes
+            // (via exception en calculateClosingSummary) — nuestros umbrales
+            // viven entre 0 y ese techo.
+            $expected = (float) ($summary['system_cash_sales'] ?? 0);
+            $actual = (float) $data['declared_cash'];
+            $diff = abs($actual - $expected);
+
+            $justificationMinAmount = (float) setting('antifraud.session_close_justification_threshold', 500);
+            $managerThresholdPercent = (float) setting('antifraud.session_close_manager_required_percent', 10);
+            $managerThresholdAmount = $expected > 0 ? $expected * ($managerThresholdPercent / 100) : PHP_FLOAT_MAX;
+
+            $approverUserId = null;
+            $justification = $data['justification'] ?? null;
+
+            if ($diff >= $justificationMinAmount) {
+                abort_if(
+                    empty($justification) || strlen($justification) < 20,
+                    422,
+                    __('pos::messages.session_close_justification_required', ['diff' => number_format($diff, 2)]),
+                );
+            }
+
+            if ($diff >= $managerThresholdAmount && $expected > 0) {
+                $token = $data['manager_approval_token'] ?? null;
+                abort_unless(
+                    $token,
+                    403,
+                    __('pos::messages.session_close_manager_required', [
+                        'diff' => number_format($diff, 2),
+                        'threshold' => number_format($managerThresholdAmount, 2),
+                    ]),
+                );
+
+                $payload = app(ManagerPinService::class)->consumeToken($token);
+                abort_unless(
+                    $payload && !empty($payload['user_id']),
+                    403,
+                    __('pos::messages.session_close_token_invalid'),
+                );
+
+                $approver = User::find($payload['user_id']);
+                abort_unless(
+                    $approver && $approver->can('admin.pos_sessions.close'),
+                    403,
+                    __('pos::messages.session_close_approver_lacks_permission'),
+                );
+
+                $approverUserId = $approver->id;
+            }
+
             $session->update([
                 'closed_by' => auth()->id(),
                 'closed_at' => now(),
                 'status' => PosSessionStatus::Closed,
                 'declared_cash' => $data['declared_cash'],
                 ...$summary
+            ]);
+
+            AuditLogger::log('pos_session_closed', $session, [
+                'reason' => $justification,
+                'new_values' => [
+                    'expected_cash' => $expected,
+                    'declared_cash' => $actual,
+                    'difference' => $actual - $expected,
+                    'open_orders_at_close' => 0,
+                ],
+                'metadata' => [
+                    'absolute_diff' => $diff,
+                    'justification_threshold' => $justificationMinAmount,
+                    'manager_threshold_amount' => $managerThresholdAmount,
+                    'required_justification' => $diff >= $justificationMinAmount,
+                    'required_manager' => $diff >= $managerThresholdAmount,
+                ],
+                'approved_by' => $approverUserId,
+                'is_fiscal' => false,
             ]);
 
             event(new ClosePosSession($session));
