@@ -224,6 +224,26 @@ const adminRoutes: RouteRecordRaw[] = [
     },
   },
 
+  // Anti-fraude dashboard + pending approvals admin.
+  {
+    path: 'antifraud',
+    name: 'admin.antifraud',
+    component: () => import('@/modules/antifraud/pages/admin/Index.vue'),
+    meta: {
+      title: 'admin::sidebar.antifraud',
+      permission: 'admin.audit_logs.index',
+    },
+  },
+  {
+    path: 'pending-approvals',
+    name: 'admin.pending_approvals',
+    component: () => import('@/modules/antifraud/pages/admin/PendingApprovals.vue'),
+    meta: {
+      title: 'admin::sidebar.pending_approvals',
+      permission: 'admin.audit_logs.index',
+    },
+  },
+
   // Configuracion hub — general, apariencia (placeholder), AFIP (placeholder), integraciones (placeholder), herramientas.
   {
     path: 'configuracion',

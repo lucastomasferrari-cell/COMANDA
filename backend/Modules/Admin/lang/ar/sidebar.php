@@ -74,6 +74,8 @@ return [
     "salon" => "صالة الطعام",
     "cocina" => "المطبخ",
     "cobros" => "المقبوضات",
+    "antifraud" => "مكافحة الاحتيال",
+    "pending_approvals" => "موافقات معلقة",
     "personal" => "الموظفون",
     "marketing" => "التسويق",
     "configuracion" => "الإعدادات",

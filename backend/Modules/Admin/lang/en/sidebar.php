@@ -74,6 +74,8 @@ return [
     "salon" => "Dining room",
     "cocina" => "Kitchen",
     "cobros" => "Cobros",
+    "antifraud" => "Anti-fraud",
+    "pending_approvals" => "Pending approvals",
     "personal" => "Staff",
     "marketing" => "Marketing",
     "configuracion" => "Configuration",

@@ -102,6 +102,14 @@ export const adminSidebar: SidebarList = {
       sort: 8,
     },
     {
+      key: 'admin.antifraud',
+      label: 'admin::sidebar.antifraud',
+      to: { name: 'admin.antifraud' },
+      icon: 'tabler-shield-lock',
+      permission: 'admin.audit_logs.index',
+      sort: 9,
+    },
+    {
       key: 'admin.configuracion',
       label: 'admin::sidebar.configuracion',
       to: { name: 'admin.configuracion.general' },
@@ -110,7 +118,7 @@ export const adminSidebar: SidebarList = {
         'admin.settings.edit',
         'admin.tools.database',
       ],
-      sort: 9,
+      sort: 10,
     },
   ],
 }
