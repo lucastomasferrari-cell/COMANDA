@@ -17,6 +17,7 @@ return [
             Action::Split,
             Action::UpdateStatus,
             Action::AssignWaiter,
+            Action::FreeWithoutPayment,
         ],
         "table_merges" => [Action::Index, Action::Show],
     ],

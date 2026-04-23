@@ -74,6 +74,17 @@ enum PermissionAction: string
     case AvailableGifts = "available_gifts";
     case Print = "print";
     case Reopen = "reopen";
+    // Permisos granulares anti-fraude (Bloque 7 del sprint).
+    case VoidItemBeforeFire = "void_item_before_fire";
+    case VoidItemAfterFire = "void_item_after_fire";
+    case VoidOrderBeforePayment = "void_order_before_payment";
+    case DiscountSmall = "discount_small";
+    case DiscountMedium = "discount_medium";
+    case DiscountLarge = "discount_large";
+    case ModifyPrice = "modify_price";
+    case ModifyAfterPaid = "modify_after_paid";
+    case CustomItemOverLimit = "custom_item_over_limit";
+    case FreeWithoutPayment = "free_without_payment";
 
     case LoyaltyLastActivity = "loyalty_last_activity";
     case LoyaltyInactiveCustomers = "loyalty_inactive_customers";

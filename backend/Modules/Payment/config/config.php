@@ -4,6 +4,6 @@ use Modules\User\Enums\{PermissionAction as Action};
 
 return [
     'permissions' => [
-        "payments" => [Action::Index, Action::Show]
+        "payments" => [Action::Index, Action::Show, Action::ModifyAfterPaid]
     ],
 ];
