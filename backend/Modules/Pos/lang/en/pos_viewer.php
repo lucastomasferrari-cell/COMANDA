@@ -112,6 +112,16 @@ return [
         "empty_description" => "Create tables in Admin > Floor to see them on the plan.",
         "context_placeholder" => "Quick actions: coming soon",
     ],
+    "change_payment_method" => [
+        "title" => "Change payment method",
+        "audit_notice" => "This change is permanently audited and the owner is notified.",
+        "payment" => "Payment to modify",
+        "new_method" => "New method",
+        "reason" => "Reason (required, min 20 characters)",
+        "reason_hint" => "Explain in detail why the method is being changed.",
+        "submit" => "Change",
+        "saved" => "Payment method updated. Change audited.",
+    ],
     "void_item" => [
         "title" => "Void item",
         "subtitle" => "You're about to void \"{item}\". This will be recorded in the audit log.",

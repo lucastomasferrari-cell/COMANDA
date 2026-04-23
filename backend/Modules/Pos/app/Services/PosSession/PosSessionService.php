@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\QueryException;
 use Illuminate\Validation\ValidationException;
+use App\Support\AntiFraud;
 use Modules\AuditLog\Services\AuditLogger;
 use Modules\Branch\Models\Branch;
 use Modules\Order\Enums\OrderStatus;
@@ -200,14 +201,15 @@ class PosSessionService implements PosSessionServiceInterface
 
             if ($diff >= $managerThresholdAmount && $expected > 0) {
                 $token = $data['manager_approval_token'] ?? null;
-                abort_unless(
-                    $token,
-                    403,
-                    __('pos::messages.session_close_manager_required', [
-                        'diff' => number_format($diff, 2),
-                        'threshold' => number_format($managerThresholdAmount, 2),
-                    ]),
-                );
+                if (!$token) {
+                    AntiFraud::requireApproval(
+                        __('pos::messages.session_close_manager_required', [
+                            'diff' => number_format($diff, 2),
+                            'threshold' => number_format($managerThresholdAmount, 2),
+                        ]),
+                        'session_close',
+                    );
+                }
 
                 $payload = app(ManagerPinService::class)->consumeToken($token);
                 abort_unless(

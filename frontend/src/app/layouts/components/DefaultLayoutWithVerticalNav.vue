@@ -16,6 +16,7 @@
   import NavItems from '@/app/layouts/components/NavItems.vue'
   import UserProfile from '@/app/layouts/components/UserProfile/Index.vue'
   import VerticalNavLayout from '@/app/layouts/components/VerticalNavLayout.vue'
+  import GlobalManagerPinDialog from '@/modules/auth/components/GlobalManagerPinDialog.vue'
   import { useAuth } from '@/modules/auth/composables/auth.ts'
   import { useAppStore } from '@/modules/core/stores/appStore.ts'
 
@@ -90,6 +91,11 @@
       <Footer />
     </template>
   </VerticalNavLayout>
+
+  <!-- Singleton global: el axios interceptor dispara esto en 403
+       con code=manager_approval_required. Cualquier dialog o UI
+       que llame al store también lo muestra. -->
+  <GlobalManagerPinDialog />
 </template>
 
 <style lang="scss" scoped>

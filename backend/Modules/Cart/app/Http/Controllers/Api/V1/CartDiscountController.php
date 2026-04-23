@@ -4,6 +4,7 @@ namespace Modules\Cart\Http\Controllers\Api\V1;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Support\AntiFraud;
 use Modules\AuditLog\Services\AuditLogger;
 use Modules\Cart\Facades\Cart;
 use Modules\Cart\Services\DiscountApplyService\DiscountApplyServiceInterface;
@@ -50,11 +51,12 @@ class CartDiscountController extends Controller
             $token = $request->input('manager_approval_token');
             $payload = $token ? $pinService->consumeToken($token) : null;
 
-            abort_unless(
-                $payload && !empty($payload['user_id']),
-                403,
-                __('cart::messages.discount_requires_approval', ['limit' => $cashierMax]),
-            );
+            if (!$payload || empty($payload['user_id'])) {
+                AntiFraud::requireApproval(
+                    __('cart::messages.discount_requires_approval', ['limit' => $cashierMax]),
+                    'discount_apply',
+                );
+            }
 
             $approver = User::find($payload['user_id']);
             abort_unless(

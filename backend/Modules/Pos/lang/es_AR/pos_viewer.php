@@ -112,6 +112,16 @@ return [
         "empty_description" => "Creá mesas en Admin > Salón para verlas en el plano.",
         "context_placeholder" => "Acciones rápidas: próximamente",
     ],
+    "change_payment_method" => [
+        "title" => "Cambiar forma de pago",
+        "audit_notice" => "Este cambio queda en auditoría permanente y notifica al dueño.",
+        "payment" => "Pago a modificar",
+        "new_method" => "Nuevo método",
+        "reason" => "Motivo (obligatorio, mínimo 20 caracteres)",
+        "reason_hint" => "Explicá con detalle por qué se está cambiando el método.",
+        "submit" => "Cambiar",
+        "saved" => "Forma de pago actualizada. Cambio auditado.",
+    ],
     "void_item" => [
         "title" => "Anular ítem",
         "subtitle" => "Estás por anular \"{item}\". El ítem queda registrado en auditoría.",

@@ -3,6 +3,7 @@
 namespace Modules\Order\Services\Order;
 
 use App\Forkiva;
+use App\Support\AntiFraud;
 use DB;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -826,16 +827,17 @@ class OrderService implements OrderServiceInterface
         }
 
         $token = $data['manager_approval_token'] ?? null;
-        abort_unless(
-            $token,
-            403,
-            __('order::messages.open_item_over_limit', [
-                'count' => $count,
-                'max' => $maxPerShift,
-                'accumulated' => $accumulated,
-                'max_total' => $maxTotalPerShift,
-            ]),
-        );
+        if (!$token) {
+            AntiFraud::requireApproval(
+                __('order::messages.open_item_over_limit', [
+                    'count' => $count,
+                    'max' => $maxPerShift,
+                    'accumulated' => $accumulated,
+                    'max_total' => $maxTotalPerShift,
+                ]),
+                'open_item_over_limit',
+            );
+        }
 
         $payload = app(ManagerPinService::class)->consumeToken($token);
         abort_unless(

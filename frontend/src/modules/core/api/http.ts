@@ -26,6 +26,40 @@ http.interceptors.request.use(config => {
 http.interceptors.response.use(
   response => response,
   async error => {
+    // Anti-fraude: 403 con shape { code: 'manager_approval_required' }
+    // o header X-AntiFraud-Action → abrimos el PIN dialog, metemos el
+    // token en el body y reintentamos la misma request una sola vez.
+    const isAntifraudApproval =
+      error.response?.status === 403
+      && (
+        error.response.data?.code === 'manager_approval_required'
+        || error.response.headers?.['x-antifraud-action'] === 'manager_approval_required'
+      )
+      && !(error.config as any)?.__antifraudRetried
+
+    if (isAntifraudApproval) {
+      const { useManagerApprovalStore } = await import('@/modules/auth/stores/managerApprovalStore.ts')
+      const store = useManagerApprovalStore()
+
+      const token = await store.requestApproval({
+        actionContext: error.response.data?.context ?? 'anti_fraud',
+        subtitle: error.response.data?.message,
+      })
+
+      if (!token) {
+        throw error // user canceló
+      }
+
+      const retryConfig: any = { ...error.config, __antifraudRetried: true }
+      let body: any = retryConfig.data
+      if (typeof body === 'string') {
+        try { body = JSON.parse(body) } catch { body = {} }
+      }
+      body = { ...(body || {}), manager_approval_token: token }
+      retryConfig.data = body
+      return http.request(retryConfig)
+    }
+
     if (error.response?.status === 401 && (!error?.config?.url?.includes('/auth/login'))) {
       if (error?.config?.url?.includes('/auth/check')) {
         throw error
