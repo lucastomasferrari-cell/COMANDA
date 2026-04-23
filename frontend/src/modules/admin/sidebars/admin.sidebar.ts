@@ -75,7 +75,7 @@ export const adminSidebar: SidebarList = {
       key: 'admin.antifraud',
       label: 'admin::sidebar.antifraud',
       to: { name: 'admin.antifraud' },
-      icon: 'tabler-shield-lock',
+      icon: 'tabler-shield-check',
       permission: 'admin.audit_logs.index',
       sort: 9,
     },
