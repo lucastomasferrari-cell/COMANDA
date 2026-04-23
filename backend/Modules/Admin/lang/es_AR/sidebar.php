@@ -97,6 +97,10 @@ return [
     "mail" => "Correo",
     "support" => "Soporte técnico",
 
+    // Sprint 5 cards: tabs del sub-hub Plano de mesas.
+    "plano_visual" => "Plano visual",
+    "zonas" => "Zonas",
+
     "coming_soon_title" => "Próximamente",
     "coming_soon_description" => "Esta sección estará disponible en la próxima versión.",
 ];

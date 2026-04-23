@@ -120,25 +120,26 @@ const adminRoutes: RouteRecordRaw[] = [
     ],
   },
 
-  // Salon hub — plano integral (Floors+Zones+Tables stackeados) + 2 placeholders.
+  // Salón ELIMINADO (sprint 5 cards): Plano de mesas → Configuración > Plano de mesas.
+  //   Canales de venta → Configuración > Operación.
+  //   Catch-all redirect de /admin/salon/* abajo. Rutas específicas redirigen a
+  //   su nuevo hogar; el resto cae en la landing de Configuración.
   {
-    path: 'salon',
-    component: () => import('@/modules/admin/pages/admin/hubs/SalonHub.vue'),
-    meta: { title: 'admin::sidebar.salon' },
-    children: [
-      { path: '', redirect: { name: 'admin.salon.plano' } },
-      {
-        path: 'plano-de-mesas',
-        name: 'admin.salon.plano',
-        component: () => import('@/modules/seatingPlan/pages/admin/SalonPlanoView.vue'),
-        meta: { permission: 'admin.tables.index' },
-      },
-      {
-        path: 'canales-de-venta',
-        name: 'admin.salon.canales',
-        component: () => import('@/modules/core/components/ComingSoonPlaceholder.vue'),
-      },
-    ],
+    path: 'salon/plano-de-mesas',
+    redirect: { name: 'admin.configuracion.plano_de_mesas.visual' },
+  },
+  {
+    path: 'salon/zonas',
+    redirect: { name: 'admin.configuracion.plano_de_mesas.zonas' },
+  },
+  {
+    path: 'salon/canales-de-venta',
+    redirect: { name: 'admin.configuracion.operacion.canales' },
+  },
+  {
+    path: 'salon/:pathMatch(.*)*',
+    name: 'admin.salon.legacy_redirect',
+    redirect: { name: 'admin.configuracion' },
   },
 
   // Alias corto: /admin/kds → full-screen KDS viewer (admin.pos.kitchen_viewer).
@@ -402,6 +403,37 @@ const adminRoutes: RouteRecordRaw[] = [
         name: 'admin.configuracion.operacion.kds',
         component: () => import('@/modules/setting/pages/admin/setting/Kitchen.vue'),
         meta: { permission: 'admin.settings.edit' },
+      },
+      // Canales de venta migrado desde el hub Salón eliminado. Placeholder
+      // por ahora — la feature (online ordering, delivery apps, QR table)
+      // se activa cuando estén las integraciones.
+      {
+        path: 'canales-de-venta',
+        name: 'admin.configuracion.operacion.canales',
+        component: () => import('@/modules/core/components/ComingSoonPlaceholder.vue'),
+      },
+    ],
+  },
+  // Configuración > Plano de mesas — sub-hub nuevo con 2 tabs (Plano visual + Zonas).
+  // Migrado desde el hub Salón eliminado en el sprint 5 cards.
+  {
+    path: 'configuracion/plano-de-mesas',
+    name: 'admin.configuracion.plano_de_mesas',
+    component: () => import('@/modules/admin/pages/admin/hubs/configuracion/PlanoDeMesasSubHub.vue'),
+    meta: { title: 'admin::admin.configuracion_landing.cards.plano_de_mesas.title' },
+    redirect: { name: 'admin.configuracion.plano_de_mesas.visual' },
+    children: [
+      {
+        path: 'plano-visual',
+        name: 'admin.configuracion.plano_de_mesas.visual',
+        component: () => import('@/modules/seatingPlan/pages/admin/SalonPlanoView.vue'),
+        meta: { permission: 'admin.tables.index' },
+      },
+      {
+        path: 'zonas',
+        name: 'admin.configuracion.plano_de_mesas.zonas',
+        component: () => import('@/modules/seatingPlan/pages/admin/zone/Index.vue'),
+        meta: { permission: 'admin.zones.index' },
       },
     ],
   },

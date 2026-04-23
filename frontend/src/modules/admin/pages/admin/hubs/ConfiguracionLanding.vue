@@ -16,26 +16,37 @@
   // tiraba exception al armar el href del VCard → pantalla en blanco +
   // router stuck en transición. Apuntar al child default bypasea
   // el indirect lookup y es más honesto: la URL refleja dónde aterriza.
+  // 5 cards en grid 3+2 desktop (cols md=4 para las 3 primeras, cols md=6 para las 2 últimas).
   const cards = [
     {
       key: 'restaurante',
       icon: 'tabler-building-store',
       to: { name: 'admin.configuracion.restaurante' },
+      cols: { md: 4 },
+    },
+    {
+      key: 'plano_de_mesas',
+      icon: 'tabler-layout-grid',
+      to: { name: 'admin.configuracion.plano_de_mesas.visual' },
+      cols: { md: 4 },
     },
     {
       key: 'operacion',
       icon: 'tabler-briefcase',
       to: { name: 'admin.configuracion.operacion.formas' },
+      cols: { md: 4 },
     },
     {
       key: 'users_and_security',
       icon: 'tabler-user-shield',
       to: { name: 'admin.configuracion.usuarios_seguridad.usuarios_permisos' },
+      cols: { md: 6 },
     },
     {
       key: 'system',
       icon: 'tabler-plug-connected',
       to: { name: 'admin.configuracion.sistema.correo' },
+      cols: { md: 6 },
     },
   ] as const
 </script>
@@ -46,7 +57,7 @@
       v-for="card in cards"
       :key="card.key"
       cols="12"
-      md="6"
+      :md="card.cols.md"
     >
       <VCard
         class="configuracion-card h-100"

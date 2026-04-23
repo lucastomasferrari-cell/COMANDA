@@ -96,6 +96,9 @@ return [
     "mail" => "Mail",
     "support" => "Technical support",
 
+    "plano_visual" => "Visual plan",
+    "zonas" => "Zones",
+
     "coming_soon_title" => "Coming soon",
     "coming_soon_description" => "This section will be available in the next version.",
 ];

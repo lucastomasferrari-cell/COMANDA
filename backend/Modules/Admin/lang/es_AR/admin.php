@@ -107,9 +107,13 @@ return [
                 "title" => "Restaurante",
                 "subtitle" => "Datos del local, logo, contacto",
             ],
+            "plano_de_mesas" => [
+                "title" => "Plano de mesas",
+                "subtitle" => "Plano visual del salón, zonas",
+            ],
             "operacion" => [
                 "title" => "Operación",
-                "subtitle" => "Formas de cobro, impresión, KDS",
+                "subtitle" => "Formas de cobro, canales, impresión, KDS",
             ],
             "users_and_security" => [
                 "title" => "Usuarios y seguridad",

@@ -106,9 +106,13 @@ return [
                 "title" => "Restaurant",
                 "subtitle" => "Business details, logo, contact",
             ],
+            "plano_de_mesas" => [
+                "title" => "Seating plan",
+                "subtitle" => "Visual plan of the venue, zones",
+            ],
             "operacion" => [
                 "title" => "Operations",
-                "subtitle" => "Payment methods, printing, KDS",
+                "subtitle" => "Payment methods, channels, printing, KDS",
             ],
             "users_and_security" => [
                 "title" => "Users and security",
