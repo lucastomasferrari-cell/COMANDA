@@ -226,46 +226,62 @@ const adminRoutes: RouteRecordRaw[] = [
     ],
   },
 
-  // Marketing hub — descuentos, cupones, gift cards, fidelizacion, clientes.
+  // Marketing ELIMINADO del sidebar (descuentos/cupones/gift-cards/loyalty
+  // se reactivan en v2). Clientes (que era hijo de marketing) sube a
+  // top-level como /admin/clientes. Catch-all redirect manda cualquier
+  // bookmark viejo de /admin/marketing/* a /admin/clientes.
   {
-    path: 'marketing',
-    component: () => import('@/modules/admin/pages/admin/hubs/MarketingHub.vue'),
-    meta: { title: 'admin::sidebar.marketing' },
+    path: 'marketing/:pathMatch(.*)*',
+    name: 'admin.marketing.legacy_redirect',
+    redirect: { name: 'admin.clientes' },
+  },
+
+  // Clientes top-level con create/edit anidados. Mismo patrón del Bloque 1:
+  // el Create/Edit renderea dentro del router-view de este bloque sin salir
+  // del hub. No necesita sub-tabs (single resource) — el header del form
+  // viene de BaseForm.
+  {
+    path: 'clientes',
+    meta: {
+      title: 'admin::sidebar.customers',
+      icon: 'tabler-user-circle',
+    },
     children: [
-      { path: '', redirect: { name: 'admin.marketing.descuentos' } },
       {
-        // Bloque 4.4a: descuentos absorbe tambien las loyalty promotions.
-        // Renderiza DiscountIndex + LoyaltyPromotionIndex stackeados.
-        path: 'descuentos',
-        name: 'admin.marketing.descuentos',
-        component: () => import('@/modules/admin/pages/admin/hubs/partials/DescuentosConsolidated.vue'),
-        meta: { permission: 'admin.discounts.index' },
-      },
-      {
-        path: 'cupones',
-        name: 'admin.marketing.cupones',
-        component: () => import('@/modules/promotion/pages/admin/voucher/Index.vue'),
-        meta: { permission: 'admin.vouchers.index' },
-      },
-      {
-        path: 'tarjetas-de-regalo',
-        name: 'admin.marketing.gift_cards',
-        component: () => import('@/modules/giftcard/pages/admin/giftCard/Index.vue'),
-        meta: { permission: 'admin.gift_cards.index' },
-      },
-      {
-        path: 'fidelizacion',
-        name: 'admin.marketing.fidelizacion',
-        component: () => import('@/modules/loyalty/pages/admin/program/Index.vue'),
-        meta: { permission: 'admin.loyalty_programs.index' },
-      },
-      {
-        path: 'clientes',
-        name: 'admin.marketing.clientes',
+        path: '',
+        name: 'admin.clientes',
         component: () => import('@/modules/user/pages/admin/customer/Index.vue'),
         meta: { permission: 'admin.customers.index' },
       },
+      {
+        path: 'create',
+        name: 'admin.clientes.create',
+        component: () => import('@/modules/user/pages/admin/customer/Create.vue'),
+        meta: {
+          title: 'admin::resource.create',
+          transParam: { resource: 'user::customers.customer' },
+          permission: 'admin.customers.create',
+        },
+      },
+      {
+        path: ':id/edit',
+        name: 'admin.clientes.edit',
+        component: () => import('@/modules/user/pages/admin/customer/Edit.vue'),
+        meta: {
+          title: 'admin::resource.edit',
+          transParam: { resource: 'user::customers.customer' },
+          permission: 'admin.customers.edit',
+        },
+      },
     ],
+  },
+  // Redirect de /admin/customers/* (ruta vendor-style del módulo user) hacia
+  // /admin/clientes/*. Mantenemos la ruta vendor viva en modules/user/routes/
+  // pero el user admin siempre llega a /admin/clientes.
+  {
+    path: 'customers/:pathMatch(.*)*',
+    name: 'admin.customers.legacy_redirect',
+    redirect: { name: 'admin.clientes' },
   },
 
   // Reportes — sin tabs.

@@ -36,32 +36,24 @@ export const adminSidebar: SidebarList = {
       ],
       sort: 2,
     },
-    {
-      key: 'admin.salon',
-      label: 'admin::sidebar.salon',
-      to: { name: 'admin.salon.plano' },
-      icon: 'tabler-building-skyscraper',
-      permission: 'admin.tables.index',
-      sort: 3,
-    },
+    // Salón: removido (sprint 4 cards). Plano de mesas/Zonas → Configuración > Plano de mesas.
+    //   Canales de venta → Configuración > Operación.
+    //   /admin/salon/* redirecciona a su nueva ubicación en bloque 3.
     // Cocina: removido (bloque 5). Impresoras → Configuración > Operación > Impresión.
     //   KDS viewer → /admin/kds (alias) o topbar icon.
     // Personal: removido (bloque 5). Usuarios/Permisos → Configuración > Usuarios y seguridad.
     // Cobros: removido (fix 2). Formas de cobro → Configuración > Operación > Formas de cobro.
     //   /admin/cobros/* sigue funcionando vía redirect catch-all.
+    // Marketing: removido (sprint 4 cards). Clientes sube como top-level.
+    //   Descuentos/Cupones/Gift cards/Fidelización se reactivan en v2.
+    //   /admin/marketing/* redirect catch-all → /admin/clientes.
     {
-      key: 'admin.marketing',
-      label: 'admin::sidebar.marketing',
-      to: { name: 'admin.marketing.descuentos' },
-      icon: 'tabler-target-arrow',
-      permission: [
-        'admin.discounts.index',
-        'admin.vouchers.index',
-        'admin.gift_cards.index',
-        'admin.loyalty_programs.index',
-        'admin.customers.index',
-      ],
-      sort: 7,
+      key: 'admin.clientes',
+      label: 'admin::sidebar.customers',
+      to: { name: 'admin.clientes' },
+      icon: 'tabler-user-circle',
+      permission: 'admin.customers.index',
+      sort: 3,
     },
     {
       key: 'admin.reportes',
