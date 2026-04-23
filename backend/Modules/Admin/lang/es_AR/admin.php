@@ -8,6 +8,7 @@ return [
         'delete' => 'Eliminar',
         'edit' => 'Editar',
         'update' => 'Actualizar',
+        'save_changes' => 'Guardar cambios',
         "close" => "Cerrar",
         "open" => "Abrir",
         "submit" => "Enviar",
