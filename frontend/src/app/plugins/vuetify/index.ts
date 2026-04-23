@@ -24,6 +24,15 @@ const vuetify = createVuetify({
   theme: {
     defaultTheme: 'light',
     themes,
+    // variations genera primary-lighten-{1..4}, primary-darken-{1..4}, etc.
+    // automáticamente desde el color base. Cubre hovers/actives sin definir
+    // a mano cada tonalidad. Aplicado solo a primary/secondary/surface para
+    // no inflar el CSS output con colores que no usamos.
+    variations: {
+      colors: ['primary', 'secondary', 'surface'],
+      lighten: 4,
+      darken: 4,
+    },
   },
 })
 

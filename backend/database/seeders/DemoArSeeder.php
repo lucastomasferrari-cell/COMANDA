@@ -16,6 +16,7 @@ use Modules\Product\Models\Product;
 use Modules\SeatingPlan\Models\Floor;
 use Modules\SeatingPlan\Models\Table;
 use Modules\SeatingPlan\Models\Zone;
+use Modules\Setting\Models\Setting;
 use Modules\User\Models\User;
 
 /**
@@ -75,6 +76,9 @@ class DemoArSeeder extends Seeder
 
         $this->command->info('→ Apertura de caja con $10.000');
         $this->seedPosSession();
+
+        $this->command->info('→ Paleta coral marca (theme settings)');
+        $this->seedThemeColors();
 
         $this->command->info('✓ Demo AR listo.');
     }
@@ -502,5 +506,27 @@ class DemoArSeeder extends Seeder
         DB::table('pos_registers')->where('id', $register->id)->update([
             'last_session_id' => $session->id,
         ]);
+    }
+
+    private function seedThemeColors(): void
+    {
+        // Sprint 1.A — paleta coral marca. Si no se setean acá el backend
+        // devuelve los defaults vendor (#F57C00 naranja etc.) y
+        // applyThemeSettings() del frontend los pisa sobre la paleta nueva
+        // del theme.ts. Idempotente vía Setting::set (updateOrCreate).
+        $colors = [
+            'theme_primary_color' => '#E8735A',
+            'theme_secondary_color' => '#6B6259',
+            'theme_success_color' => '#0D9B6A',
+            'theme_info_color' => '#3B82F6',
+            'theme_warning_color' => '#F59E0B',
+            'theme_error_color' => '#DC2626',
+            'pwa_background_color' => '#FDFBF7',
+            'pwa_theme_color' => '#FDFBF7',
+        ];
+
+        foreach ($colors as $key => $value) {
+            Setting::set($key, $value);
+        }
     }
 }

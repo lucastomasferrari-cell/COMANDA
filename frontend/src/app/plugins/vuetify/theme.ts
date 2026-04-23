@@ -1,41 +1,65 @@
 import type { ThemeDefinition } from 'vuetify'
 import type { AppSettings } from '@/modules/core/contracts/AppState.ts'
 
-export const staticPrimaryColor = '#F57C00'
-export const staticPrimaryDarkenColor = '#EF6C00'
-export const staticSecondaryColor = '#043A63' // 00695C
+// Paleta coral marca — Sprint 1.A. Reemplaza la paleta vendor (primary
+// naranja #F57C00 + background frío #FAF8F3) por una identidad cálida
+// gastronómica AR. Los tokens viven en Vuetify nativo; todo lo que ya
+// usa rgba(var(--v-theme-*)) o clases bg-* text-* de Vuetify los
+// hereda automáticamente sin tocar nada.
+export const staticPrimaryColor = '#E8735A'
+export const staticPrimaryDarkenColor = '#D85F48'
+export const staticSecondaryColor = '#6B6259'
 export const themes: Record<string, ThemeDefinition> = {
   light: {
     dark: false,
     colors: {
+      // Surfaces
+      'background': '#FDFBF7',        // blanco cálido
+      'surface': '#FFFFFF',
+      'surface-variant': '#FAF7F2',   // surface-elevated
+      'on-background': '#1F1B17',
+      'on-surface': '#1F1B17',
+      'on-surface-variant': '#6B6259',
+
+      // Brand
       'primary': staticPrimaryColor,
-      'on-primary': '#fff',
       'primary-darken-1': staticPrimaryDarkenColor,
-      'primary-light': '#8789FF',
+      'primary-light': '#F2957E',
+      'on-primary': '#FFFFFF',
       'secondary': staticSecondaryColor,
-      'on-secondary': '#fff',
-      'secondary-darken-1': staticSecondaryColor,
-      'secondary-light': staticSecondaryColor,
-      'success': '#2ecc71',
-      'on-success': '#fff',
-      'success-darken-1': '#66C732',
-      'success-light': '#53D28C',
-      'info': '#03C3EC',
-      'on-info': '#fff',
-      'info-darken-1': '#03AFD4',
-      'info-light': '#35CFF0',
-      'warning': '#f1c40f',
-      'on-warning': '#fff',
-      'warning-darken-1': '#E69A00',
-      'warning-light': '#FFBC33',
-      'error': '#e74c3c',
-      'on-error': '#fff',
-      'error-darken-1': '#E6381A',
-      'error-light': '#FF654A',
-      'background': '#FAF8F3',
-      'on-background': '#22303E',
-      'surface': '#fff',
-      'on-surface': '#22303E',
+      'secondary-darken-1': '#524A43',
+      'secondary-light': '#8A7F72',
+      'on-secondary': '#FFFFFF',
+
+      // Semantic gastronómico
+      'success': '#0D9B6A',           // mesa libre, cocina lista
+      'on-success': '#FFFFFF',
+      'success-darken-1': '#0A7D55',
+      'success-light': '#2FB787',
+      'warning': '#F59E0B',           // en cocina
+      'on-warning': '#1F1B17',
+      'warning-darken-1': '#D48806',
+      'warning-light': '#FBC65D',
+      'error': '#DC2626',
+      'on-error': '#FFFFFF',
+      'error-darken-1': '#B91C1C',
+      'error-light': '#EF5350',
+      'info': '#3B82F6',
+      'on-info': '#FFFFFF',
+      'info-darken-1': '#2563EB',
+      'info-light': '#60A5FA',
+
+      // Tokens custom — KDS y estados de mesa
+      'kitchen-hot': '#EF4444',       // comanda pasada de tiempo
+      'table-occupied': '#F59E0B',
+      'table-ready': '#0D9B6A',
+
+      // Borders (custom)
+      'border': '#EDE8E0',
+      'border-strong': '#C9BFB2',
+
+      // Greys — mantenemos la escala del vendor para no romper
+      // componentes que la usan (VBtn color="grey-500", etc).
       'grey-50': '#FAFAFA',
       'grey-100': '#F5F5F5',
       'grey-200': '#EEEEEE',
@@ -52,11 +76,10 @@ export const themes: Record<string, ThemeDefinition> = {
       'skin-bordered-surface': '#fff',
       'expansion-panel-text-custom-bg': '#fafafa',
     },
-
     variables: {
       'code-color': '#d400ff',
-      'overlay-scrim-background': '#22303E',
-      'tooltip-background': '#22303E',
+      'overlay-scrim-background': '#1F1B17',
+      'tooltip-background': '#1F1B17',
       'overlay-scrim-opacity': 0.5,
       'hover-opacity': 0.06,
       'focus-opacity': 0.1,
@@ -65,7 +88,7 @@ export const themes: Record<string, ThemeDefinition> = {
       'pressed-opacity': 0.14,
       'dragged-opacity': 0.1,
       'disabled-opacity': 0.4,
-      'border-color': '#22303E',
+      'border-color': '#1F1B17',
       'border-opacity': 0.12,
       'table-header-color': '#FFFFFF',
       'high-emphasis-opacity': 0.9,
@@ -77,66 +100,82 @@ export const themes: Record<string, ThemeDefinition> = {
       'track-bg': '#EEF1F3',
       'chat-bg': '#F7F8F8',
       // Shadows
-      'shadow-key-umbra-color': '#22303E',
+      'shadow-key-umbra-color': '#1F1B17',
       'shadow-xs-opacity': 0.06,
       'shadow-sm-opacity': 0.06,
       'shadow-md-opacity': 0.06,
       'shadow-lg-opacity': 0.06,
       'shadow-xl-opacity': 0.06,
-      'table-head-bg': '#fafafa',
-      'on-table-head-bg': '#333333',
+      'table-head-bg': '#FAF7F2',
+      'on-table-head-bg': '#1F1B17',
     },
   },
   dark: {
     dark: true,
     colors: {
-      'primary': staticPrimaryColor,
-      'on-primary': '#fff',
-      'primary-darken-1': staticPrimaryDarkenColor,
-      'primary-light': '#8789FF',
-      'secondary': staticSecondaryColor,
-      'on-secondary': '#fff',
-      'secondary-darken-1': staticSecondaryColor,
-      'secondary-light': staticSecondaryColor,
-      'success': '#71DD37',
-      'on-success': '#fff',
-      'success-darken-1': '#66C732',
-      'success-light': '#53D28C',
-      'info': '#03C3EC',
-      'on-info': '#fff',
-      'info-darken-1': '#03AFD4',
-      'info-light': '#35CFF0',
-      'warning': '#FFAB00',
-      'on-warning': '#fff',
-      'warning-darken-1': '#E69A00',
-      'warning-light': '#FFBC33',
-      'error': '#FF3E1D',
-      'on-error': '#fff',
-      'error-darken-1': '#E6381A',
-      'error-light': '#FF654A',
-      'background': '#232333',
-      'on-background': '#E6E6F1',
-      'surface': '#2B2C40',
-      'on-surface': '#E6E6F1',
-      'grey-50': '#26293A',
-      'grey-100': '#2F3349',
-      'grey-200': '#26293A',
-      'grey-300': '#4A5072',
-      'grey-400': '#5E6692',
-      'grey-500': '#7983BB',
-      'grey-600': '#AAB3DE',
-      'grey-700': '#B6BEE3',
-      'grey-800': '#CFD3EC',
-      'grey-900': '#E7E9F6',
-      'grey-light': '#313246',
-      'perfect-scrollbar-thumb': '#4A5072',
-      'skin-bordered-background': '#2B2C40',
-      'skin-bordered-surface': '#2B2C40',
+      // Surfaces — marrón-gris profundo (no negro puro) para gastronómico
+      'background': '#1A1612',
+      'surface': '#252019',
+      'surface-variant': '#2F2921',
+      'on-background': '#F5F0E8',
+      'on-surface': '#F5F0E8',
+      'on-surface-variant': '#A89C8D',
+
+      // Brand — coral subido para AA en dark
+      'primary': '#F08A6F',
+      'primary-darken-1': staticPrimaryColor,
+      'primary-light': '#F5A890',
+      'on-primary': '#1A1612',
+      'secondary': '#A89C8D',
+      'secondary-darken-1': '#8A7F72',
+      'secondary-light': '#C5BBAE',
+      'on-secondary': '#1A1612',
+
+      // Semantic
+      'success': '#10B981',
+      'on-success': '#1A1612',
+      'success-darken-1': '#0D9B6A',
+      'success-light': '#34D399',
+      'warning': '#FBBF24',
+      'on-warning': '#1A1612',
+      'warning-darken-1': '#F59E0B',
+      'warning-light': '#FCD34D',
+      'error': '#EF4444',
+      'on-error': '#FFFFFF',
+      'error-darken-1': '#DC2626',
+      'error-light': '#F87171',
+      'info': '#60A5FA',
+      'on-info': '#1A1612',
+      'info-darken-1': '#3B82F6',
+      'info-light': '#93C5FD',
+
+      'kitchen-hot': '#F87171',
+      'table-occupied': '#FBBF24',
+      'table-ready': '#10B981',
+
+      'border': '#3B3428',
+      'border-strong': '#5C5244',
+
+      // Greys dark (vendor scale)
+      'grey-50': '#1F1B17',
+      'grey-100': '#252019',
+      'grey-200': '#2F2921',
+      'grey-300': '#423A30',
+      'grey-400': '#5C5244',
+      'grey-500': '#7D7063',
+      'grey-600': '#A89C8D',
+      'grey-700': '#C5BBAE',
+      'grey-800': '#DDD4C8',
+      'grey-900': '#F5F0E8',
+      'grey-light': '#2F2921',
+      'perfect-scrollbar-thumb': '#5C5244',
+      'skin-bordered-background': '#252019',
+      'skin-bordered-surface': '#252019',
     },
     variables: {
       'code-color': '#d400ff',
-      'overlay-scrim-background': '#1D1D2A',
-      'tooltip-background': '#E6E6F1',
+      'overlay-scrim-background': '#0F0D0B',
+      'tooltip-background': '#F5F0E8',
       'overlay-scrim-opacity': 0.6,
       'hover-opacity': 0.06,
       'focus-opacity': 0.1,
@@ -145,28 +184,26 @@ export const themes: Record<string, ThemeDefinition> = {
       'pressed-opacity': 0.14,
       'dragged-opacity': 0.1,
       'disabled-opacity': 0.4,
-      'border-color': '#E6E6F1',
+      'border-color': '#F5F0E8',
       'border-opacity': 0.12,
-      'table-header-color': '#2B2C40',
+      'table-header-color': '#252019',
       'high-emphasis-opacity': 0.9,
       'medium-emphasis-opacity': 0.7,
       'switch-opacity': 0.4,
       'switch-disabled-track-opacity': 0.4,
       'switch-disabled-thumb-opacity': 0.8,
       'switch-checked-disabled-opacity': 0.3,
-      'track-bg': '#41415F',
-      'chat-bg': '#20202E',
-
+      'track-bg': '#3B3428',
+      'chat-bg': '#1F1B17',
       // Shadows
-      'shadow-key-umbra-color': '#14141D',
+      'shadow-key-umbra-color': '#0F0D0B',
       'shadow-xs-opacity': 0.18,
       'shadow-sm-opacity': 0.2,
       'shadow-md-opacity': 0.22,
       'shadow-lg-opacity': 0.24,
       'shadow-xl-opacity': 0.26,
-
-      'table-head-bg': '#1e1e1e',
-      'on-table-head-bg': '#eeeeee',
+      'table-head-bg': '#1F1B17',
+      'on-table-head-bg': '#F5F0E8',
     },
   },
 }
