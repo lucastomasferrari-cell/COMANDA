@@ -14,6 +14,7 @@ use Modules\Order\Enums\OrderType;
 use Modules\Order\Http\Requests\Api\V1\CancelOrRefundOrderRequest;
 use Modules\Order\Http\Requests\Api\V1\OrderPaymentRequest;
 use Modules\Order\Http\Requests\Api\V1\SaveOrderRequest;
+use Modules\Order\Http\Requests\Api\V1\ChangePaymentMethodRequest;
 use Modules\Order\Http\Requests\Api\V1\StoreCustomOrderProductRequest;
 use Modules\Order\Http\Requests\Api\V1\VoidOrderProductRequest;
 use Modules\Order\Services\Order\OrderServiceInterface;
@@ -438,6 +439,24 @@ class OrderController extends Controller
         return ApiResponse::success(
             body: new ShowOrderResource($order),
             message: __("order::messages.item_voided_successfully"),
+        );
+    }
+
+    /**
+     * Cambia la forma de pago de una orden ya paid. Requiere
+     * manager_approval_token + reason 20+ chars. Audit log
+     * is_fiscal=true (AFIP 10 años). Dispara evento que Bloque 11
+     * consume para alertar al dueño.
+     */
+    public function changePaymentMethod(
+        ChangePaymentMethodRequest $request,
+        int|string $orderId,
+    ): JsonResponse {
+        $order = $this->service->changePaymentMethod($orderId, $request->validated());
+
+        return ApiResponse::success(
+            body: new ShowOrderResource($order),
+            message: __('order::messages.payment_method_changed_successfully'),
         );
     }
 

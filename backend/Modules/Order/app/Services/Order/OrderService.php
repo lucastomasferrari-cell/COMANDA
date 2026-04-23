@@ -18,6 +18,7 @@ use Modules\Order\Enums\OrderType;
 use Modules\Order\Enums\ReasonType;
 use Modules\Order\Events\OrderBillRequested;
 use Modules\Order\Events\OrderPaused;
+use Modules\Order\Events\OrderPaymentMethodChanged;
 use Modules\Order\Events\OrderResumed;
 use Modules\Order\Events\OrderUpdateStatus;
 use Modules\Order\Events\OrderVoided;
@@ -733,6 +734,76 @@ class OrderService implements OrderServiceInterface
      * valido, aborta 403. Si el token es valido pero el approver no
      * tiene admin.orders.custom_item_over_limit, aborta 403.
      */
+    /** @inheritDoc */
+    public function changePaymentMethod(int|string $orderId, array $data): Order
+    {
+        return DB::transaction(function () use ($orderId, $data): Order {
+            /** @var Order $order */
+            $order = $this->findOrFail($orderId);
+
+            // Solo aplica sobre ordenes paid. En ordenes no-paid el
+            // cambio de method se hace con el flujo normal de receive
+            // payment.
+            abort_unless(
+                $order->payment_status->isPaid(),
+                422,
+                __('order::messages.change_payment_method_only_on_paid'),
+            );
+
+            // Consumir token
+            $payload = app(ManagerPinService::class)->consumeToken($data['manager_approval_token']);
+            abort_unless(
+                $payload && !empty($payload['user_id']),
+                403,
+                __('order::messages.change_payment_method_token_invalid'),
+            );
+
+            $approver = User::find($payload['user_id']);
+            abort_unless(
+                $approver && $approver->can('admin.payments.modify_after_paid'),
+                403,
+                __('order::messages.change_payment_method_no_permission'),
+            );
+
+            /** @var \Modules\Payment\Models\Payment|null $payment */
+            $payment = $order->payments()->where('id', $data['payment_id'])->first();
+            abort_unless($payment, 404, __('order::messages.change_payment_method_not_found'));
+
+            $oldMethod = $payment->method?->value ?? (string) $payment->method;
+            $newMethod = $data['new_method'];
+
+            if ($oldMethod === $newMethod) {
+                return $order;
+            }
+
+            $payment->update(['method' => $newMethod]);
+
+            AuditLogger::log('payment_method_changed', $order, [
+                'reason' => $data['reason'],
+                'old_values' => ['method' => $oldMethod],
+                'new_values' => ['method' => $newMethod],
+                'metadata' => [
+                    'payment_id' => $payment->id,
+                    'amount' => $payment->amount,
+                    'reason_length' => strlen($data['reason']),
+                ],
+                'approved_by' => $approver->id,
+                'is_fiscal' => true,
+            ]);
+
+            event(new OrderPaymentMethodChanged(
+                order: $order,
+                paymentId: $payment->id,
+                oldMethod: $oldMethod,
+                newMethod: $newMethod,
+                reason: $data['reason'],
+                approverUserId: $approver->id,
+            ));
+
+            return $order->fresh();
+        });
+    }
+
     protected function enforceOpenItemLimits(Order $order, float $price, float $subtotal, array $data): ?int
     {
         $maxPerShift = (int) setting('antifraud.open_item_max_per_shift', 5);

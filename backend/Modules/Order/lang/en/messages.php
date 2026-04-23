@@ -31,4 +31,9 @@ return [
     "open_item_over_limit" => "You reached the open-item limit for this shift ({count}/{max}) or accumulated cap ({accumulated}/{max_total}). Manager approval required.",
     "open_item_over_limit_token_invalid" => "The approval token is invalid or expired.",
     "open_item_over_limit_approver_lacks_permission" => "The approver lacks permission for open items over the limit.",
+    "change_payment_method_only_on_paid" => "This endpoint only changes payment method on already-paid orders.",
+    "change_payment_method_token_invalid" => "The approval token is invalid or expired.",
+    "change_payment_method_no_permission" => "The approver lacks permission to modify closed payments.",
+    "change_payment_method_not_found" => "Payment not found on this order.",
+    "payment_method_changed_successfully" => "Payment method updated. Change logged for audit.",
 ];

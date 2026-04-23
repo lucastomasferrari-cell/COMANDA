@@ -29,4 +29,9 @@ return [
     "open_item_over_limit" => "وصلت إلى حد الأصناف الحرة لهذه الوردية ({count}/{max}) أو السقف التراكمي ({accumulated}/{max_total}). مطلوب تصريح المدير.",
     "open_item_over_limit_token_invalid" => "رمز التصريح غير صالح أو انتهت صلاحيته.",
     "open_item_over_limit_approver_lacks_permission" => "المستخدم المصرّح لا يملك صلاحية الأصناف الحرة فوق الحد.",
+    "change_payment_method_only_on_paid" => "يسمح هذا المسار فقط بتغيير وسيلة الدفع لطلبات مدفوعة.",
+    "change_payment_method_token_invalid" => "رمز التصريح غير صالح أو انتهت صلاحيته.",
+    "change_payment_method_no_permission" => "المستخدم المصرّح لا يملك صلاحية تعديل مدفوعات مغلقة.",
+    "change_payment_method_not_found" => "الدفع غير موجود في هذا الطلب.",
+    "payment_method_changed_successfully" => "تم تحديث وسيلة الدفع. تم تسجيل التغيير في التدقيق.",
 ];

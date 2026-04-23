@@ -31,4 +31,9 @@ return [
     "open_item_over_limit" => "Alcanzaste el límite de ítems sueltos del turno ({count}/{max}) o el tope acumulado ({accumulated}/{max_total}). Se requiere autorización del encargado.",
     "open_item_over_limit_token_invalid" => "El token de autorización no es válido o expiró.",
     "open_item_over_limit_approver_lacks_permission" => "El usuario que autorizó no tiene permiso para ítems sueltos sobre el límite.",
+    "change_payment_method_only_on_paid" => "Este endpoint solo cambia la forma de pago de órdenes ya cobradas.",
+    "change_payment_method_token_invalid" => "El token de autorización no es válido o expiró.",
+    "change_payment_method_no_permission" => "El usuario que autorizó no tiene permiso para modificar pagos cerrados.",
+    "change_payment_method_not_found" => "No se encontró el pago en esta orden.",
+    "payment_method_changed_successfully" => "Forma de pago actualizada. Cambio registrado en auditoría.",
 ];

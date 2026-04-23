@@ -47,6 +47,8 @@ Route::controller(OrderController::class)
         Route::post('/{orderId}/resume', 'resumeOrder')->middleware('can:admin.orders.edit');
         Route::post('/{orderId}/products/{productId}/void', 'voidOrderProduct')
             ->middleware('can:admin.orders.edit');
+        Route::patch('/{orderId}/payment-method', 'changePaymentMethod')
+            ->middleware('can:admin.payments.modify_after_paid');
     });
 
 Route::controller(VoidReasonController::class)

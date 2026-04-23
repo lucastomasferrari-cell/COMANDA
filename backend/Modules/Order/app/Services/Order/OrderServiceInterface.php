@@ -221,4 +221,13 @@ interface OrderServiceInterface
      * @return Order
      */
     public function voidOrderProduct(int|string $orderId, int $orderProductId, array $data): Order;
+
+    /**
+     * Cambia el payment_method de una orden ya paid.
+     *
+     * @param int|string $orderId
+     * @param array $data {payment_id, new_method, reason, manager_approval_token}
+     * @return Order
+     */
+    public function changePaymentMethod(int|string $orderId, array $data): Order;
 }

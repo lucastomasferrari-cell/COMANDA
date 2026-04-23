@@ -8,6 +8,7 @@ use Modules\Order\Events\OrderCreated;
 use Modules\Order\Events\OrderMergeBillingPaid;
 use Modules\Order\Events\OrderPaid;
 use Modules\Order\Events\OrderPaused;
+use Modules\Order\Events\OrderPaymentMethodChanged;
 use Modules\Order\Events\OrderResumed;
 use Modules\Order\Events\OrderUpdated;
 use Modules\Order\Events\OrderUpdateStatus;
@@ -62,6 +63,11 @@ class EventServiceProvider extends ServiceProvider
         ],
         OrderResumed::class => [
             RestoreTableOnResume::class,
+        ],
+        OrderPaymentMethodChanged::class => [
+            // El AuditLogger ya se llamó dentro del service. Este
+            // event se declara para que Bloque 11 (mail al dueño) y
+            // otros listeners futuros puedan engancharse.
         ],
     ];
 }
