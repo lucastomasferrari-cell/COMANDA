@@ -118,7 +118,7 @@
 <template>
   <div
     v-if="showNoResults"
-    class="no-results-state d-flex flex-column align-center justify-center text-center py-8 px-4"
+    class="no-results-state d-flex flex-column align-center justify-center text-center py-6 px-4"
   >
     <VIcon class="mb-3" color="grey-500" icon="tabler-search-off" size="48" />
     <h4 class="mb-1 font-weight-medium">{{ t('pos::pos_viewer.search_empty.title') }}</h4>
@@ -128,7 +128,7 @@
   </div>
   <div
     v-else-if="showEmptyCategory"
-    class="no-results-state d-flex flex-column align-center justify-center text-center py-8 px-4"
+    class="no-results-state d-flex flex-column align-center justify-center text-center py-6 px-4"
   >
     <VIcon class="mb-3" color="grey-500" icon="tabler-basket" size="48" />
     <h4 class="mb-1 font-weight-medium">{{ t('pos::pos_viewer.category_empty.title') }}</h4>

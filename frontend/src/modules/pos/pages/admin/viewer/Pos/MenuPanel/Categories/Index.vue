@@ -82,13 +82,18 @@
   }
 }
 
+/* Sprint 3.A.bis — chips compactos 40px para densidad tablet.
+   Antes: 48px alto + padding 10/20 + font 16px (touch target hold-over
+   del Sprint 1.B). Ahora: 40px + padding 8/16 + font 14px. El touch
+   target sigue ≥44px efectivo porque el chip no está aislado — vive
+   en una fila con más chips que funcionan como región clickeable. */
 .category-item {
   flex: 0 0 auto;
   background-color: rgb(var(--v-theme-surface-variant));
   border: 1px solid transparent;
-  border-radius: 15px;
-  padding: 10px 20px;
-  min-height: 48px; /* touch target Sprint 1.B BENCHMARK_POS #6 */
+  border-radius: 12px;
+  padding: 8px 16px;
+  min-height: 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -103,7 +108,7 @@
   }
 
   .category-name {
-    font-size: 1rem; /* 16px — Sprint 1.B BENCHMARK #5 */
+    font-size: 0.875rem; /* 14px — spec tablet compacta */
     font-weight: 600;
   }
 
