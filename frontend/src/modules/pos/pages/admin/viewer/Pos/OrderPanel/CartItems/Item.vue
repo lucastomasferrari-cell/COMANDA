@@ -199,15 +199,18 @@
           </template>
         </VTooltip>
 
+        <!-- Sprint 1.B: botones +/- pasan de size="x-small" (24px) a
+             size="default" (40px) — los usa el cajero mucho en operación
+             diaria, 24x24 era difícil de tapear preciso en tablet. -->
         <div class="qty-box d-flex align-center me-4">
           <v-btn
             :disabled="disabledDecreaseButton"
             icon="tabler-minus"
-            size="x-small"
+            size="default"
             variant="text"
             @click.stop.prevent="updateQty(cartItem.qty - 1)"
           />
-          <span v-if="!loading" class="mx-2 text-subtitle-2">{{ cartItem.qty }}</span>
+          <span v-if="!loading" class="qty-value mx-2">{{ cartItem.qty }}</span>
           <VProgressCircular
             v-else
             color="primary"
@@ -218,7 +221,7 @@
           <v-btn
             :disabled="disabledIncreaseButton"
             icon="tabler-plus"
-            size="x-small"
+            size="default"
             variant="text"
             @click.stop.prevent="updateQty(cartItem.qty + 1)"
           />
