@@ -185,52 +185,62 @@
       @on-click-action="onClickAction"
       @open-active-orders="showActiveOrdersDrawer = true"
     />
-    <VRow class="pos-wrapper flex-grow-1" dense>
-    <VCol v-if="!isNarrow" cols="12" md="3">
-      <VCard class="pos-col-card">
-        <ActiveOrdersPanel
-          :branch-id="form.branchId"
-          :cart-id="cart.cartId"
-          @init-order="(response:Record<string, any>) => $emit('init-order', response)"
-          @new-order="onNewOrder"
-        />
-      </VCard>
-    </VCol>
-    <VCol cols="12" md="7" lg="5">
-      <VCard class="pos-col-card">
-        <VCardText class="pa-3">
-          <MenuPanel
-            ref="menuPanelRef"
-            :cart="cart"
-            :form="form"
-            :has-active-order="hasActiveOrder"
-            :meta="meta"
+    <!-- Sprint 2 parte A: layout split-screen con CSS Grid.
+         Vista "home" (!hasActiveOrder): 2 columnas 30/70 — ActiveOrders
+         + plano de mesas ocupando todo el espacio.
+         Vista "working" (hasActiveOrder): 3 columnas 22/48/30 —
+         ActiveOrders colapsado + grid productos + detalle comanda.
+         El MenuPanel ya alterna internamente entre plano y productos
+         según hasActiveOrder; acá solo controlamos columnas + OrderPanel. -->
+    <div
+      class="pos-layout flex-grow-1"
+      :class="{ 'pos-layout--working': hasActiveOrder, 'pos-layout--narrow': isNarrow }"
+    >
+      <aside v-if="!isNarrow" class="pos-panel pos-panel--orders">
+        <VCard class="pos-col-card">
+          <ActiveOrdersPanel
+            :branch-id="form.branchId"
+            :cart-id="cart.cartId"
             @init-order="(response:Record<string, any>) => $emit('init-order', response)"
-            @pick-table-free="onPlanoPickFree"
-            @pick-table-occupied="onPlanoPickOccupied"
-            @tables-count="(count:number) => tablesCount = count"
+            @new-order="onNewOrder"
           />
-        </VCardText>
-      </VCard>
-    </VCol>
-    <VCol cols="12" md="5" lg="4">
-      <VCard class="pos-col-card">
-        <VCardText class="pa-3">
-          <OrderPanel
-            :cart="cart"
-            :form="form"
-            :has-active-order="hasActiveOrder"
-            :meta="meta"
-            :qintrix="qintrix"
-            @focus-menu-search="onFocusMenuSearch"
-            @on-click-action="onClickAction"
-            @reset="(cartData?:Cart)=>$emit('reset',cartData)"
-            @store-payment="storePayment"
-          />
-        </VCardText>
-      </VCard>
-    </VCol>
-    </VRow>
+        </VCard>
+      </aside>
+      <main class="pos-panel pos-panel--main">
+        <VCard class="pos-col-card">
+          <VCardText class="pa-3">
+            <MenuPanel
+              ref="menuPanelRef"
+              :cart="cart"
+              :form="form"
+              :has-active-order="hasActiveOrder"
+              :meta="meta"
+              @init-order="(response:Record<string, any>) => $emit('init-order', response)"
+              @pick-table-free="onPlanoPickFree"
+              @pick-table-occupied="onPlanoPickOccupied"
+              @tables-count="(count:number) => tablesCount = count"
+            />
+          </VCardText>
+        </VCard>
+      </main>
+      <aside v-if="hasActiveOrder" class="pos-panel pos-panel--cart">
+        <VCard class="pos-col-card">
+          <VCardText class="pa-3">
+            <OrderPanel
+              :cart="cart"
+              :form="form"
+              :has-active-order="hasActiveOrder"
+              :meta="meta"
+              :qintrix="qintrix"
+              @focus-menu-search="onFocusMenuSearch"
+              @on-click-action="onClickAction"
+              @reset="(cartData?:Cart)=>$emit('reset',cartData)"
+              @store-payment="storePayment"
+            />
+          </VCardText>
+        </VCard>
+      </aside>
+    </div>
   </div>
   <!-- En pantallas md-and-down, ActiveOrdersPanel pasa a drawer lateral.
        Se abre con el botón "☰ Comandas" del TopActionsBar. -->
@@ -324,6 +334,38 @@
   overflow: hidden;
   min-height: 0;
   flex: 1 1 auto;
+}
+
+/* Sprint 2 A.1 — layout split-screen con CSS Grid. 2 vistas:
+   - home (sin comanda activa): 30/70 — ActiveOrders + plano.
+   - working (con comanda): 22/48/30 — ActiveOrders colapsado + productos + comanda. */
+.pos-layout {
+  display: grid;
+  grid-template-columns: 30% 70%;
+  gap: 8px;
+  overflow: hidden;
+  min-height: 0;
+}
+.pos-layout--working {
+  grid-template-columns: 22% 48% 30%;
+}
+/* Sub-1024: md-and-down ya oculta ActiveOrders (pasa a drawer). Ese
+   caso se controla con --narrow: una sola columna con el MenuPanel.
+   Cuando hay comanda activa, a partir de md se muestran 2 columnas:
+   productos arriba / comanda abajo — las cards se apilan con auto-flow.
+   En un iteración futura se puede reemplazar por tabs. */
+.pos-layout--narrow {
+  grid-template-columns: 1fr;
+}
+.pos-layout--narrow.pos-layout--working {
+  grid-template-columns: 1fr;
+  grid-auto-rows: minmax(0, 1fr);
+}
+.pos-panel {
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .pos-col-card {
