@@ -53,13 +53,53 @@
           rows="2"
         />
       </VCol>
+      <!-- Sprint 2 B.2 — comensales editable inline (reemplaza
+           GuestCountDialog que aparecía ANTES de abrir la mesa). El campo
+           default=1 se setea al crear la comanda; el mozo lo ajusta acá
+           con los botones +/- (44x44 touch target) o tipeando directo.
+           Validación de guest_count >= 1 al enviar a cocina (B.5), no
+           al abrir: FILOSOFIA.md "confirmaciones solo para acciones
+           irreversibles". Abrir mesa no lo es. -->
       <VCol cols="12">
-        <VTextField
-          v-model="form.meta.guestCount"
-          :label="t('order::attributes.orders.guest_count')"
-          :readonly="processing"
-        />
+        <div class="d-flex align-center ga-2">
+          <span class="text-body-2 flex-grow-1">{{ t('order::attributes.orders.guest_count') }}</span>
+          <VBtn
+            aria-label="decrement guest count"
+            :disabled="processing || Number(form.meta.guestCount) <= 1"
+            icon="tabler-minus"
+            size="default"
+            variant="tonal"
+            @click="form.meta.guestCount = Math.max(1, Number(form.meta.guestCount ?? 1) - 1)"
+          />
+          <VTextField
+            v-model.number="form.meta.guestCount"
+            class="guest-count-input"
+            hide-details
+            min="1"
+            :readonly="processing"
+            type="number"
+            variant="outlined"
+          />
+          <VBtn
+            aria-label="increment guest count"
+            :disabled="processing"
+            icon="tabler-plus"
+            size="default"
+            variant="tonal"
+            @click="form.meta.guestCount = Number(form.meta.guestCount ?? 0) + 1"
+          />
+        </div>
       </VCol>
     </VRow>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.guest-count-input {
+  max-width: 80px;
+  :deep(input) {
+    text-align: center;
+    font-weight: 600;
+  }
+}
+</style>
