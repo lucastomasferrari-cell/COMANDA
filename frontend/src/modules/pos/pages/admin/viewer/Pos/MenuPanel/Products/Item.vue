@@ -98,29 +98,40 @@
   /* Borde superior 4px con el color de la categoria primaria. */
   border-top: 4px solid var(--category-color, #B0B0B0);
 
+  /* Tipografía del tile — Sprint 1.B BENCHMARK_POS #5.
+     Nombres 1.25rem (20px) y precios 1.125rem (18px) — el cajero lee el
+     tile a distancia con el ojo moviéndose rápido entre tiles del grid.
+     2 líneas de nombre con ellipsis antes, ahora permitimos 2 líneas con
+     -webkit-line-clamp para no cortar "Hamburguesa Clásica" a la mitad. */
   .product-name {
     font-weight: 600;
-    font-size: 0.8rem;
-    margin-bottom: 5px;
+    font-size: 1.25rem;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    min-height: 3em; /* reserva 2 líneas aunque el nombre sea corto → grid parejo */
   }
 
   .product-price {
     display: flex;
     gap: 0.5rem;
-    align-items: center;
+    align-items: baseline;
+    font-size: 1.125rem;
+    font-weight: 600;
 
     .original-price {
       text-decoration: line-through;
-      color: gray;
-      font-size: 0.79rem;
+      color: rgba(var(--v-theme-on-surface-variant), 0.7);
+      font-size: 0.875rem;
+      font-weight: 400;
     }
 
     .selling-price {
-      color: #e53935;
-      font-weight: 600;
+      color: rgb(var(--v-theme-primary));
+      font-weight: 700;
     }
   }
 

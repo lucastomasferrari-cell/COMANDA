@@ -79,10 +79,11 @@
 
 .category-item {
   flex: 0 0 auto;
-  background-color: rgb(var(--v-theme-grey-300));
+  background-color: rgb(var(--v-theme-surface-variant));
+  border: 1px solid transparent;
   border-radius: 15px;
   padding: 10px 20px;
-  min-height: 44px;
+  min-height: 48px; /* touch target Sprint 1.B BENCHMARK_POS #6 */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -90,8 +91,14 @@
 
   text-align: center;
   cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease;
+
+  &:hover {
+    border-color: rgba(var(--v-theme-on-surface), 0.12);
+  }
 
   .category-name {
+    font-size: 1rem; /* 16px — Sprint 1.B BENCHMARK #5 */
     font-weight: 600;
   }
 
@@ -101,7 +108,7 @@
     background-color: var(--category-accent, rgb(var(--v-theme-primary)));
 
     .category-name {
-      color: #ffffff;
+      color: rgb(var(--v-theme-on-primary));
     }
   }
 }

@@ -108,12 +108,14 @@
   max-width: 200px;
 }
 
+/* Sprint 1.B: v-field sube de 14 → 16 en el topheader, donde vive el
+   selector de register y el menú activo — el cajero los mira a distancia. */
 .v-input--density-compact .v-field__input {
-  font-size: 14px;
+  font-size: 1rem;
 }
 
 .pos-menu-label {
   color: rgba(var(--v-theme-on-surface), 0.7);
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 </style>
