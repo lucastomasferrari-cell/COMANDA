@@ -1,162 +1,172 @@
 <script lang="ts" setup>
   import type { UseCart } from '@/modules/cart/composables/cart.ts'
   import type { PosMeta } from '@/modules/pos/contracts/posViewer.ts'
+  import { computed, ref, watch } from 'vue'
   import { useI18n } from 'vue-i18n'
 
+  // Sprint 3.A.10 — Discount pasa de bloque permanente del footer del
+  // check a VDialog invocado desde el overflow menu. El formato bloque +
+  // dialog conviviendo (que hubo brevemente en 3.A.9) quedó eliminado:
+  // todo el flujo discount/voucher vive ahora en este archivo.
+
   const props = defineProps<{
+    modelValue: boolean
     meta: PosMeta
     cart: UseCart
+    // Tab pre-seleccionada al abrir. Si el user vino del item "Aplicar
+    // descuento" del overflow, arranca en 'discount'; si vino de
+    // "Aplicar cupón", arranca en 'voucher'.
+    initialType?: 'discount' | 'voucher'
+  }>()
+
+  const emit = defineEmits<{
+    (e: 'update:modelValue', value: boolean): void
   }>()
 
   const { t } = useI18n()
-
   const { applyDiscount, applyVoucher } = props.cart
+
+  const open = computed({
+    get: () => props.modelValue,
+    set: v => emit('update:modelValue', v),
+  })
+
+  const discountType = ref<'discount' | 'voucher'>(props.initialType ?? 'discount')
+  const selectedValue = ref<number | string | null>(null)
   const loading = ref(false)
-  const discount = ref<number | string | null>(null)
-  const discountType = ref<'discount' | 'voucher'>('discount')
-  const discountTypes = [
+
+  watch(
+    () => props.modelValue,
+    isOpen => {
+      if (isOpen) {
+        discountType.value = props.initialType ?? 'discount'
+        selectedValue.value = null
+      }
+    },
+  )
+
+  const types = [
     {
-      id: 'discount',
-      name: t('order::orders.discount'),
+      id: 'discount' as const,
+      label: t('order::orders.discount'),
       icon: 'tabler-shopping-bag-discount',
-      color: '#2980b9',
     },
     {
-      id: 'voucher',
-      name: t('order::orders.voucher'),
+      id: 'voucher' as const,
+      label: t('order::orders.voucher'),
       icon: 'tabler-ticket',
-      color: '#16a085',
     },
   ]
 
-  const submit = async () => {
-    if (!discount.value || loading.value) return
+  const submit = async (): Promise<void> => {
+    if (!selectedValue.value || loading.value) return
     loading.value = true
-    await (
-      discountType.value === 'voucher'
-        ? applyVoucher(discount.value as string)
-        : applyDiscount(discount.value as number)
-    )
-    loading.value = false
-    discount.value = null
-  }
-
-  const updateDiscountType = (type: Record<string, any>) => {
-    discountType.value = type.id
+    try {
+      await (
+        discountType.value === 'voucher'
+          ? applyVoucher(selectedValue.value as string)
+          : applyDiscount(selectedValue.value as number)
+      )
+      open.value = false
+    } finally {
+      loading.value = false
+    }
   }
 </script>
 
 <template>
-  <div class="mt-3 mb-4">
-    <VDivider />
-    <div class="discount-type-container  mt-4">
-      <div
-        v-for="type in discountTypes"
-        :key="type.id"
-        class="discount-type-card"
-        :class="{ active:type.id === discountType }"
-        @click="updateDiscountType(type)"
-      >
-        <div class="discount-type-info">
-          <VIcon :color="type.color" :icon="type.icon" size="23" />
-          <span class="name">{{ type.name }}</span>
+  <VDialog v-model="open" max-width="460">
+    <VCard class="discount-dialog">
+      <VCardTitle>
+        {{ discountType === 'voucher'
+          ? t('pos::pos_viewer.check_header.overflow.apply_voucher')
+          : t('pos::pos_viewer.check_header.overflow.apply_discount') }}
+      </VCardTitle>
+
+      <VCardText>
+        <!-- Segmented control entre Descuento y Cupón. Mantiene la chance
+             de togglear dentro del mismo dialog sin tener que cerrar y
+             reabrir desde el overflow. -->
+        <div class="type-toggle d-flex ga-2 mb-4">
+          <button
+            v-for="type in types"
+            :key="type.id"
+            type="button"
+            class="type-toggle__btn"
+            :class="{ 'type-toggle__btn--active': discountType === type.id }"
+            @click="discountType = type.id; selectedValue = null"
+          >
+            <VIcon class="me-2" :icon="type.icon" size="20" />
+            {{ type.label }}
+          </button>
         </div>
-        <div class="checkbox">
-          <v-icon v-if="type.id === discountType" color="white" icon="tabler-check" size="20" />
-        </div>
-      </div>
-    </div>
-    <div class=" flex items-end gap-2">
-      <VTextField
-        v-if="discountType ==='voucher'"
-        v-model="discount"
-        clearable
-        :label="t('pos::pos.enter_voucher_code')"
-      />
-      <VSelect
-        v-else
-        v-model="discount"
-        class="flex-grow"
-        item-title="name"
-        item-value="id"
-        :items="meta.discounts"
-        :label="t('pos::pos.discount')"
-      />
-      <VBtn
-        class=" text-white"
-        color="primary"
-        :disabled="!discount || loading"
-        :loading="loading"
-        @click="submit"
-      >
-        <VIcon icon="tabler-circle-dashed-check" start />
-        {{ t('pos::pos_viewer.apply') }}
-      </VBtn>
-    </div>
-  </div>
+
+        <VTextField
+          v-if="discountType === 'voucher'"
+          v-model="selectedValue"
+          autofocus
+          clearable
+          hide-details
+          :label="t('pos::pos.enter_voucher_code')"
+          variant="outlined"
+        />
+        <VSelect
+          v-else
+          v-model="selectedValue"
+          autofocus
+          hide-details
+          item-title="name"
+          item-value="id"
+          :items="meta.discounts ?? []"
+          :label="t('pos::pos.discount')"
+          variant="outlined"
+        />
+      </VCardText>
+
+      <VCardActions class="px-5 pb-5 ga-2">
+        <VSpacer />
+        <VBtn variant="text" @click="open = false">
+          {{ t('admin::admin.buttons.cancel') }}
+        </VBtn>
+        <VBtn
+          color="primary"
+          :disabled="!selectedValue || loading"
+          :loading="loading"
+          variant="flat"
+          @click="submit"
+        >
+          <VIcon icon="tabler-check" start />
+          {{ t('pos::pos_viewer.apply') }}
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
 </template>
+
 <style lang="scss" scoped>
-.flex {
-  display: flex;
-  align-items: flex-end;
-}
-
-.flex-grow {
-  flex-grow: 1;
-}
-
-.gap-3 {
-  gap: 0.75rem;
-}
-
-.discount-type-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.8rem;
-}
-
-.discount-type-card {
-  border: 1px dashed rgba(var(--v-theme-on-surface), 0.12);
-  border-radius: 10px;
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.type-toggle__btn {
+  all: unset;
   cursor: pointer;
-  transition: all 0.25s ease;
-  position: relative;
-  width: 48%;
-}
-
-.discount-type-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.discount-type-card .name {
-  font-size: 0.9rem;
-  font-weight: 700;
-}
-
-.discount-type-card .checkbox {
-  height: 19px;
-  width: 19px;
-  border-radius: 50%;
-  border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  flex: 1 1 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 12px 16px;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: rgb(var(--v-theme-on-surface-variant));
+  transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease;
+
+  &:hover {
+    border-color: rgba(var(--v-theme-on-surface), 0.24);
+  }
 }
 
-.discount-type-card.active {
+.type-toggle__btn--active {
+  background-color: rgba(var(--v-theme-primary), 0.08);
   border-color: rgb(var(--v-theme-primary));
-  background-color: rgba(var(--v-theme-primary), 0.05);
-}
-
-.discount-type-card.active .checkbox {
-  background-color: rgb(var(--v-theme-primary));
-  border-color: rgb(var(--v-theme-primary));
+  color: rgb(var(--v-theme-primary));
 }
 </style>

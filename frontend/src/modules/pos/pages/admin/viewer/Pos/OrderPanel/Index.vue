@@ -9,7 +9,7 @@
   import { useOrder } from '@/modules/sale/composables/order.ts'
   import CartItems from './CartItems/Index.vue'
   import CheckHeader from './CheckHeader.vue'
-  import Discount from './Discount.vue'
+  import DiscountDialog from './Discount.vue'
   import Invoice from './Invoice.vue'
   import RefundPaymentMethod from './RefundPaymentMethod.vue'
 
@@ -295,10 +295,11 @@
   onMounted(() => { window.addEventListener('keydown', onGlobalKeydown) })
   onBeforeUnmount(() => { window.removeEventListener('keydown', onGlobalKeydown) })
 
-  // Sprint 3.A.9 — handler del overflow del CheckHeader. Mapea los emits
-  // a las funciones que ya existían en el OrderPanel. more_discount /
-  // more_voucher se dejan pasar up al Pos/Index.vue parent (hoy no-op;
-  // en 3.A.10 se conectan al DiscountDialog refactorizado).
+  // Sprint 3.A.9/3.A.10 — handler del overflow del CheckHeader. Mapea los
+  // emits a las funciones que ya existían en el OrderPanel.
+  const showDiscountDialog = ref(false)
+  const discountDialogType = ref<'discount' | 'voucher'>('discount')
+
   const onHeaderAction = (key: string): void => {
     switch (key) {
       case 'hold_order':
@@ -313,12 +314,17 @@
         cancelOrder()
         return
       case 'more_discount':
+        discountDialogType.value = 'discount'
+        showDiscountDialog.value = true
+        return
       case 'more_voucher':
+        discountDialogType.value = 'voucher'
+        showDiscountDialog.value = true
+        return
       case 'more_split_bill':
       case 'more_change_table':
-        // Se propaga al Pos/Index.vue por si alguien lo engancha. En 3.A.10
-        // los 2 primeros se conectan al DiscountDialog. El resto queda
-        // coming-soon.
+        // Coming-soon: se propaga al Pos/Index.vue por si alguien quiere
+        // engancharse. Hoy no-op.
         emit('on-click-action', key)
     }
   }
@@ -372,9 +378,11 @@
       <CartItems :cart="cart" :form="form" />
     </section>
 
-    <!-- Footer sticky — totales + CTAs. Sin scroll acá. -->
+    <!-- Footer sticky — totales + CTAs. Sin scroll acá.
+         El bloque Discount fue removido del footer (Sprint 3.A.10) — el
+         descuento/cupón se aplica desde el overflow del header via
+         DiscountDialog invocado al final de este template. -->
     <footer class="check-panel__footer">
-      <Discount :cart="cart" :meta="meta" />
       <Invoice :amount-due="amountDue" :cart="cart" :is-edit-mode="isEditMode" />
       <VRow v-if="hasRefundAmount" class="mt-2" dense>
         <VCol cols="12">
@@ -519,6 +527,15 @@
         </div>
       </div>
     </footer>
+
+    <!-- Dialog descuento/cupón invocado desde el overflow del CheckHeader
+         (Sprint 3.A.10). Antes era bloque permanente en el footer. -->
+    <DiscountDialog
+      v-model="showDiscountDialog"
+      :cart="cart"
+      :initial-type="discountDialogType"
+      :meta="meta"
+    />
   </div>
 </template>
 
