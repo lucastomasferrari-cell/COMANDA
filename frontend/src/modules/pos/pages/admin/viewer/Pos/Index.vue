@@ -32,6 +32,7 @@
   import MostradorModeView from './MostradorModeView.vue'
   import OrderPanel from './OrderPanel/Index.vue'
   import PedidosModeView from './PedidosModeView.vue'
+  import SalonModeView from './SalonModeView.vue'
   // TopActionsBar eliminado Sprint 3.A.bis — "+ Orden rápida" se reubica
   // en el modo Mostrador; "Caja" es modo propio en el switcher.
   import { usePosMode } from '@/modules/pos/composables/posMode.ts'
@@ -301,42 +302,21 @@
         </aside>
       </div>
 
-      <!-- (3a) Home Salón: ActiveOrders + plano. -->
-      <div
+      <!-- (3a) Home Salón: ActiveOrders + plano. Extraído a SalonModeView
+           en Sprint 4 commit 1 — refactor sin cambio funcional, base
+           para KeepAlive (commit 2). -->
+      <SalonModeView
         v-else-if="posMode === 'salon'"
-        class="pos-layout flex-grow-1"
-        :class="{ 'pos-layout--narrow': isNarrow }"
-      >
-        <aside v-if="!isNarrow" class="pos-panel pos-panel--orders">
-          <VCard class="pos-col-card">
-            <ActiveOrdersPanel
-              :active-order-id="meta.order?.id ?? null"
-              :branch-id="form.branchId"
-              :cart-id="cart.cartId"
-              :collapsed="false"
-              @init-order="(response:Record<string, any>) => $emit('init-order', response)"
-              @new-order="onNewOrder"
-            />
-          </VCard>
-        </aside>
-        <main class="pos-panel pos-panel--main">
-          <VCard class="pos-col-card">
-            <VCardText class="pa-3">
-              <MenuPanel
-                ref="menuPanelRef"
-                :cart="cart"
-                :form="form"
-                :has-active-order="false"
-                :meta="meta"
-                @init-order="(response:Record<string, any>) => $emit('init-order', response)"
-                @pick-table-free="onPlanoPickFree"
-                @pick-table-occupied="onPlanoPickOccupied"
-                @tables-count="(count:number) => tablesCount = count"
-              />
-            </VCardText>
-          </VCard>
-        </main>
-      </div>
+        :cart="cart"
+        class="flex-grow-1"
+        :form="form"
+        :meta="meta"
+        @init-order="(response: Record<string, any>) => $emit('init-order', response)"
+        @new-order="onNewOrder"
+        @pick-table-free="onPlanoPickFree"
+        @pick-table-occupied="onPlanoPickOccupied"
+        @tables-count="(count: number) => tablesCount = count"
+      />
 
       <!-- (3b) Home Mostrador: placeholder hasta Sprint 3.C. -->
       <MostradorModeView
