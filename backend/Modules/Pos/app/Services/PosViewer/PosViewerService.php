@@ -165,7 +165,12 @@ class PosViewerService implements PosViewerServiceInterface
                 ]),
                 fn() => PosCategoryResource::collection(
                     Category::query()
-                        ->select(['id', 'name', 'parent_id', 'order', 'menu_id'])
+                        // color_hue agregado al select Sprint 2 fix: el transformer
+                        // lo expone y Laravel 12 tira "attribute does not exist" si
+                        // no está en el select explícito. Sin color hex — decisión
+                        // opción A: color_hue es la fuente de verdad, el frontend
+                        // deriva HSL(hue 55% 50%) para todo uso visual.
+                        ->select(['id', 'name', 'parent_id', 'order', 'menu_id', 'color_hue'])
                         ->with(["childrenRecursive", "files"])
                         ->whereNull("parent_id")
                         ->whereMenu($menuId)

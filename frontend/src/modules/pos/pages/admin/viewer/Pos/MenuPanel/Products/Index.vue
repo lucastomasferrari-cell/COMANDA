@@ -16,27 +16,10 @@
     cart: UseCart
   }>()
 
-  // Mapa id -> color hex. Se usa en Item.vue para pintar el borde superior
-  // del boton de producto con el color de su categoria primaria.
-  const categoryColorMap = computed(() => {
-    const map = new Map<number | string, string>()
-    const walk = (cats: Category[]) => {
-      for (const c of cats) {
-        const color = (c as any).color
-        if (typeof color === 'string' && /^#[0-9a-f]{6}$/i.test(color)) {
-          map.set(c.id, color)
-        }
-        if (c.items?.length) walk(c.items)
-      }
-    }
-    walk(props.categories)
-    return map
-  })
-
-  // Mapa id -> color_hue (0-360) Sprint 1.B. Se usa en el placeholder
-  // del tile (ProductTileImage) y en el borde izquierdo con hsl(hue 55% 50%).
-  // Paralelo a categoryColorMap — independientes porque color_hue puede
-  // estar seteado sin color hex y viceversa.
+  // Mapa id -> color_hue (0-360) como fuente única de verdad visual.
+  // El "color" hex legacy dejó de exponerse desde PosCategoryResource
+  // (rompía por select parcial). Tile.vue deriva el hex con
+  // hsl(hue 55% 50%) cuando necesita pintar el borde superior.
   const categoryHueMap = computed(() => {
     const map = new Map<number | string, number>()
     const walk = (cats: Category[]) => {
@@ -159,7 +142,6 @@
         v-for="product in visibleProducts"
         :key="product.id"
         :cart="cart"
-        :category-color-map="categoryColorMap"
         :category-hue-map="categoryHueMap"
         :product="product"
         @open-options-dialog="openProductOptionDialog"

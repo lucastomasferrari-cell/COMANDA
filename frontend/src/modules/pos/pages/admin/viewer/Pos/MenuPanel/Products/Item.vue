@@ -9,7 +9,6 @@
   const props = defineProps<{
     product: Product
     cart: UseCart
-    categoryColorMap?: Map<number | string, string>
     categoryHueMap?: Map<number | string, number>
   }>()
 
@@ -20,20 +19,11 @@
   const hasOptions = computed(() => (props.product.options?.length ?? 0) > 0)
   const hasDiscount = computed(() => (props.product.selling_price?.amount ?? 0) < (props.product.price?.amount ?? 0))
 
-  // Color de la categoria primaria del producto (primer category_id que
-  // este en el mapa). Fallback a gris neutro.
-  const categoryColor = computed(() => {
-    if (!props.categoryColorMap) return '#B0B0B0'
-    for (const id of props.product.category_ids ?? []) {
-      const c = props.categoryColorMap.get(id)
-      if (c) return c
-    }
-    return '#B0B0B0'
-  })
-
   // Hue (0-360) de la categoria primaria. Para el placeholder y el borde
   // izquierdo si se activa el color por hue. Default null → ProductTileImage
   // usa coral marca (hue 12).
+  // (categoryColor hex legacy eliminado — el backend ya no lo expone; el
+  // tile usa el hue via has-hue class o cae al border token neutro.)
   const categoryHue = computed<number | null>(() => {
     if (!props.categoryHueMap) return null
     for (const id of props.product.category_ids ?? []) {
@@ -71,16 +61,12 @@
 
 <template>
   <!-- Sprint 1.B: borde izquierdo 4px con hsl(hue 55% 50%) cuando la
-       categoría tiene color_hue. Si no, mantener el top border con hex
-       color como fallback. Ambas vars conviven. -->
+       categoría tiene color_hue. Sin hue → cae al border token neutro. -->
   <VCard
     class="product-item mb-3 me-2"
     :class="{ 'has-hue': categoryHue !== null }"
     :ripple="false"
-    :style="{
-      '--category-color': categoryColor,
-      '--category-hue': categoryHue ?? 12,
-    }"
+    :style="{ '--category-hue': categoryHue ?? 12 }"
     @click="addProductToCart"
   >
     <!-- ProductTileImage reemplaza el VImg + VIcon tabler-soup genérico
@@ -116,9 +102,8 @@
   border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
   border-radius: 8px;
   overflow: hidden;
-  /* Borde superior 4px con el color de la categoria primaria (hex legacy,
-     fallback cuando no hay hue). */
-  border-top: 4px solid var(--category-color, rgb(var(--v-theme-border)));
+  /* Borde superior 4px — token neutro por default, HSL por hue con .has-hue. */
+  border-top: 4px solid rgb(var(--v-theme-border));
   transition: border-color 150ms ease, transform 80ms ease;
 
   &:hover {

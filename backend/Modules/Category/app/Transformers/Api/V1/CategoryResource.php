@@ -24,6 +24,11 @@ class CategoryResource extends JsonResource
             "is_active" => $this->is_active,
             "parent_id" => $this->parent_id,
             "slug" => $this->slug,
+            // color (hex legacy): el form admin lo sigue mostrando como
+            // swatch picker; trae el modelo completo, no hay select parcial.
+            // En el transformer del POS (PosCategoryResource) SÍ lo
+            // sacamos — allí fallaba por select limitado y además el
+            // viewer visual deriva todo del color_hue.
             "color" => $this->color,
             "color_hue" => $this->color_hue,
             "updated_at" => dateTimeFormat($this->updated_at),

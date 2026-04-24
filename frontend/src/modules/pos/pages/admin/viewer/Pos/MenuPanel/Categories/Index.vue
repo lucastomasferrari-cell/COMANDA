@@ -27,16 +27,16 @@
     })
   })
 
-  // Color de la categoria para el chip activo. Prioriza color_hue (Sprint
-  // 1.B: hsl con saturación/luminosidad fijas para consistencia visual).
-  // Fallback a color hex legacy; último fallback a coral marca.
+  // Color de la categoria para el chip activo. color_hue es la fuente de
+  // verdad (Opción A post-Sprint 2): el backend del POS dejó de exponer
+  // "color" hex para evitar attribute errors con select parcial. Fallback
+  // a coral marca cuando el hue no está seteado.
   const colorOf = (category: Category): string => {
     const hue = (category as any).color_hue
     if (typeof hue === 'number' && hue >= 0 && hue <= 360) {
       return `hsl(${hue} 55% 50%)`
     }
-    const c = (category as any).color
-    return typeof c === 'string' && /^#[0-9a-f]{6}$/i.test(c) ? c : 'rgb(var(--v-theme-primary))'
+    return 'rgb(var(--v-theme-primary))'
   }
 </script>
 
