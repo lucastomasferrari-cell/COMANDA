@@ -1,21 +1,25 @@
 <script lang="ts" setup>
-  import type { PlanoTable } from '@/modules/seatingPlan/components/SalonPlanoVisual.vue'
   import type { Cart, UseCart } from '@/modules/cart/composables/cart.ts'
   import type { PosForm, PosMeta } from '@/modules/pos/contracts/posViewer.ts'
   import type { useQintrix } from '@/modules/printer/composables/qintrix.ts'
-  import { computed } from 'vue'
+  import { computed, ref } from 'vue'
   import { useDisplay } from 'vuetify'
   import ActiveOrdersPanel from './ActiveOrdersPanel/Index.vue'
   import MenuPanel from './MenuPanel/Index.vue'
-  import WorkingSplitScreen from './WorkingSplitScreen.vue'
+  import OrderPanel from './OrderPanel/Index.vue'
 
-  // Sprint 4 commit 2 — SalonModeView ahora renderiza el sub-estado
-  // según hasActiveOrder:
-  //   - true  → WorkingSplitScreen (3 cols productos+check, igual que
-  //             Mostrador/Pedidos cuando entran a una orden).
-  //   - false → home Salón (ActiveOrders + plano de mesas).
-  // Con KeepAlive en el padre (commit 3), cambiar de modo NO desmonta
-  // este componente; volver a Salón restituye el sub-estado vigente.
+  // Sprint 4 commit 2 — extracción del split-screen "working" (3 cols:
+  // ActiveOrders colapsado + grid productos + check) a componente
+  // propio. Este componente lo renderiza CADA modo (Salón / Mostrador /
+  // Pedidos) cuando hay orden activa en ese modo. Caja no lo usa
+  // (es full-screen).
+  //
+  // Por qué inside-de-modo en vez de fuera (como Sprint 3.A.bis):
+  //   Con KeepAlive en los modos, cada modo cachea su sub-estado. Si el
+  //   working vivía afuera, abrir orden en Salón → ir a Mostrador →
+  //   volver a Salón perdía la orden (working se desmontaba al cambiar
+  //   modo). Embebido adentro, el cache de KeepAlive del modo preserva
+  //   home Y working según corresponda.
 
   const props = defineProps<{
     cart: UseCart
@@ -31,35 +35,27 @@
     (e: 'new-order'): void
     (e: 'on-click-action', action: string): void
     (e: 'store-payment', orderId: number | string): void
-    (e: 'pick-table-free', table: PlanoTable): void
-    (e: 'pick-table-occupied', table: PlanoTable): void
-    (e: 'tables-count', count: number): void
   }>()
 
   const display = useDisplay()
   const isNarrow = computed(() => !display.lgAndUp.value)
+
+  // Ref local del MenuPanel para que ESC desde OrderPanel pueda
+  // delegarle el foco al search interno. Antes vivia en Pos/Index.vue;
+  // mas correcto que viva acá donde MenuPanel y OrderPanel son hermanos.
+  const menuPanelRef = ref<any>(null)
+  const onFocusMenuSearch = (): void => {
+    menuPanelRef.value?.focusSearch?.()
+  }
+
+  defineExpose({
+    focusSearch: onFocusMenuSearch,
+  })
 </script>
 
 <template>
-  <!-- (1) Working: en orden activa, split-screen 3 cols compartido. -->
-  <WorkingSplitScreen
-    v-if="hasActiveOrder"
-    :cart="cart"
-    :form="form"
-    :has-active-order="hasActiveOrder"
-    :meta="meta"
-    :qintrix="qintrix"
-    @init-order="(response: Record<string, any>) => emit('init-order', response)"
-    @new-order="emit('new-order')"
-    @on-click-action="(action: string) => emit('on-click-action', action)"
-    @reset="(cart?: Cart) => emit('reset', cart)"
-    @store-payment="(orderId: number | string) => emit('store-payment', orderId)"
-  />
-
-  <!-- (2) Home Salón: ActiveOrders + plano. -->
   <div
-    v-else
-    class="pos-layout flex-grow-1"
+    class="pos-layout pos-layout--working flex-grow-1"
     :class="{ 'pos-layout--narrow': isNarrow }"
   >
     <aside v-if="!isNarrow" class="pos-panel pos-panel--orders">
@@ -68,7 +64,7 @@
           :active-order-id="meta.order?.id ?? null"
           :branch-id="form.branchId"
           :cart-id="cart.cartId"
-          :collapsed="false"
+          :collapsed="hasActiveOrder"
           @init-order="(response: Record<string, any>) => emit('init-order', response)"
           @new-order="emit('new-order')"
         />
@@ -78,18 +74,33 @@
       <VCard class="pos-col-card">
         <VCardText class="pa-3">
           <MenuPanel
+            ref="menuPanelRef"
             :cart="cart"
             :form="form"
-            :has-active-order="false"
+            :has-active-order="hasActiveOrder"
             :meta="meta"
             @init-order="(response: Record<string, any>) => emit('init-order', response)"
-            @pick-table-free="(table: PlanoTable) => emit('pick-table-free', table)"
-            @pick-table-occupied="(table: PlanoTable) => emit('pick-table-occupied', table)"
-            @tables-count="(count: number) => emit('tables-count', count)"
           />
         </VCardText>
       </VCard>
     </main>
+    <aside class="pos-panel pos-panel--cart">
+      <VCard class="pos-col-card">
+        <VCardText class="pa-3">
+          <OrderPanel
+            :cart="cart"
+            :form="form"
+            :has-active-order="hasActiveOrder"
+            :meta="meta"
+            :qintrix="qintrix"
+            @focus-menu-search="onFocusMenuSearch"
+            @on-click-action="(action: string) => emit('on-click-action', action)"
+            @reset="(cartData?: Cart) => emit('reset', cartData)"
+            @store-payment="(orderId: number | string) => emit('store-payment', orderId)"
+          />
+        </VCardText>
+      </VCard>
+    </aside>
   </div>
 </template>
 
@@ -102,8 +113,17 @@
   min-height: 0;
 }
 
+.pos-layout--working {
+  grid-template-columns: 22% 48% 30%;
+}
+
 .pos-layout--narrow {
   grid-template-columns: 1fr;
+}
+
+.pos-layout--narrow.pos-layout--working {
+  grid-template-columns: 1fr;
+  grid-auto-rows: minmax(0, 1fr);
 }
 
 .pos-panel {

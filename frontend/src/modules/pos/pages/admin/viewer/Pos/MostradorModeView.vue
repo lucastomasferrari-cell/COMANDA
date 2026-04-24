@@ -1,33 +1,64 @@
 <script lang="ts" setup>
-  import { nextTick } from 'vue'
+  import type { Cart, UseCart } from '@/modules/cart/composables/cart.ts'
+  import type { PosForm, PosMeta } from '@/modules/pos/contracts/posViewer.ts'
+  import type { useQintrix } from '@/modules/printer/composables/qintrix.ts'
   import { useI18n } from 'vue-i18n'
+  import WorkingSplitScreen from './WorkingSplitScreen.vue'
 
-  // Sprint 3.A.bis bug 2 — Placeholder del modo Mostrador. Sprint 3.C va
-  // a llenarlo con el panel izq "Tabs abiertos" (counter orders activas)
-  // + center con teclado numérico rápido o grid de favoritos. Hoy solo
-  // expone la acción "+ Nueva" para que el cajero pueda seguir operando.
+  // Sprint 3.A.bis bug 2 — Placeholder del modo Mostrador (home).
+  // Sprint 4 commit 2 — además del placeholder, ahora MostradorModeView
+  // delega al WorkingSplitScreen cuando hay orden activa, igual que
+  // Salón. Esto permite que cada modo tenga su propio sub-estado
+  // home/working consistente con KeepAlive.
+
+  const props = defineProps<{
+    cart: UseCart
+    form: PosForm
+    meta: PosMeta
+    qintrix: ReturnType<typeof useQintrix>
+    hasActiveOrder: boolean
+  }>()
 
   const emit = defineEmits<{
+    (e: 'init-order', response: Record<string, any>): void
+    (e: 'reset', cart?: Cart): void
     (e: 'new-order'): void
+    (e: 'on-click-action', action: string): void
+    (e: 'store-payment', orderId: number | string): void
   }>()
 
   const { t } = useI18n()
 
-  // Defer el emit 1 tick para que el ciclo de click del VBtn (ripple DOM
-  // mount, event bubble) termine ANTES de que startNewOrder flippee
-  // hasActiveOrder y desmonte este componente. Sin nextTick + sin
-  // ripple=false, Vue crasheaba accediendo __vnode de un nodo ya
-  // desmontado porque el Mostrador y Pedidos son v-else-if branches
-  // (se desmontan al cambiar hasActiveOrder), a diferencia del
-  // ActiveOrdersPanel en Salón que se queda montado con :collapsed.
-  const onClickNew = async (): Promise<void> => {
-    await nextTick()
+  // Sprint 3.A.bis: el click "+ Nueva" emitía sin nextTick y
+  // crasheaba __vnode al desmontar el placeholder. Sprint 4 commit 2:
+  // ya no es problema porque KeepAlive impide el unmount, pero el
+  // ripple=false + emit directo siguen siendo el patrón correcto
+  // (no agrega valor el ripple en un CTA grande).
+  const onClickNew = (): void => {
     emit('new-order')
   }
 </script>
 
 <template>
-  <div class="mostrador-placeholder">
+  <!-- Working: si entrás a una orden desde Mostrador (placeholder no
+       genera órdenes, pero la "+ Nueva" del banner futuro sí), se
+       renderiza el split-screen igual que Salón. -->
+  <WorkingSplitScreen
+    v-if="hasActiveOrder"
+    :cart="cart"
+    :form="form"
+    :has-active-order="hasActiveOrder"
+    :meta="meta"
+    :qintrix="qintrix"
+    @init-order="(response: Record<string, any>) => emit('init-order', response)"
+    @new-order="emit('new-order')"
+    @on-click-action="(action: string) => emit('on-click-action', action)"
+    @reset="(cart?: Cart) => emit('reset', cart)"
+    @store-payment="(orderId: number | string) => emit('store-payment', orderId)"
+  />
+
+  <!-- Home Mostrador: placeholder hasta Sprint 3.C. -->
+  <div v-else class="mostrador-placeholder">
     <aside class="mostrador-placeholder__side">
       <div class="mostrador-placeholder__side-title">
         {{ t('pos::pos_viewer.modes_placeholders.mostrador.side_title') }}

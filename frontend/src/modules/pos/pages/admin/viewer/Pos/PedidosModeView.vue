@@ -1,31 +1,53 @@
 <script lang="ts" setup>
-  import { nextTick } from 'vue'
+  import type { Cart, UseCart } from '@/modules/cart/composables/cart.ts'
+  import type { PosForm, PosMeta } from '@/modules/pos/contracts/posViewer.ts'
+  import type { useQintrix } from '@/modules/printer/composables/qintrix.ts'
   import { useI18n } from 'vue-i18n'
+  import WorkingSplitScreen from './WorkingSplitScreen.vue'
 
-  // Sprint 3.A.bis bug 2 — Placeholder del modo Pedidos. Sprint 3.C va a
-  // reemplazarlo por el Orders Hub: grid de pedidos takeout/delivery con
-  // filtros por channel (propio/teléfono/whatsapp) + acciones approve /
-  // mark-ready / assign-driver / mark-delivered. El composable
-  // useOrderHubStatus del Sprint 3.A ya espera este modo.
+  // Sprint 3.A.bis bug 2 — Placeholder del modo Pedidos (home).
+  // Sprint 4 commit 2 — además del placeholder, delega al
+  // WorkingSplitScreen cuando hay orden activa.
+
+  const props = defineProps<{
+    cart: UseCart
+    form: PosForm
+    meta: PosMeta
+    qintrix: ReturnType<typeof useQintrix>
+    hasActiveOrder: boolean
+  }>()
 
   const emit = defineEmits<{
+    (e: 'init-order', response: Record<string, any>): void
+    (e: 'reset', cart?: Cart): void
     (e: 'new-order'): void
+    (e: 'on-click-action', action: string): void
+    (e: 'store-payment', orderId: number | string): void
   }>()
 
   const { t } = useI18n()
 
-  // Ver MostradorModeView para la razón del nextTick + ripple=false: este
-  // componente es un v-else-if branch que se desmonta cuando
-  // hasActiveOrder flippea a true; sin el defer, el ciclo de click del
-  // VBtn choca con el unmount y Vue crashea accediendo __vnode null.
-  const onClickNew = async (): Promise<void> => {
-    await nextTick()
+  const onClickNew = (): void => {
     emit('new-order')
   }
 </script>
 
 <template>
-  <div class="pedidos-placeholder">
+  <WorkingSplitScreen
+    v-if="hasActiveOrder"
+    :cart="cart"
+    :form="form"
+    :has-active-order="hasActiveOrder"
+    :meta="meta"
+    :qintrix="qintrix"
+    @init-order="(response: Record<string, any>) => emit('init-order', response)"
+    @new-order="emit('new-order')"
+    @on-click-action="(action: string) => emit('on-click-action', action)"
+    @reset="(cart?: Cart) => emit('reset', cart)"
+    @store-payment="(orderId: number | string) => emit('store-payment', orderId)"
+  />
+
+  <div v-else class="pedidos-placeholder">
     <div class="icon-wrapper mb-4">
       <VIcon color="primary" icon="tabler-clipboard-list" size="48" />
     </div>

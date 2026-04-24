@@ -22,15 +22,16 @@
   // StartOrderDialog eliminado del mount (Sprint 2 B.1): el modal
   // bifurcador quedó redundante con el nuevo split-screen (plano = abrir
   // mesa, botón + = orden rápida). Archivo vive huérfano.
+  // ActiveOrdersPanel sigue importado para el fallback narrow-screen
+  // (VNavigationDrawer en md-and-down). MenuPanel/OrderPanel ya no se
+  // usan acá: viven adentro de SalonModeView/WorkingSplitScreen.
   import ActiveOrdersPanel from './ActiveOrdersPanel/Index.vue'
   import CajaMode from './CajaMode.vue'
   // Drawers/Caja eliminado Sprint 3.A.bis — el contenido migró a CajaMode
   // como modo propio del switcher vertical. Ver commit hash del sprint.
   import TableViewerDrawer from './Drawers/TableViewer/Index.vue'
-  import MenuPanel from './MenuPanel/Index.vue'
   import ModeSwitcher from './ModeSwitcher.vue'
   import MostradorModeView from './MostradorModeView.vue'
-  import OrderPanel from './OrderPanel/Index.vue'
   import PedidosModeView from './PedidosModeView.vue'
   import SalonModeView from './SalonModeView.vue'
   // TopActionsBar eliminado Sprint 3.A.bis — "+ Orden rápida" se reubica
@@ -107,9 +108,9 @@
   const viewOrderDetailsDialog = ref<Record<string, any>>({ orderId: null, open: false })
   const showOrderPrintDialog = ref<Record<string, any>>({ orderId: null, open: false })
   const tableViewerDrawerRef = ref()
-  const menuPanelRef = ref<any>(null)
-
-  const onFocusMenuSearch = () => menuPanelRef.value?.focusSearch?.()
+  // Sprint 4 commit 2 — menuPanelRef + onFocusMenuSearch viven ahora
+  // adentro de WorkingSplitScreen, donde MenuPanel y OrderPanel son
+  // hermanos directos. Ya no necesitan vivir en este nivel.
 
   const onClickAction = (action: string) => {
     if (action == 'manage_cash_movement' && can('admin.pos_cash_movements.create')) {
@@ -226,111 +227,82 @@
         @update:model-value="onModeChange"
       />
 
-      <!-- Sprint 3.A.bis bug 2 — render según modo + hasActiveOrder.
-           Reglas:
-             1) posMode='caja' → CajaMode pantalla completa.
-             2) hasActiveOrder=true → split-screen productos+check
-                (ortogonal al modo: si entraste a una comanda, se atiende
-                igual en Salón/Mostrador/Pedidos).
-             3) Home (!hasActiveOrder):
-                - salon   → ActiveOrdersPanel + plano (flujo "abrir mesa").
-                - counter → MostradorModeView (placeholder hasta 3.C).
-                - orders  → PedidosModeView (placeholder hasta 3.C). -->
+      <!-- Sprint 4 commit 2 — KeepAlive sobre los 4 modos.
+           Cada modo cachea su sub-estado (home / working) en memoria;
+           cambiar de modo NO desmonta los componentes. Esto cierra los
+           __vnode crashes de raíz: sin unmount, no hay race entre
+           fetch in-flight y patch del nuevo árbol.
 
-      <!-- (1) Modo Caja: pantalla completa. -->
-      <CajaMode
-        v-if="posMode === 'caja' && can('admin.pos_cash_movements.create')"
-        class="flex-grow-1"
-        :meta="meta"
-        :register-id="form.registerId"
-        :session-id="form.sessionId"
-        @session-closed="$emit('reset')"
-      />
+           Cada modo (excepto Caja) decide internamente si renderiza su
+           home o el WorkingSplitScreen según hasActiveOrder. Caja tiene
+           UI propia full-screen y no usa el split-screen.
 
-      <!-- (2) Vista "working" — split-screen 3 cols: ActiveOrders
-           colapsado + grid productos + detalle comanda. -->
-      <div
-        v-else-if="hasActiveOrder"
-        class="pos-layout flex-grow-1 pos-layout--working"
-        :class="{ 'pos-layout--narrow': isNarrow }"
-      >
-        <aside v-if="!isNarrow" class="pos-panel pos-panel--orders">
-          <VCard class="pos-col-card">
-            <ActiveOrdersPanel
-              :active-order-id="meta.order?.id ?? null"
-              :branch-id="form.branchId"
-              :cart-id="cart.cartId"
-              :collapsed="hasActiveOrder"
-              @init-order="(response:Record<string, any>) => $emit('init-order', response)"
-              @new-order="onNewOrder"
-            />
-          </VCard>
-        </aside>
-        <main class="pos-panel pos-panel--main">
-          <VCard class="pos-col-card">
-            <VCardText class="pa-3">
-              <MenuPanel
-                ref="menuPanelRef"
-                :cart="cart"
-                :form="form"
-                :has-active-order="hasActiveOrder"
-                :meta="meta"
-                @init-order="(response:Record<string, any>) => $emit('init-order', response)"
-                @pick-table-free="onPlanoPickFree"
-                @pick-table-occupied="onPlanoPickOccupied"
-                @tables-count="(count:number) => tablesCount = count"
-              />
-            </VCardText>
-          </VCard>
-        </main>
-        <aside class="pos-panel pos-panel--cart">
-          <VCard class="pos-col-card">
-            <VCardText class="pa-3">
-              <OrderPanel
-                :cart="cart"
-                :form="form"
-                :has-active-order="hasActiveOrder"
-                :meta="meta"
-                :qintrix="qintrix"
-                @focus-menu-search="onFocusMenuSearch"
-                @on-click-action="onClickAction"
-                @reset="(cartData?:Cart)=>$emit('reset',cartData)"
-                @store-payment="storePayment"
-              />
-            </VCardText>
-          </VCard>
-        </aside>
-      </div>
+           hasActiveOrder = "hay orden activa en el cart compartido". Con
+           KeepAlive + cart compartido, Phase A solo cubre la memoria
+           visual del modo; Phase B (drafts en backend) va a permitir
+           que cada modo tenga SU PROPIA orden pausada persistida. -->
+      <KeepAlive>
+        <CajaMode
+          v-if="posMode === 'caja' && can('admin.pos_cash_movements.create')"
+          key="caja"
+          class="flex-grow-1"
+          :meta="meta"
+          :register-id="form.registerId"
+          :session-id="form.sessionId"
+          @session-closed="$emit('reset')"
+        />
 
-      <!-- (3a) Home Salón: ActiveOrders + plano. Extraído a SalonModeView
-           en Sprint 4 commit 1 — refactor sin cambio funcional, base
-           para KeepAlive (commit 2). -->
-      <SalonModeView
-        v-else-if="posMode === 'salon'"
-        :cart="cart"
-        class="flex-grow-1"
-        :form="form"
-        :meta="meta"
-        @init-order="(response: Record<string, any>) => $emit('init-order', response)"
-        @new-order="onNewOrder"
-        @pick-table-free="onPlanoPickFree"
-        @pick-table-occupied="onPlanoPickOccupied"
-        @tables-count="(count: number) => tablesCount = count"
-      />
+        <SalonModeView
+          v-else-if="posMode === 'salon'"
+          key="salon"
+          :cart="cart"
+          class="flex-grow-1"
+          :form="form"
+          :has-active-order="hasActiveOrder"
+          :meta="meta"
+          :qintrix="qintrix"
+          @init-order="(response: Record<string, any>) => $emit('init-order', response)"
+          @new-order="onNewOrder"
+          @on-click-action="onClickAction"
+          @pick-table-free="onPlanoPickFree"
+          @pick-table-occupied="onPlanoPickOccupied"
+          @reset="(cartData?: Cart) => $emit('reset', cartData)"
+          @store-payment="storePayment"
+          @tables-count="(count: number) => tablesCount = count"
+        />
 
-      <!-- (3b) Home Mostrador: placeholder hasta Sprint 3.C. -->
-      <MostradorModeView
-        v-else-if="posMode === 'counter'"
-        class="flex-grow-1"
-        @new-order="onNewOrder"
-      />
+        <MostradorModeView
+          v-else-if="posMode === 'counter'"
+          key="counter"
+          :cart="cart"
+          class="flex-grow-1"
+          :form="form"
+          :has-active-order="hasActiveOrder"
+          :meta="meta"
+          :qintrix="qintrix"
+          @init-order="(response: Record<string, any>) => $emit('init-order', response)"
+          @new-order="onNewOrder"
+          @on-click-action="onClickAction"
+          @reset="(cartData?: Cart) => $emit('reset', cartData)"
+          @store-payment="storePayment"
+        />
 
-      <!-- (3c) Home Pedidos: placeholder hasta Sprint 3.C. -->
-      <PedidosModeView
-        v-else-if="posMode === 'orders'"
-        class="flex-grow-1"
-        @new-order="onNewOrder"
-      />
+        <PedidosModeView
+          v-else-if="posMode === 'orders'"
+          key="orders"
+          :cart="cart"
+          class="flex-grow-1"
+          :form="form"
+          :has-active-order="hasActiveOrder"
+          :meta="meta"
+          :qintrix="qintrix"
+          @init-order="(response: Record<string, any>) => $emit('init-order', response)"
+          @new-order="onNewOrder"
+          @on-click-action="onClickAction"
+          @reset="(cartData?: Cart) => $emit('reset', cartData)"
+          @store-payment="storePayment"
+        />
+      </KeepAlive>
     </div>
   </div>
   <!-- En pantallas md-and-down, ActiveOrdersPanel pasa a drawer lateral.
