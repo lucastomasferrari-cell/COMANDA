@@ -227,6 +227,18 @@ return [
     ],
     // active_orders legacy string removed — collided with array below.
     "upcoming_orders" => "الطلبات القادمة",
+    "back_to_map" => "عرض الخريطة",
+    "back_to_admin" => "الإدارة",
+    "quick_order" => "طلب سريع",
+    "guest_count_required" => "حدد عدد الضيوف قبل الإرسال إلى المطبخ.",
+
+    "modes" => [
+        "salon" => "الصالة",
+        "counter" => "الكاونتر",
+        "orders" => "الطلبات",
+        "caja" => "الصندوق",
+    ],
+
     "no_cart_items" => [
         "title" => "ابدأ طلبًا جديدًا",
         "description" => "اختر الأطباق من القائمة لبدء طلبك",
