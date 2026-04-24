@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+  import { nextTick } from 'vue'
   import { useI18n } from 'vue-i18n'
 
   // Sprint 3.A.bis bug 2 — Placeholder del modo Mostrador. Sprint 3.C va
@@ -6,11 +7,23 @@
   // + center con teclado numérico rápido o grid de favoritos. Hoy solo
   // expone la acción "+ Nueva" para que el cajero pueda seguir operando.
 
-  defineEmits<{
+  const emit = defineEmits<{
     (e: 'new-order'): void
   }>()
 
   const { t } = useI18n()
+
+  // Defer el emit 1 tick para que el ciclo de click del VBtn (ripple DOM
+  // mount, event bubble) termine ANTES de que startNewOrder flippee
+  // hasActiveOrder y desmonte este componente. Sin nextTick + sin
+  // ripple=false, Vue crasheaba accediendo __vnode de un nodo ya
+  // desmontado porque el Mostrador y Pedidos son v-else-if branches
+  // (se desmontan al cambiar hasActiveOrder), a diferencia del
+  // ActiveOrdersPanel en Salón que se queda montado con :collapsed.
+  const onClickNew = async (): Promise<void> => {
+    await nextTick()
+    emit('new-order')
+  }
 </script>
 
 <template>
@@ -39,8 +52,9 @@
       <VBtn
         color="primary"
         prepend-icon="tabler-plus"
+        :ripple="false"
         size="large"
-        @click="$emit('new-order')"
+        @click="onClickNew"
       >
         {{ t('pos::pos_viewer.modes_placeholders.cta_new') }}
       </VBtn>
