@@ -39,10 +39,20 @@ class DemoArSeeder extends Seeder
         // que filtra por branch del user autenticado — en CLI no hay auth,
         // el scope resuelve null y queries vuelven vacías. Esto me tiró un
         // seedPosSession con opened_by=admin (fallback) en vez de cajero.
-        $this->adminId = User::withOutGlobalBranchPermission()
+        $admin = User::withOutGlobalBranchPermission()
             ->where('username', 'admin')
-            ->firstOrFail()
-            ->id;
+            ->firstOrFail();
+        $this->adminId = $admin->id;
+
+        // En single-branch mode, TODO user necesita branch_id=1 para que
+        // assignedToBranch() devuelva true. Si no: PosViewerService cae en
+        // Branch::list() (filtra por permission admin.branches.index que
+        // super_admin NO tiene — está desactivado en single-branch) y
+        // devuelve vacío → POS muestra empty state "no hay sucursales".
+        // Fix post Sprint 2: forzar branch_id=1 en todos los users.
+        User::withOutGlobalBranchPermission()
+            ->whereNull('branch_id')
+            ->update(['branch_id' => $this->branchId]);
 
         $menu = Menu::withOutGlobalBranchPermission()
             ->where('branch_id', $this->branchId)
