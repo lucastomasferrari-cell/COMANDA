@@ -54,40 +54,57 @@
 </template>
 
 <style lang="scss" scoped>
+/* Sprint 3.A commit 7 — Toast-style: subtotal/descuentos chicos en
+   on-surface-variant, TOTAL grande en primary coral como el único
+   elemento "gritador" del panel. Divider sutil separando.
+   Sin background card (antes era grey-200 tintado, feo en dark) —
+   ahora limpio contra el surface del panel. */
 .invoice-card {
-  padding: 10px 15px 15px 15px;
-  border-radius: 8px;
-  background: rgba(var(--v-theme-grey-200), 0.5);
+  padding: 8px 4px;
   display: flex;
   flex-direction: column;
-
 }
 
 .row-line {
   display: flex;
-  padding: 0.4rem 0;
+  padding: 4px 0;
   justify-content: space-between;
-  font-size: 0.95rem;
-  color: rgb(var(--v-theme-on-surface));
+  align-items: baseline;
+  font-size: 0.875rem;
+  color: rgb(var(--v-theme-on-surface-variant));
 }
 
 .row-line span:last-child {
-  font-weight: 600;
+  font-weight: 500;
+  color: rgb(var(--v-theme-on-surface));
 }
 
 .divider {
   height: 1px;
   margin: 6px 0;
-  background: rgba(var(--v-theme-on-surface), 0.1);
+  background: rgba(var(--v-theme-on-surface), 0.12);
 }
 
+/* TOTAL: el número más grande del panel — text-h4 weight 700 coral
+   primary. Es lo que el cajero ve a distancia cuando decide cobrar. */
 .total-row {
+  padding: 8px 0 4px 0;
+  font-size: 1.125rem;
   font-weight: 600;
+  color: rgb(var(--v-theme-on-surface));
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.total-row span:last-child {
+  font-size: 2rem;
+  font-weight: 700;
   color: rgb(var(--v-theme-primary));
+  letter-spacing: -0.01em;
 }
 
 .amount_due-row {
-  font-weight: bold;
+  font-weight: 600;
   color: rgb(var(--v-theme-error));
 }
 

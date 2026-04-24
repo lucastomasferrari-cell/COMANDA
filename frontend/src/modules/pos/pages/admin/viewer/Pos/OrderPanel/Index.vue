@@ -356,48 +356,53 @@
           <RefundPaymentMethod :form="form" :meta="meta" :overpaid-amount="overpaidAmount" />
         </VCol>
       </VRow>
-      <!-- Footer Toast-style: 2 botones grandes principales + 1 mas acciones -->
-      <div class="order-footer-buttons mt-2">
-        <div class="primary-row">
-          <VBtn
-            class="primary-cta"
-            color="warning"
-            :disabled="isSubmitDisabled||submitState.action != null"
-            :loading="submitState.isLoading && submitState.action =='send_to_kitchen'"
-            size="x-large"
-            @click="submit('send_to_kitchen')"
-          >
-            <VIcon icon="tabler-chef-hat" start />
-            {{ t('pos::pos_viewer.send_to_kitchen') }}
-            <kbd class="shortcut-hint ms-2">↵</kbd>
-          </VBtn>
+      <!-- Sprint 3.A commit 7 — Toast-style: acción primary full-width
+           coral (Enviar a cocina), luego split 65/35 con Cobrar success +
+           Más tonal. Antes ambos CTAs en paralelo competían por atención;
+           ahora hay jerarquía clara: Enviar > Cobrar > Más. -->
+      <div class="order-footer-buttons mt-3">
+        <VBtn
+          block
+          class="primary-cta mb-2"
+          color="primary"
+          :disabled="isSubmitDisabled || submitState.action != null"
+          :loading="submitState.isLoading && submitState.action == 'send_to_kitchen'"
+          size="x-large"
+          variant="flat"
+          @click="submit('send_to_kitchen')"
+        >
+          <VIcon icon="tabler-chef-hat" start />
+          {{ t('pos::pos_viewer.send_to_kitchen') }}
+          <kbd class="shortcut-hint ms-2">↵</kbd>
+        </VBtn>
+        <div class="split-row d-flex ga-2">
           <VBtn
             v-if="canShowPay"
-            class="primary-cta"
+            class="secondary-cta"
             color="success"
-            :disabled="isSubmitDisabled||submitState.action != null"
-            :loading="submitState.isLoading && submitState.action =='pay_and_fire'"
-            size="x-large"
+            :disabled="isSubmitDisabled || submitState.action != null"
+            :loading="submitState.isLoading && submitState.action == 'pay_and_fire'"
+            size="large"
+            variant="flat"
             @click="submit('pay_and_fire')"
           >
             <VIcon icon="tabler-cash" start />
             {{ t('pos::pos_viewer.pay_and_fire') }}
-            <kbd class="shortcut-hint ms-2">⌘↵</kbd>
           </VBtn>
-        </div>
-        <VMenu location="top">
-          <template #activator="{ props: menuProps }">
-            <VBtn
-              v-bind="menuProps"
-              block
-              class="more-actions-btn mt-2"
-              color="default"
-              prepend-icon="tabler-dots"
-              variant="tonal"
-            >
-              {{ t('pos::pos_viewer.more_actions.label') }}
-            </VBtn>
-          </template>
+          <VMenu location="top">
+            <template #activator="{ props: menuProps }">
+              <VBtn
+                v-bind="menuProps"
+                class="more-actions-btn"
+                :class="{ 'flex-grow-1': !canShowPay }"
+                color="default"
+                prepend-icon="tabler-dots"
+                size="large"
+                variant="tonal"
+              >
+                {{ t('pos::pos_viewer.more_actions.label') }}
+              </VBtn>
+            </template>
           <VList density="compact">
             <VListItem
               v-if="!isEditMode"
@@ -486,6 +491,7 @@
             </VListItem>
           </VList>
         </VMenu>
+        </div>
       </div>
     </footer>
   </div>
@@ -537,23 +543,35 @@
   justify-content: center;
 }
 
+/* Sprint 3.A commit 7 — Toast-style: CTA primary full-width 52px,
+   secundarios 48px en split 65/35. Jerarquía visual clara: Enviar a
+   cocina es el único elemento "gritador" del footer (coral primary,
+   tipografía weight 700). Cobrar es subordinado verde. Más es tonal
+   quasi-transparente. */
 .order-footer-buttons {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
 }
 
-.primary-row {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.primary-row .primary-cta {
-  flex: 1 1 0;
-  min-height: 56px;
-  font-size: 0.95rem;
+.primary-cta {
+  min-height: 52px;
+  font-size: 1rem;
   font-weight: 700;
   letter-spacing: 0.02em;
+}
+
+.split-row {
+  min-height: 48px;
+}
+
+.split-row .secondary-cta {
+  flex: 0 0 65%;
+  font-weight: 600;
+}
+
+.split-row .more-actions-btn {
+  flex: 0 0 35%;
+  font-weight: 500;
 }
 
 .shortcut-hint {
