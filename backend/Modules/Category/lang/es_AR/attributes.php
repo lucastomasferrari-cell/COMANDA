@@ -11,6 +11,8 @@ return [
         "sku_hint" => "Código único para integraciones. Se genera automático si se deja vacío.",
         "color" => "Color",
         "color_custom" => "Color personalizado",
+        "color_hue" => "Tinte de categoría",
+        "color_hue_preview" => "Vista previa",
         "files" => [
             "logo" => "Logo",
         ]

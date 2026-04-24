@@ -40,7 +40,17 @@ const form = useForm({
   },
   is_active: props.item?.is_active ?? true,
   color: props.item?.color || null,
+  // Sprint 1.B: hue 0-360 para los placeholders de producto del POS
+  // viewer + chip activo. Default null → frontend usa coral marca (12).
+  color_hue: props.item?.color_hue ?? null,
 })
+
+// Preview del color_hue con saturación/luminosidad fijas (mismas que usa
+// el frontend del POS para consistencia visual: 55%/50%).
+const hueValue = computed(() => form.state.color_hue ?? 12)
+const huePreviewColor = computed(() => `hsl(${hueValue.value} 55% 50%)`)
+const huePlaceholderBg = computed(() => `hsl(${hueValue.value} 40% 85%)`)
+const huePlaceholderFg = computed(() => `hsl(${hueValue.value} 50% 25%)`)
 
 // Paleta Toast. Coincide con HasCategoryColor trait del backend —
 // el auto-asigna uno de estos si el user no elige nada.
@@ -168,6 +178,46 @@ async function deleteCategory() {
                     {{ form.errors.value.color }}
                   </div>
                 </VCol>
+                <!-- Sprint 1.B: hue slider + preview. El slider es intencionalmente
+                     más simple que un color picker full — el dueño elige un hue
+                     (tinte) y el sistema fija sat/lum para que todos los placeholders
+                     del POS se vean coherentes. No hay full-RGB que se vaya de paleta. -->
+                <VCol cols="12">
+                  <label class="text-caption text-medium-emphasis d-block mb-2">
+                    {{ t('category::attributes.categories.color_hue') }}
+                  </label>
+                  <div class="d-flex align-center ga-3 mb-2">
+                    <div class="hue-preview" :style="{ backgroundColor: huePreviewColor }" />
+                    <VSlider
+                      v-model="form.state.color_hue"
+                      class="flex-grow-1"
+                      :color="huePreviewColor"
+                      hide-details
+                      :max="360"
+                      :min="0"
+                      :step="5"
+                      thumb-label
+                      track-color="hue-track"
+                    />
+                    <VBtn
+                      v-if="form.state.color_hue !== null"
+                      icon="tabler-rotate-clockwise"
+                      size="small"
+                      variant="text"
+                      :aria-label="t('admin::admin.buttons.reset')"
+                      @click="form.state.color_hue = null"
+                    />
+                  </div>
+                  <div class="hue-tile-preview" :style="{ borderTopColor: huePreviewColor }">
+                    <div class="hue-tile-placeholder" :style="{ background: huePlaceholderBg, color: huePlaceholderFg }">
+                      AA
+                    </div>
+                    <div class="hue-tile-label">{{ t('category::attributes.categories.color_hue_preview') }}</div>
+                  </div>
+                  <div v-if="form.errors.value?.color_hue" class="text-caption text-error mt-1">
+                    {{ form.errors.value.color_hue }}
+                  </div>
+                </VCol>
                 <VCol cols="12">
                   <VCheckbox v-if="action !== 'create'" v-model="form.state.is_active" :label="t('category::attributes.categories.is_active')" />
                 </VCol>
@@ -204,5 +254,38 @@ async function deleteCategory() {
   border-radius: 50%;
   cursor: pointer;
   background: transparent;
+}
+
+/* Hue picker Sprint 1.B — preview del hue + tile de producto dummy
+   para que el admin vea el impacto real antes de guardar. */
+.hue-preview {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  flex-shrink: 0;
+}
+.hue-tile-preview {
+  max-width: 200px;
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  border-top: 4px solid rgb(var(--v-theme-primary));
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.hue-tile-placeholder {
+  aspect-ratio: 1.4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  user-select: none;
+}
+.hue-tile-label {
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  color: rgba(var(--v-theme-on-surface), 0.7);
 }
 </style>
