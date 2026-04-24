@@ -61,9 +61,11 @@
 
 <template>
   <!-- Sprint 1.B: borde izquierdo 4px con hsl(hue 55% 50%) cuando la
-       categoría tiene color_hue. Sin hue → cae al border token neutro. -->
+       categoría tiene color_hue. Sin hue → cae al border token neutro.
+       Sprint 3.A.bis bug 3: altura cappeada 150px total con layout
+       imagen/body 60/40 para encajar tiles compactos tablet-first. -->
   <VCard
-    class="product-item mb-3 me-2"
+    class="product-item"
     :class="{ 'has-hue': categoryHue !== null }"
     :ripple="false"
     :style="{ '--category-hue': categoryHue ?? 12 }"
@@ -72,7 +74,7 @@
     <!-- ProductTileImage reemplaza el VImg + VIcon tabler-soup genérico
          (anti-patrón: todos los productos mostraban la misma sopita).
          Ahora foto si existe o iniciales tinteadas por el hue de la categoría. -->
-    <div class="image-wrapper">
+    <div class="product-item__image">
       <ProductTileImage
         :category-color-hue="categoryHue"
         :name="product.name"
@@ -82,9 +84,9 @@
         {{ t('pos::pos_viewer.new').toUpperCase() }}
       </div>
     </div>
-    <VCardText class="pa-2">
+    <div class="product-item__body">
       <div class="product-name">{{ product.name }}</div>
-      <div class="product-price mt-1">
+      <div class="product-price">
         <span v-if="hasDiscount" class="selling-price">
           {{ product.selling_price?.formatted }}
         </span>
@@ -92,13 +94,29 @@
           {{ product.price?.formatted }}
         </span>
       </div>
-    </VCardText>
+    </div>
   </VCard>
 </template>
 
 <style lang="scss" scoped>
+/* Sprint 3.A.bis bug 3 — tiles cappeados 140-160px total con layout
+   imagen 60% / body 40%. El commit 70541f8 había bajado las fuentes
+   (14px) pero el v-card-text seguía con padding default + sin altura
+   fija, así que los tiles crecían a ~200-250px en productos con
+   nombres largos. Ahora:
+     - Card: height 150px fijo (max 160 en cards con nombre 2 líneas).
+     - Imagen: flex-basis 60% sin aspect-ratio (lo fija el height).
+     - Body: flex-basis 40%, padding 8px 10px, distribuye con
+       justify-content: space-between para que precio siempre quede
+       abajo.
+   Criterio validado: 1280px viewport, split-screen working → columna
+   main ~615px, gap 10px, minmax(160px, 1fr) → 3 cols cómodos con tiles
+   totales de 180×150px. */
 .product-item {
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  height: 150px;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
   border-radius: 8px;
   overflow: hidden;
@@ -119,73 +137,79 @@
   &.has-hue {
     border-top-color: hsl(var(--category-hue) 55% 50%);
   }
+}
 
-  /* Sprint 3.A.bis — tipografía comprimida tablet-first.
-     Antes: nombre 1.25rem (20px), precio 1.125rem (18px). Con tiles de
-     160px de ancho + 2 líneas de nombre, el espacio vertical pedía 180+
-     de alto total. Ahora 0.875rem (14px) weight 500 en nombre, 0.875rem
-     weight 700 en precio — los tiles entran en 140-160px alto con aire
-     para el thumbnail 60%. El cajero sigue leyendo fácil a distancia
-     normal de tablet; la jerarquía ahora la da el weight, no el size. */
-  .product-name {
-    font-weight: 500;
-    font-size: 0.875rem;
-    line-height: 1.25;
-    margin-bottom: 4px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    min-height: 2.5em;
+.product-item__image {
+  position: relative;
+  flex: 0 0 60%;
+  overflow: hidden;
+  /* Asegurar que el VImg/placeholder respete el height del flex-basis:
+     sin esto, el aspect-ratio 1.4 del ProductTileImage le gana. */
+  :deep(.product-tile-image) {
+    height: 100%;
+    aspect-ratio: auto;
+    border-radius: 0;
+  }
+  :deep(.product-tile-image__placeholder) {
+    font-size: 1.5rem; /* placeholder 24px — compacto para 60% de 150px */
+  }
+}
+
+.product-item__body {
+  flex: 1 1 40%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 6px 10px 8px;
+  min-height: 0;
+}
+
+/* Nombre 13px line-height 1.2 clamp 2 — evita overflow vertical en
+   productos con nombres largos. Jerarquía por weight, no por size. */
+.product-name {
+  font-weight: 500;
+  font-size: 0.8125rem;
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.product-price {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: rgb(var(--v-theme-primary));
+  line-height: 1;
+
+  .original-price {
+    text-decoration: line-through;
+    color: rgba(var(--v-theme-on-surface-variant), 0.7);
+    font-size: 0.75rem;
+    font-weight: 400;
   }
 
-  .product-price {
-    display: flex;
-    gap: 0.5rem;
-    align-items: baseline;
-    font-size: 0.875rem;
-    font-weight: 600;
-
-    .original-price {
-      text-decoration: line-through;
-      color: rgba(var(--v-theme-on-surface-variant), 0.7);
-      font-size: 0.875rem;
-      font-weight: 400;
-    }
-
-    .selling-price {
-      color: rgb(var(--v-theme-primary));
-      font-weight: 700;
-    }
+  .selling-price {
+    color: rgb(var(--v-theme-primary));
+    font-weight: 700;
   }
+}
 
-  .new-badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-  }
-
-  .image-wrapper {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    .icon {
-      color: rgb(var(--v-theme-grey-500));
-    }
-
-    .new-badge {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background-color: rgb(var(--v-theme-error));
-      color: white;
-      padding: 4px 8px;
-      font-size: 0.75rem;
-      font-weight: bold;
-      border-radius: 4px;
-    }
-  }
+.new-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background-color: rgb(var(--v-theme-error));
+  color: white;
+  padding: 2px 6px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border-radius: 4px;
+  z-index: 1;
 }
 </style>
