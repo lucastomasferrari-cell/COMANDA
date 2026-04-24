@@ -2,10 +2,11 @@
 
 namespace Modules\SeatingPlan\Http\Controllers\Api\V1;
 
-use App\Http\Controllers\Controller;
 use App\Http\Responses\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Modules\Core\Http\Controllers\Controller;
 
 /**
  * Sprint 3.A.bis — endpoint read-only para que el POS viewer muestre badges
@@ -22,9 +23,18 @@ class ReservationController extends Controller
      * Reservas próximas en el horizonte inmediato (2hs por default).
      * Filtro: status ∈ {pending, confirmed}, reserved_for entre ahora y
      * ahora+2hs, table_id no-null (las sin mesa se manejan en PASE).
+     *
+     * Safeguard: si la tabla `reservations` todavía no fue migrada (ej.
+     * deploy mid-rollout o un fresh install que no corrió el seeder),
+     * respondemos lista vacía en vez de 500. El POS trata las reservas
+     * como feature secundario y no puede caerse por falta de data.
      */
     public function upcoming(): JsonResponse
     {
+        if (! Schema::hasTable('reservations')) {
+            return ApiResponse::success([]);
+        }
+
         $rows = DB::table('reservations')
             ->whereIn('status', ['pending', 'confirmed'])
             ->whereNotNull('table_id')
