@@ -172,7 +172,9 @@ return [
         "closed_ok" => "Caja cerrada correctamente.",
     ],
     "more_actions" => [
-        "label" => "Más acciones",
+        // Sprint 3.A fix: "Más" solo — "Más acciones" era redundante con
+        // el ícono ⋮ y no entraba limpio en el split 65/35 del footer.
+        "label" => "Más",
         "coming_soon" => "Próximamente",
         "print_needs_order" => "Imprimir está disponible cuando la comanda ya fue enviada",
         "print_needs_order_short" => "Envialo primero",
@@ -274,7 +276,9 @@ return [
 
     "no_cart_items" => [
         "title" => "Arrancá una comanda",
-        "description" => "Seleccioná platos del menú para comenzar el pedido",
+        // Sprint 3.A fix: copy más directo Toast-style — "Agregá
+        // productos" es accionable, no decorativo.
+        "description" => "Agregá productos para empezar la comanda",
     ],
     "order_management" => "Gestión de pedidos",
     "filters" => "Filtros",

@@ -30,6 +30,16 @@ body,
   font-weight: bold !important;
 }
 
+/* Sprint 3.A fix — text-transform global para VBtn.
+   El vendor setea capitalize en el typography token "button"
+   (scss/template/libs/vuetify/_variables.scss) que se aplica a todos los
+   VBtn. En es_AR se lee horrible: "Enviar A Cocina" en vez de "Enviar a
+   cocina", "Más Acciones" en vez de "Más acciones". Override global a
+   none. Si algún caso necesita uppercase, se aplica con clase local. */
+.v-btn {
+  text-transform: none !important;
+}
+
 .layout-page-content {
   padding-block: 0.5rem;
 }

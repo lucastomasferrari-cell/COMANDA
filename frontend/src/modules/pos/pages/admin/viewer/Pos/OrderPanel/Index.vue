@@ -62,9 +62,14 @@
   // Mostrar "Cobrar" cuando el canal no es dine_in (salón no paga en caja
   // de la comanda) y el user puede recibir pagos. No bloquea en edit mode
   // si hubo overpaid negativo (queda solo el Enviar a cocina ampliado).
+  // Sprint 3.A fix — "Cobrar" siempre visible, no depende de dining_option.
+  // Antes se ocultaba en dine_in (orden de mesa), asumiendo que el cajero
+  // solo cobra al final. Pero el flujo de cobro anticipado (pay_and_fire)
+  // es válido en cualquier dining_option y el botón debe estar disponible
+  // siempre que el user tenga permiso. Disabled por !hasItems lo maneja el
+  // template via isSubmitDisabled.
   const canShowPay = computed(() =>
-    data.value.orderType?.id !== 'dine_in'
-    && canReceivePayment.value
+    canReceivePayment.value
     && (!isEditMode.value || overpaidAmount.value < 0),
   )
 
@@ -398,6 +403,9 @@
            Más tonal. Antes ambos CTAs en paralelo competían por atención;
            ahora hay jerarquía clara: Enviar > Cobrar > Más. -->
       <div class="order-footer-buttons mt-3">
+        <!-- CTA primary Toast-style — ícono chef-hat 22px blanco + texto
+             del send_to_kitchen + atajo Enter. Ícono con tamaño explícito
+             para que tenga presencia sin que el texto se achique. -->
         <VBtn
           block
           class="primary-cta mb-2"
@@ -408,11 +416,13 @@
           variant="flat"
           @click="submit('send_to_kitchen')"
         >
-          <VIcon icon="tabler-chef-hat" start />
+          <VIcon class="me-2" icon="tabler-chef-hat" size="22" />
           {{ t('pos::pos_viewer.send_to_kitchen') }}
-          <kbd class="shortcut-hint ms-2">↵</kbd>
         </VBtn>
         <div class="split-row d-flex ga-2">
+          <!-- CTA secundaria "Cobrar" 65% — ícono cash + texto corto.
+               Sprint 3.A fix: siempre visible (canShowPay ya no filtra
+               por dine_in). Disabled si no hay items. -->
           <VBtn
             v-if="canShowPay"
             class="secondary-cta"
@@ -423,7 +433,7 @@
             variant="flat"
             @click="submit('pay_and_fire')"
           >
-            <VIcon icon="tabler-cash" start />
+            <VIcon class="me-2" icon="tabler-cash" size="20" />
             {{ t('pos::pos_viewer.pay_and_fire') }}
           </VBtn>
           <VMenu location="top">

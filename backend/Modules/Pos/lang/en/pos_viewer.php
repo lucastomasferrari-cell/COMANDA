@@ -172,7 +172,7 @@ return [
         "closed_ok" => "Drawer closed successfully.",
     ],
     "more_actions" => [
-        "label" => "More actions",
+        "label" => "More",
         "coming_soon" => "Coming soon",
         "print_needs_order" => "Printing is available once the order has been sent",
         "print_needs_order_short" => "Send first",
@@ -266,7 +266,7 @@ return [
 
     "no_cart_items" => [
         "title" => "Start a new order",
-        "description" => "Select dishes from the menu to start your order",
+        "description" => "Add products to start the order",
     ],
     "order_management" => "Order Management",
     "filters" => "Filters",
