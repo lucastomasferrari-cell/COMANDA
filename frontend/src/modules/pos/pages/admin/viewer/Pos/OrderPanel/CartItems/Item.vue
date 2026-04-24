@@ -1,7 +1,7 @@
 <script lang="ts" setup>
   import type { CartItem, CartItemAction, UseCart } from '@/modules/cart/composables/cart.ts'
   import type { PosForm } from '@/modules/pos/contracts/posViewer.ts'
-  import { computed, ref } from 'vue'
+  import { computed, onBeforeUnmount, ref } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { useToast } from 'vue-toastification'
   import { useOrder } from '@/modules/sale/composables/order.ts'
@@ -27,6 +27,14 @@
   const open = ref<boolean>(false)
   const editQtyDialog = ref<boolean>(false)
   const voidDialog = ref<boolean>(false)
+
+  // Sprint 3.A.bis post-validación 7 — este componente se desmonta
+  // cuando: (a) el item se elimina del cart, (b) la orden se resetea,
+  // (c) la v-for re-orders por cambio de items. Todas las async
+  // functions de acá pueden resolver post-unmount mutando refs
+  // locales (loading*) o shared (cart.data via mutateItem/etc).
+  let isAlive = true
+  onBeforeUnmount(() => { isAlive = false })
 
   // orderProductId existe solo en edit mode (item persistido).
   const orderProductId = computed(() => props.cartItem.orderProduct?.id ?? null)
@@ -77,13 +85,15 @@
   const toggle = () => open.value = !open.value
 
   async function updateQty (qty: number) {
-    if (qty < 1 || !enableEditOrRemoveItem.value || processing.value) {
+    if (!isAlive || qty < 1 || !enableEditOrRemoveItem.value || processing.value) {
       return
     }
-
     loading.value = true
-    await updateItem(props.cartItem.id, qty)
-    loading.value = false
+    try {
+      await updateItem(props.cartItem.id, qty)
+    } finally {
+      if (isAlive) loading.value = false
+    }
   }
 
   async function removeItem () {
@@ -93,14 +103,20 @@
       voidDialog.value = true
       return
     }
-    if (processing.value) return
+    if (!isAlive || processing.value) return
     loadingDelete.value = true
-    await deleteItem(props.cartItem.id)
-    loadingDelete.value = false
+    try {
+      await deleteItem(props.cartItem.id)
+    } finally {
+      // Este finally casi seguro corre post-unmount: deleteItem saca
+      // este cart-item del v-for. loadingDelete es local, safe set
+      // post-unmount, pero lo guardeamos igual por consistencia.
+      if (isAlive) loadingDelete.value = false
+    }
   }
 
   async function onVoided () {
-    if (!orderId.value) return
+    if (!isAlive || !orderId.value) return
     // Refrescar la orden completa para que el cart muestre totales
     // actualizados y el item voided deje de aparecer.
     try {
@@ -109,6 +125,7 @@
       // → viewer/Index.vue. Emisión indirecta: escribimos el response
       // en cart.data (vendor ya lo hace en edit()) no hace falta.
       // Simplemente toast + auto-close del dialog es suficiente.
+      if (!isAlive) return
       props.cart.resetCart(res.data.body.cart)
     } catch {
       // fallback silencioso
@@ -123,15 +140,23 @@
   }
 
   async function refundProduct (quantity: number) {
+    if (!isAlive) return
     loadingAction.value = true
-    await storeAction(props.cartItem.id, 'refund', quantity)
-    loadingAction.value = false
+    try {
+      await storeAction(props.cartItem.id, 'refund', quantity)
+    } finally {
+      if (isAlive) loadingAction.value = false
+    }
   }
 
   async function cancelProduct (quantity: number) {
+    if (!isAlive) return
     loadingAction.value = true
-    await storeAction(props.cartItem.id, 'cancel', quantity)
-    loadingAction.value = false
+    try {
+      await storeAction(props.cartItem.id, 'cancel', quantity)
+    } finally {
+      if (isAlive) loadingAction.value = false
+    }
   }
 
   function getActionLabel (action: string) {
@@ -149,10 +174,13 @@
   }
 
   async function deleteAction (id: string) {
-    if (processing.value) return
+    if (!isAlive || processing.value) return
     loadingDeleteAction.value = true
-    await removeAction(props.cartItem.id, id)
-    loadingDeleteAction.value = false
+    try {
+      await removeAction(props.cartItem.id, id)
+    } finally {
+      if (isAlive) loadingDeleteAction.value = false
+    }
   }
 
   function onConfirmEditQty (qty: number) {

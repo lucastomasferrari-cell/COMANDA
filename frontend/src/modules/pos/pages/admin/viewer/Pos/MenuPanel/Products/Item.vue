@@ -1,6 +1,7 @@
 <script lang="ts" setup>
   import type { UseCart } from '@/modules/cart/composables/cart.ts'
   import type { Product } from '@/modules/pos/contracts/posViewer.ts'
+  import { onBeforeUnmount } from 'vue'
   import { useI18n } from 'vue-i18n'
   import ProductTileImage from './ProductTileImage.vue'
 
@@ -19,6 +20,14 @@
   const hasOptions = computed(() => (props.product.options?.length ?? 0) > 0)
   const hasDiscount = computed(() => (props.product.selling_price?.amount ?? 0) < (props.product.price?.amount ?? 0))
 
+  // Sprint 3.A.bis post-validación 7 — guard contra mutaciones post-unmount.
+  // Cada tile tiene su propio await de storeItem; si el v-for se rebarajara
+  // durante el fetch (ej: search/category filter cambia + response llega),
+  // el vnode del tile clickeado se reciclaría y una mutación reactive de
+  // data.value cascadearía por el árbol con el vnode del tile ya null.
+  let isAlive = true
+  onBeforeUnmount(() => { isAlive = false })
+
   // Hue (0-360) de la categoria primaria. Para el placeholder y el borde
   // izquierdo si se activa el color por hue. Default null → ProductTileImage
   // usa coral marca (hue 12).
@@ -34,7 +43,7 @@
   })
 
   const addProductToCart = async () => {
-    if (processing.value) {
+    if (!isAlive || processing.value) {
       return
     }
     if (hasOptions.value) {
@@ -48,12 +57,21 @@
           options: {},
           qty: 1,
         })
+        // Si este tile se reciclo (filter/search cambio durante el fetch),
+        // no mutamos data.value — la response llega a un cart compartido
+        // que ya puede estar tracked por otro tile activo. processing.value
+        // sigue siendo shared ref (cart.processing) pero queda en estado
+        // colgado; lo liberamos abajo con el finally condicional.
+        if (!isAlive) return
         data.value = response.data.body
       } catch (error: any) {
+        if (!isAlive) return
         showError(error)
       } finally {
-        loading.value = false
+        // processing es shared ref del cart — liberar SIEMPRE, incluso
+        // post-unmount, para no bloquear el siguiente tile clickeable.
         processing.value = false
+        if (isAlive) loading.value = false
       }
     }
   }

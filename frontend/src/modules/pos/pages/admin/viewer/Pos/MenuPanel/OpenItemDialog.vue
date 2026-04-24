@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { computed, nextTick, ref, watch } from 'vue'
+  import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { useToast } from 'vue-toastification'
   import { storeCustomProduct } from '@/modules/sale/api/order.api.ts'
@@ -31,6 +31,10 @@
   const saving = ref(false)
   const nameInputRef = ref<any>(null)
 
+  // Sprint 3.A.bis post-validación 7 — guard post-unmount.
+  let isAlive = true
+  onBeforeUnmount(() => { isAlive = false })
+
   watch(open, async val => {
     if (val) {
       form.value = { custom_name: '', custom_price: 0, custom_description: '', quantity: 1 }
@@ -46,7 +50,7 @@
   )
 
   async function submit () {
-    if (!canSubmit.value || saving.value || props.orderId == null) return
+    if (!isAlive || !canSubmit.value || saving.value || props.orderId == null) return
     saving.value = true
     try {
       const res = await storeCustomProduct(props.orderId, {
@@ -55,10 +59,12 @@
         custom_description: form.value.custom_description.trim() || undefined,
         quantity: Math.max(1, Math.round(Number(form.value.quantity) || 1)),
       })
+      if (!isAlive) return
       toast.success(res.data?.message ?? t('pos::pos_viewer.open_item.saved'))
       emit('saved', res.data.body)
       open.value = false
     } catch (err: any) {
+      if (!isAlive) return
       const message = err?.response?.data?.message
       const errors = err?.response?.data?.errors
       if (errors && typeof errors === 'object') {
@@ -68,7 +74,7 @@
         toast.error(message || t('core::errors.an_unexpected_error_occurred'))
       }
     } finally {
-      saving.value = false
+      if (isAlive) saving.value = false
     }
   }
 </script>

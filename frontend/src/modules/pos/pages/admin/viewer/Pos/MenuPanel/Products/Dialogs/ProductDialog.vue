@@ -1,5 +1,6 @@
 <script lang="ts" setup>
   import type { UseCart } from '@/modules/cart/composables/cart.ts'
+  import { onBeforeUnmount } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { useToast } from 'vue-toastification'
   import Options from './Options.vue'
@@ -20,6 +21,12 @@
   const errors = ref<Record<string, string>>({})
   const loading = ref(false)
 
+  // Sprint 3.A.bis post-validación 7 — guard post-unmount. El dialog
+  // se cierra con emit('update:modelValue', false) — parent desmonta
+  // via v-if. El await de storeItem puede resolver durante el tear-down.
+  let isAlive = true
+  onBeforeUnmount(() => { isAlive = false })
+
   watch(() => formOptions.value, newValue => {
     selectedOptions.value = {}
     if (newValue) {
@@ -35,7 +42,7 @@
   }
 
   const addProductToCart = async () => {
-    if (processing.value) {
+    if (!isAlive || processing.value) {
       return
     }
     try {
@@ -46,9 +53,11 @@
         options: selectedOptions.value,
         qty: 1,
       })
+      if (!isAlive) return
       data.value = response.data.body
       close()
     } catch (error: any) {
+      if (!isAlive) return
       if (error?.response?.status === 422 && error.response?.data?.errors) {
         const apiErrors = error.response.data.errors
         for (const field in apiErrors) {
@@ -60,8 +69,10 @@
         toast.error(t('core::errors.an_unexpected_error_occurred'))
       }
     } finally {
-      loading.value = false
+      // processing es shared ref del cart — liberar SIEMPRE post-unmount
+      // para no bloquear el siguiente add. loading es local, guardeado.
       processing.value = false
+      if (isAlive) loading.value = false
     }
   }
 </script>
