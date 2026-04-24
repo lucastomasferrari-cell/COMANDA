@@ -2,6 +2,7 @@
   import type { UseCart } from '@/modules/cart/composables/cart.ts'
   import type { Product } from '@/modules/pos/contracts/posViewer.ts'
   import { useI18n } from 'vue-i18n'
+  import ProductTileImage from './ProductTileImage.vue'
 
   const emit = defineEmits(['open-options-dialog'])
 
@@ -9,6 +10,7 @@
     product: Product
     cart: UseCart
     categoryColorMap?: Map<number | string, string>
+    categoryHueMap?: Map<number | string, number>
   }>()
 
   const { t } = useI18n()
@@ -27,6 +29,18 @@
       if (c) return c
     }
     return '#B0B0B0'
+  })
+
+  // Hue (0-360) de la categoria primaria. Para el placeholder y el borde
+  // izquierdo si se activa el color por hue. Default null → ProductTileImage
+  // usa coral marca (hue 12).
+  const categoryHue = computed<number | null>(() => {
+    if (!props.categoryHueMap) return null
+    for (const id of props.product.category_ids ?? []) {
+      const h = props.categoryHueMap.get(id)
+      if (typeof h === 'number') return h
+    }
+    return null
   })
 
   const addProductToCart = async () => {
@@ -62,22 +76,21 @@
     :style="{ '--category-color': categoryColor }"
     @click="addProductToCart"
   >
-    <VCardText class="pa-3">
-      <div class="image-wrapper">
-        <VImg
-          v-if="product.thumbnail"
-          class="product-image"
-          cover
-          height="100"
-          rounded="lg"
-          :src="product.thumbnail"
-        />
-        <VIcon v-else class="icon" icon="tabler-soup" size="100" />
-        <div v-if="product.is_new" class="new-badge">
-          {{ t('pos::pos_viewer.new').toUpperCase() }}
-        </div>
+    <!-- ProductTileImage reemplaza el VImg + VIcon tabler-soup genérico
+         (anti-patrón: todos los productos mostraban la misma sopita).
+         Ahora foto si existe o iniciales tinteadas por el hue de la categoría. -->
+    <div class="image-wrapper">
+      <ProductTileImage
+        :category-color-hue="categoryHue"
+        :name="product.name"
+        :thumbnail="product.thumbnail"
+      />
+      <div v-if="product.is_new" class="new-badge">
+        {{ t('pos::pos_viewer.new').toUpperCase() }}
       </div>
-      <div class="product-name mt-3">{{ product.name }}</div>
+    </div>
+    <VCardText class="pa-3">
+      <div class="product-name">{{ product.name }}</div>
       <div class="product-price mt-1">
         <span v-if="hasDiscount" class="selling-price">
           {{ product.selling_price?.formatted }}
