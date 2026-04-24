@@ -1,6 +1,7 @@
 <?php
 
 use Modules\SeatingPlan\Http\Controllers\Api\V1\FloorController;
+use Modules\SeatingPlan\Http\Controllers\Api\V1\ReservationController;
 use Modules\SeatingPlan\Http\Controllers\Api\V1\TableController;
 use Modules\SeatingPlan\Http\Controllers\Api\V1\TableMergeController;
 use Modules\SeatingPlan\Http\Controllers\Api\V1\TableViewerController;
@@ -46,6 +47,14 @@ Route::controller(TableController::class)
         Route::post('/', 'store')->middleware('can:admin.tables.create');
         Route::put('/{id}', 'update')->middleware('can:admin.tables.edit');
         Route::delete('/{ids}', 'destroy')->middleware('can:admin.tables.destroy');
+    });
+
+// Sprint 3.A.bis — endpoint read-only de reservas próximas para el badge
+// del plano del POS. PASE (Fase 2) tendrá CRUD completo + UI admin.
+Route::controller(ReservationController::class)
+    ->prefix('reservations')
+    ->group(function () {
+        Route::get('/upcoming', 'upcoming')->middleware('can:admin.tables.index');
     });
 
 Route::controller(TableViewerController::class)

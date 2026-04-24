@@ -5,6 +5,7 @@
   import { useToast } from 'vue-toastification'
   import SalonPlanoVisual from '@/modules/seatingPlan/components/SalonPlanoVisual.vue'
   import { useTable } from '@/modules/seatingPlan/composables/table.ts'
+  import { useUpcomingReservations } from '@/modules/seatingPlan/composables/upcomingReservations.ts'
 
   const props = defineProps<{
     branchId: number | null
@@ -19,6 +20,10 @@
   const { t } = useI18n()
   const { getTableViewer } = useTable()
   const toast = useToast()
+  // Sprint 3.A.bis — reservas próximas (2hs) indexadas por table_id para
+  // badges en el plano. Refresco interno cada 60s. PASE (Fase 2) va a
+  // poblar la tabla reservations vía su UI admin.
+  const { byTable: reservationsByTable } = useUpcomingReservations()
 
   const tables = ref<PlanoTable[]>([])
   const loading = ref(false)
@@ -89,6 +94,7 @@
   <div class="pos-plano-wrapper">
     <SalonPlanoVisual
       v-if="tables.length > 0"
+      :reservations-by-table="reservationsByTable"
       :tables="tables"
       @click-free="onClickFree"
       @click-occupied="onClickOccupied"

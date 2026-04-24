@@ -20,6 +20,17 @@
     } | null
   }
 
+  export interface PlanoReservation {
+    id: number
+    table_id: number
+    guest_name: string | null
+    guest_phone: string | null
+    party_size: number
+    reserved_for: string
+    status: 'pending' | 'confirmed'
+    notes: string | null
+  }
+
   const props = withDefaults(defineProps<{
     tables: PlanoTable[]
     editable?: boolean
@@ -28,11 +39,15 @@
     // Palette overrides por status id — si el backend no marda bill_requested
     // o paused, el componente no los pinta distinto.
     statusColors?: Partial<Record<string, string>>
+    // Sprint 3.A.bis — mapa table_id → reserva próxima (2hs). Cuando
+    // está presente, la mesa muestra un badge discreto púrpura.
+    reservationsByTable?: Record<number, PlanoReservation>
   }>(), {
     editable: false,
     selectedId: null,
     snap: false,
     statusColors: () => ({}),
+    reservationsByTable: () => ({}),
   })
 
   const emit = defineEmits<{
@@ -206,6 +221,26 @@
     return `0:${m.toString().padStart(2, '0')}`
   }
 
+  // HH:mm local time del reserved_for. Lo mostramos así porque la reserva
+  // "próxima" siempre es en las próximas 2hs → con hora alcanza.
+  const reservationTimeLabel = (iso: string): string => {
+    const d = new Date(iso)
+    const hh = d.getHours().toString().padStart(2, '0')
+    const mm = d.getMinutes().toString().padStart(2, '0')
+    return `${hh}:${mm}`
+  }
+
+  const reservationTooltip = (r: PlanoReservation): string => {
+    const who = r.guest_name ?? 'Sin nombre'
+    const parts = [`${who} · x${r.party_size}`, reservationTimeLabel(r.reserved_for)]
+    if (r.notes) parts.push(r.notes)
+    return parts.join(' — ')
+  }
+
+  const reservationFor = (tableId: number): PlanoReservation | undefined => {
+    return props.reservationsByTable[tableId]
+  }
+
   // si cambia el set de tables (ids), limpio overrides locales de ids que
   // ya no existen — evita fugas si el parent hizo fetch y borro mesas.
   watch(() => props.tables.map(t => t.id).join(','), () => {
@@ -259,6 +294,7 @@
           :class="{
             selected: selectedId === table.id,
             editable,
+            'has-reservation': !!reservationFor(table.id),
           }"
           :transform="`translate(${effectivePos(table).x},${effectivePos(table).y}) rotate(${table.rotation || 0})`"
           @pointerdown="onTablePointerDown($event, table)"
@@ -276,8 +312,8 @@
             :rx="table.width / 2"
             :ry="table.height / 2"
             :fill="fillForTable(table)"
-            stroke="rgba(0,0,0,0.35)"
-            stroke-width="1.5"
+            :stroke="reservationFor(table.id) ? '#8e44ad' : 'rgba(0,0,0,0.35)'"
+            :stroke-width="reservationFor(table.id) ? 2 : 1.5"
           />
           <rect
             v-else
@@ -287,8 +323,8 @@
             :height="table.height"
             rx="6"
             :fill="fillForTable(table)"
-            stroke="rgba(0,0,0,0.35)"
-            stroke-width="1.5"
+            :stroke="reservationFor(table.id) ? '#8e44ad' : 'rgba(0,0,0,0.35)'"
+            :stroke-width="reservationFor(table.id) ? 2 : 1.5"
           />
 
           <!-- nombre -->
@@ -315,6 +351,35 @@
               dominant-baseline="middle"
             >{{ table.active_order.total.formatted }}</text>
           </template>
+
+          <!-- Sprint 3.A.bis — badge reserva próxima (top-right, offset
+               hacia afuera para no solapar con la mesa). Tooltip nativo
+               via <title> alcanza en SVG; popover complejo queda para PASE
+               Fase 2 cuando haya acciones sobre la reserva. -->
+          <g
+            v-if="reservationFor(table.id)"
+            class="reservation-badge"
+            :transform="`translate(${table.width / 2 - 4},${-table.height / 2 - 4})`"
+          >
+            <title>{{ reservationTooltip(reservationFor(table.id)!) }}</title>
+            <rect
+              x="-2"
+              y="-12"
+              width="42"
+              height="18"
+              rx="9"
+              fill="#8e44ad"
+              stroke="rgba(255,255,255,0.9)"
+              stroke-width="1"
+            />
+            <text
+              class="reservation-badge-text"
+              x="19"
+              y="-3"
+              text-anchor="middle"
+              dominant-baseline="middle"
+            >🕐 {{ reservationTimeLabel(reservationFor(table.id)!.reserved_for) }}</text>
+          </g>
         </g>
       </g>
     </svg>
@@ -383,6 +448,17 @@
   font-size: 12px;
   font-weight: 700;
   fill: rgba(0, 0, 0, 0.85);
+  pointer-events: none;
+}
+
+.reservation-badge {
+  pointer-events: none;
+}
+
+.reservation-badge-text {
+  font-size: 10px;
+  font-weight: 700;
+  fill: #fff;
   pointer-events: none;
 }
 
