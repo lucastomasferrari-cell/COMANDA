@@ -15,9 +15,9 @@
   const { t } = useI18n()
 
   // Sprint 3.A — Switcher vertical siempre visible al extremo izq del POS.
-  // Copia exacta del patrón Toast: 3 íconos grandes, label debajo, activo
-  // con fondo coral. Si solo 1 modo disponible, Pos/Index.vue no lo
-  // monta (componente asume que availableModes.length >= 2).
+  // Sprint 3.A.bis — comprimido a 64px por botón (antes 72) + ícono 24px
+  // + label 11px + activo con bg sutil + left indicator coral (no cuadro
+  // relleno saturado). Toast-style.
   const modes = computed(() => ([
     {
       key: 'salon' as PosMode,
@@ -53,18 +53,22 @@
       :aria-label="m.label"
       @click="selectMode(m.key)"
     >
-      <VIcon class="mode-switcher__icon" :icon="m.icon" size="28" />
+      <VIcon class="mode-switcher__icon" :icon="m.icon" size="24" />
       <span class="mode-switcher__label">{{ m.label }}</span>
     </button>
   </nav>
 </template>
 
 <style lang="scss" scoped>
+/* Sprint 3.A.bis — switcher compacto tablet-first.
+   Ancho 80px total, cada botón 64px alto (touch ≥44px ✓), ícono 24px,
+   label 11px. Activo con bg sutil + border-left coral indicator en vez
+   del cuadrote coral saturado anterior — Toast-style discreto. */
 .mode-switcher {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 6px;
+  gap: 8px;
   width: 80px;
   padding: 12px 8px;
   background: rgb(var(--v-theme-surface));
@@ -74,12 +78,13 @@
 
 .mode-switcher__btn {
   all: unset;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  min-height: 72px;
+  min-height: 64px;
   padding: 8px 4px;
   border-radius: 10px;
   cursor: pointer;
@@ -105,12 +110,26 @@
 }
 
 .mode-switcher__btn--active {
-  background: rgb(var(--v-theme-primary));
-  color: rgb(var(--v-theme-on-primary));
+  background: rgba(var(--v-theme-primary), 0.08);
+  color: rgb(var(--v-theme-primary));
 
   &:hover {
+    background: rgba(var(--v-theme-primary), 0.12);
+    color: rgb(var(--v-theme-primary));
+  }
+
+  /* Left indicator coral — barra 3px a la izquierda. Toast-style:
+     activo discreto sin invertir colores; el indicador vertical marca
+     dónde estás sin robar protagonismo visual. */
+  &::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
     background: rgb(var(--v-theme-primary));
-    color: rgb(var(--v-theme-on-primary));
   }
 }
 
@@ -119,7 +138,7 @@
 }
 
 .mode-switcher__label {
-  font-size: 0.75rem;
+  font-size: 0.6875rem; /* 11px — spec tablet compacta */
   font-weight: 600;
   letter-spacing: 0.02em;
   text-align: center;
