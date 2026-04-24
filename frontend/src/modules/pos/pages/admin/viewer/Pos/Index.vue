@@ -171,6 +171,7 @@
       :meta="meta"
       @on-click-action="onClickAction"
       @open-active-orders="showActiveOrdersDrawer = true"
+      @quick-order="onNewOrder"
     />
     <!-- Sprint 2 parte A: layout split-screen con CSS Grid.
          Vista "home" (!hasActiveOrder): 2 columnas 30/70 — ActiveOrders

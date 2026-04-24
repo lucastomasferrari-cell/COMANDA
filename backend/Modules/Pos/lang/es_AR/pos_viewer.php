@@ -232,6 +232,7 @@ return [
     // active_orders.title.
     "upcoming_orders" => "Pedidos próximos",
     "back_to_map" => "Ver plano",
+    "quick_order" => "Orden rápida",
     "no_cart_items" => [
         "title" => "Arrancá una comanda",
         "description" => "Seleccioná platos del menú para comenzar el pedido",

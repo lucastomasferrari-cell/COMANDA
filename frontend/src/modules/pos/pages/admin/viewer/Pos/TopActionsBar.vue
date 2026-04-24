@@ -12,6 +12,7 @@
   defineEmits<{
     (e: 'on-click-action', value: string): void
     (e: 'open-active-orders'): void
+    (e: 'quick-order'): void
   }>()
 
   const { t } = useI18n()
@@ -48,6 +49,22 @@
     />
 
     <VSpacer />
+
+    <!-- Sprint 2 B.4: "+ Orden rápida" permanente en ambas vistas (home y
+         working). Color warning tonal para destacar sin competir con el
+         coral primary de los CTAs de cobrar/marchar. Ícono tabler-bolt
+         (rayo) alineado con el modal viejo StartOrderDialog que usaba el
+         mismo símbolo para la opción quick. -->
+    <VBtn
+      class="me-1"
+      color="warning"
+      prepend-icon="tabler-bolt"
+      size="small"
+      variant="tonal"
+      @click="$emit('quick-order')"
+    >
+      {{ t('pos::pos_viewer.quick_order') }}
+    </VBtn>
 
     <template v-for="action in actions" :key="action.id">
       <VBtn
