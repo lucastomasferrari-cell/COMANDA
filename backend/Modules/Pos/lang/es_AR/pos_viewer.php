@@ -263,6 +263,16 @@ return [
         ],
     ],
 
+    // Sprint 4 — banner de orden pausada en home de cada modo. Aparece
+    // cuando se cambió de modo teniendo una orden activa; ofrece
+    // continuar (recarga al cart) o descartar.
+    "paused_order" => [
+        "title" => "Tenés una orden pausada",
+        "items" => "ítems",
+        "continue" => "Continuar",
+        "discard" => "Descartar",
+    ],
+
     // Sprint 3.A.9 — Toast-style CheckHeader. "context" top-level es
     // distinto del "context" nested dentro de active_orders (que usa el
     // ActiveOrdersPanel para labels de takeaway/drive_thru/no_table).

@@ -7,6 +7,7 @@
   import { useDisplay } from 'vuetify'
   import ActiveOrdersPanel from './ActiveOrdersPanel/Index.vue'
   import MenuPanel from './MenuPanel/Index.vue'
+  import PausedOrderBanner from './PausedOrderBanner.vue'
   import WorkingSplitScreen from './WorkingSplitScreen.vue'
 
   // Sprint 4 commit 2 — SalonModeView ahora renderiza el sub-estado
@@ -56,40 +57,48 @@
     @store-payment="(orderId: number | string) => emit('store-payment', orderId)"
   />
 
-  <!-- (2) Home Salón: ActiveOrders + plano. -->
+  <!-- (2) Home Salón: ActiveOrders + plano + banner orden pausada. -->
   <div
     v-else
-    class="pos-layout flex-grow-1"
-    :class="{ 'pos-layout--narrow': isNarrow }"
+    class="salon-home flex-grow-1 d-flex flex-column"
   >
-    <aside v-if="!isNarrow" class="pos-panel pos-panel--orders">
-      <VCard class="pos-col-card">
-        <ActiveOrdersPanel
-          :active-order-id="meta.order?.id ?? null"
-          :branch-id="form.branchId"
-          :cart-id="cart.cartId"
-          :collapsed="false"
-          @init-order="(response: Record<string, any>) => emit('init-order', response)"
-          @new-order="emit('new-order')"
-        />
-      </VCard>
-    </aside>
-    <main class="pos-panel pos-panel--main">
-      <VCard class="pos-col-card">
-        <VCardText class="pa-3">
-          <MenuPanel
-            :cart="cart"
-            :form="form"
-            :has-active-order="false"
-            :meta="meta"
+    <PausedOrderBanner
+      :cart-id="cart.cartId"
+      @init-order="(response: Record<string, any>) => emit('init-order', response)"
+    />
+    <div
+      class="pos-layout flex-grow-1"
+      :class="{ 'pos-layout--narrow': isNarrow }"
+    >
+      <aside v-if="!isNarrow" class="pos-panel pos-panel--orders">
+        <VCard class="pos-col-card">
+          <ActiveOrdersPanel
+            :active-order-id="meta.order?.id ?? null"
+            :branch-id="form.branchId"
+            :cart-id="cart.cartId"
+            :collapsed="false"
             @init-order="(response: Record<string, any>) => emit('init-order', response)"
-            @pick-table-free="(table: PlanoTable) => emit('pick-table-free', table)"
-            @pick-table-occupied="(table: PlanoTable) => emit('pick-table-occupied', table)"
-            @tables-count="(count: number) => emit('tables-count', count)"
+            @new-order="emit('new-order')"
           />
-        </VCardText>
-      </VCard>
-    </main>
+        </VCard>
+      </aside>
+      <main class="pos-panel pos-panel--main">
+        <VCard class="pos-col-card">
+          <VCardText class="pa-3">
+            <MenuPanel
+              :cart="cart"
+              :form="form"
+              :has-active-order="false"
+              :meta="meta"
+              @init-order="(response: Record<string, any>) => emit('init-order', response)"
+              @pick-table-free="(table: PlanoTable) => emit('pick-table-free', table)"
+              @pick-table-occupied="(table: PlanoTable) => emit('pick-table-occupied', table)"
+              @tables-count="(count: number) => emit('tables-count', count)"
+            />
+          </VCardText>
+        </VCard>
+      </main>
+    </div>
   </div>
 </template>
 

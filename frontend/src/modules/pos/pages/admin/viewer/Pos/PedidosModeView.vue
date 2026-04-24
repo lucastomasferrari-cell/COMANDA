@@ -3,6 +3,7 @@
   import type { PosForm, PosMeta } from '@/modules/pos/contracts/posViewer.ts'
   import type { useQintrix } from '@/modules/printer/composables/qintrix.ts'
   import { useI18n } from 'vue-i18n'
+  import PausedOrderBanner from './PausedOrderBanner.vue'
   import WorkingSplitScreen from './WorkingSplitScreen.vue'
 
   // Sprint 3.A.bis bug 2 — Placeholder del modo Pedidos (home).
@@ -47,7 +48,12 @@
     @store-payment="(orderId: number | string) => emit('store-payment', orderId)"
   />
 
-  <div v-else class="pedidos-placeholder">
+  <div v-else class="pedidos-home d-flex flex-column flex-grow-1">
+    <PausedOrderBanner
+      :cart-id="cart.cartId"
+      @init-order="(response: Record<string, any>) => emit('init-order', response)"
+    />
+    <div class="pedidos-placeholder flex-grow-1">
     <div class="icon-wrapper mb-4">
       <VIcon color="primary" icon="tabler-clipboard-list" size="48" />
     </div>
@@ -66,6 +72,7 @@
     >
       {{ t('pos::pos_viewer.modes_placeholders.cta_new') }}
     </VBtn>
+    </div>
   </div>
 </template>
 

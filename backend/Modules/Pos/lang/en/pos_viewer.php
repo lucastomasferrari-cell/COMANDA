@@ -253,6 +253,13 @@ return [
         ],
     ],
 
+    "paused_order" => [
+        "title" => "You have a paused order",
+        "items" => "items",
+        "continue" => "Continue",
+        "discard" => "Discard",
+    ],
+
     "check_header" => [
         "context" => [
             "counter" => "Counter",

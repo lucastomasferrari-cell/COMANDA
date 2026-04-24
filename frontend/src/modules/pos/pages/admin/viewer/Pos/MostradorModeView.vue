@@ -3,6 +3,7 @@
   import type { PosForm, PosMeta } from '@/modules/pos/contracts/posViewer.ts'
   import type { useQintrix } from '@/modules/printer/composables/qintrix.ts'
   import { useI18n } from 'vue-i18n'
+  import PausedOrderBanner from './PausedOrderBanner.vue'
   import WorkingSplitScreen from './WorkingSplitScreen.vue'
 
   // Sprint 3.A.bis bug 2 — Placeholder del modo Mostrador (home).
@@ -57,8 +58,13 @@
     @store-payment="(orderId: number | string) => emit('store-payment', orderId)"
   />
 
-  <!-- Home Mostrador: placeholder hasta Sprint 3.C. -->
-  <div v-else class="mostrador-placeholder">
+  <!-- Home Mostrador: placeholder hasta Sprint 3.C + banner orden pausada. -->
+  <div v-else class="mostrador-home d-flex flex-column flex-grow-1">
+    <PausedOrderBanner
+      :cart-id="cart.cartId"
+      @init-order="(response: Record<string, any>) => emit('init-order', response)"
+    />
+    <div class="mostrador-placeholder flex-grow-1">
     <aside class="mostrador-placeholder__side">
       <div class="mostrador-placeholder__side-title">
         {{ t('pos::pos_viewer.modes_placeholders.mostrador.side_title') }}
@@ -90,6 +96,7 @@
         {{ t('pos::pos_viewer.modes_placeholders.cta_new') }}
       </VBtn>
     </main>
+    </div>
   </div>
 </template>
 
