@@ -17,7 +17,9 @@
   // por si se reactiva en una vista dedicada (/admin/pos/comandas).
   import OrderPrintDialog from './Dialogs/OrderPrint/Index.vue'
   import RefundCancelDialog from './Dialogs/RefundCancelDialog.vue'
-  import StartOrderDialog from './Dialogs/StartOrderDialog.vue'
+  // StartOrderDialog eliminado del mount (Sprint 2 B.1): el modal
+  // bifurcador quedó redundante con el nuevo split-screen (plano = abrir
+  // mesa, botón + = orden rápida). Archivo vive huérfano.
   import ActiveOrdersPanel from './ActiveOrdersPanel/Index.vue'
   import CajaDrawer from './Drawers/Caja/Index.vue'
   import TableViewerDrawer from './Drawers/TableViewer/Index.vue'
@@ -45,7 +47,6 @@
 
   const showCajaDrawer = ref(false)
   const showTableViewerDrawer = ref(false)
-  const showStartOrderDialog = ref(false)
   const showPlanoGuestCountDialog = ref(false)
   const pendingPlanoTable = ref<PlanoTable | null>(null)
   // Count emitido por TablePlano tras fetch. Lo usa el StartOrderDialog
@@ -86,21 +87,14 @@
     }
   }
 
-  // "+ Nueva" abre el dialog bifurcador (Abrir mesa / Orden rapida).
-  // Importante: NO disparamos startNewOrder aqui — si lo hicieramos, el
-  // panel derecho se llenaria con controles antes de que el user elija
-  // como arrancar (regresion historica, ver commit de consolidacion).
-  const onNewOrder = () => { showStartOrderDialog.value = true }
-
-  // "Orden rapida" del dialog → crea orden sin mesa, canal default
-  // takeaway/para-llevar (lo decide OrderTypes.watch con el primer
-  // non-dine_in disponible).
-  const onStartOrderQuick = () => props.startNewOrder()
-
-  // "Abrir mesa" del dialog → cerramos el dialog y dejamos que el user
-  // clickee una mesa en el plano central. El flujo mesa-libre ya existe
-  // (onPlanoPickFree abre GuestCountDialog). No creamos orden aca.
-  const onStartOrderOpenTable = () => { /* noop: flujo natural del plano */ }
+  // "+ Nueva" del panel izq y "+ Orden rápida" del topheader (Sprint 2 B.4):
+  // van DIRECTO a crear orden sin mesa (takeaway/mostrador). El modal
+  // bifurcador StartOrderDialog que antes preguntaba "¿Cómo querés
+  // arrancar?" quedó eliminado (Sprint 2 B.1) — la bifurcación ya se
+  // resuelve por la topología del layout: el plano para abrir mesa, el
+  // botón + para orden rápida. OrderTypes.watch elige el primer canal
+  // non-dine_in disponible como default.
+  const onNewOrder = () => props.startNewOrder()
 
   // Mesa libre clickeada desde el plano: pedimos comensales antes de abrir.
   const onPlanoPickFree = (table: PlanoTable) => {
@@ -260,12 +254,8 @@
       @new-order="() => { showActiveOrdersDrawer = false; onNewOrder() }"
     />
   </VNavigationDrawer>
-  <StartOrderDialog
-    v-model="showStartOrderDialog"
-    :has-tables="tablesCount > 0"
-    @open-table="onStartOrderOpenTable"
-    @quick="onStartOrderQuick"
-  />
+  <!-- StartOrderDialog mount eliminado Sprint 2 B.1 — bifurcación resuelta
+       por topología del layout (plano vs botón +). -->
   <GuestCountDialog
     v-model="showPlanoGuestCountDialog"
     :initial="1"
