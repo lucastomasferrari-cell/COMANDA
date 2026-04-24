@@ -30,7 +30,8 @@
   import MenuPanel from './MenuPanel/Index.vue'
   import ModeSwitcher from './ModeSwitcher.vue'
   import OrderPanel from './OrderPanel/Index.vue'
-  import TopActionsBar from './TopActionsBar.vue'
+  // TopActionsBar eliminado Sprint 3.A.bis — "+ Orden rápida" se reubica
+  // en el modo Mostrador; "Caja" es modo propio en el switcher.
   import { usePosMode } from '@/modules/pos/composables/posMode.ts'
 
   const props = defineProps<{
@@ -183,13 +184,6 @@
        La TopActionsBar vive arriba de todo como sibling de la VRow; contiene
        el toggle Mesas/Rápido y las 4 acciones globales del viewer. -->
   <div class="pos-viewer-layout d-flex flex-column">
-    <TopActionsBar
-      :is-narrow="isNarrow"
-      :meta="meta"
-      @on-click-action="onClickAction"
-      @open-active-orders="showActiveOrdersDrawer = true"
-      @quick-order="onNewOrder"
-    />
     <!-- Sprint 3.A — wrapper del layout con el switcher vertical a la
          izquierda (si hay más de 1 modo activo). El comportamiento
          específico de cada modo (Salón ≠ Mostrador ≠ Pedidos) se
