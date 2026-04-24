@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import type { PlanoTable } from '@/modules/seatingPlan/components/SalonPlanoVisual.vue'
-  import { onBeforeUnmount, onMounted, ref } from 'vue'
+  import { onActivated, onBeforeUnmount, onDeactivated, onMounted, ref } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { useToast } from 'vue-toastification'
   import SalonPlanoVisual from '@/modules/seatingPlan/components/SalonPlanoVisual.vue'
@@ -73,14 +73,32 @@
     }
   }
 
-  onMounted(() => {
+  // Sprint 4 commit 3 — pausar polling cuando el modo se cachea via
+  // KeepAlive. Sin esto, los 4 modos polleaban en paralelo aunque
+  // solo veas uno → 4× tráfico inútil + ruido en logs del servidor.
+  // onActivated incluye un fetch inmediato porque la data cacheada
+  // puede estar stale después de un cambio de modo prolongado.
+  const startPolling = (): void => {
+    if (pollTimer !== null) return
     fetchTables()
     pollTimer = window.setInterval(() => fetchTables(), 30_000)
-  })
+  }
+  const stopPolling = (): void => {
+    if (pollTimer !== null) {
+      window.clearInterval(pollTimer)
+      pollTimer = null
+    }
+  }
 
+  onMounted(startPolling)
+  onActivated(() => {
+    isAlive = true
+    startPolling()
+  })
+  onDeactivated(stopPolling)
   onBeforeUnmount(() => {
     isAlive = false
-    if (pollTimer !== null) window.clearInterval(pollTimer)
+    stopPolling()
   })
 
   function onClickFree (table: PlanoTable) {

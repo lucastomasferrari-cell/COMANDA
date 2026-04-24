@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref } from 'vue'
 import { http } from '@/modules/core/api/http.ts'
 
 export interface UpcomingReservation {
@@ -78,17 +78,35 @@ export function useUpcomingReservations () {
     return map
   })
 
-  onMounted(() => {
+  // Sprint 4 commit 3 — pause polling on KeepAlive deactivate. El
+  // composable lo usa TablePlano (cacheado en SalonModeView). Si Salón
+  // queda inactivo, no necesitamos seguir polleando reservas.
+  const startPolling = (): void => {
+    if (pollTimer !== null) return
     fetch()
-    // Refresh cada 60s para que el badge se mantenga actualizado.
     pollTimer = window.setInterval(fetch, 60_000)
-  })
-
-  onBeforeUnmount(() => {
-    isAlive = false
+  }
+  const stopPolling = (): void => {
     if (pollTimer !== null) {
       window.clearInterval(pollTimer)
+      pollTimer = null
     }
+  }
+
+  onMounted(startPolling)
+  onActivated(() => {
+    isAlive = true
+    startPolling()
+  })
+  onDeactivated(() => {
+    // Mantenemos la lista cacheada (no la limpiamos), solo paramos el
+    // poll. Al re-activar, fetch() inmediato refresca lo stale.
+    stopPolling()
+    abortController?.abort()
+  })
+  onBeforeUnmount(() => {
+    isAlive = false
+    stopPolling()
     abortController?.abort()
   })
 

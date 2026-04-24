@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import type { AxiosError } from 'axios'
-  import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+  import { computed, onActivated, onBeforeUnmount, onDeactivated, onMounted, ref } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { useToast } from 'vue-toastification'
   import { useOrder } from '@/modules/sale/composables/order.ts'
@@ -151,16 +151,29 @@
     emit('new-order')
   }
 
-  onMounted(() => {
+  // Sprint 4 commit 3 — pause polling on KeepAlive deactivate. Doble
+  // start (mount + activate inicial) está OK porque el guard pollingTimer
+  // !== null evita doble interval.
+  const startPolling = (): void => {
+    if (pollingTimer !== null) return
     fetchActiveOrders(true)
     pollingTimer = window.setInterval(() => fetchActiveOrders(false), 30_000)
     clockTimer = window.setInterval(() => { currentTime.value = Date.now() }, 30_000)
-  })
+  }
+  const stopPolling = (): void => {
+    if (pollingTimer !== null) { window.clearInterval(pollingTimer); pollingTimer = null }
+    if (clockTimer !== null) { window.clearInterval(clockTimer); clockTimer = null }
+  }
 
+  onMounted(startPolling)
+  onActivated(() => {
+    isAlive = true
+    startPolling()
+  })
+  onDeactivated(stopPolling)
   onBeforeUnmount(() => {
     isAlive = false
-    if (pollingTimer !== null) window.clearInterval(pollingTimer)
-    if (clockTimer !== null) window.clearInterval(clockTimer)
+    stopPolling()
   })
 </script>
 
