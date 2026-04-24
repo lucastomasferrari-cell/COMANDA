@@ -228,6 +228,7 @@ return [
     // active_orders legacy string removed — collided with array below (commit c89b4f1).
     "upcoming_orders" => "Upcoming Orders",
     "back_to_map" => "View map",
+    "back_to_admin" => "Admin",
     "quick_order" => "Quick order",
     "guest_count_required" => "Set the number of guests before sending to kitchen.",
 

@@ -234,6 +234,7 @@ return [
     // active_orders.title.
     "upcoming_orders" => "Pedidos próximos",
     "back_to_map" => "Ver plano",
+    "back_to_admin" => "Admin",
     "quick_order" => "Orden rápida",
     "guest_count_required" => "Indicá la cantidad de comensales antes de enviar a cocina.",
 

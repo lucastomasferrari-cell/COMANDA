@@ -1,6 +1,12 @@
 import type { RouteRecordRaw } from 'vue-router'
 
 const adminRoutes: RouteRecordRaw[] = [
+  // Sprint 3.A.bis — los 3 viewers operativos (POS, customer display, KDS)
+  // pasan a target='pos' para usar PosLayout (header 56px + main full).
+  // Vue Router hace merge de meta de parent+child; target='pos' en parent
+  // aplica al child que vive en layoutResolver. Las rutas admin-style de
+  // registers/sessions/cash-movements más abajo siguen con target='admin'
+  // (son tablas CRUD del admin panel, no viewers operativos).
   {
     path: 'pos/viewer/:cartId',
     name: 'admin.pos_viewer',
@@ -9,6 +15,7 @@ const adminRoutes: RouteRecordRaw[] = [
       icon: 'tabler-cash-register',
       pageHeader: false,
       hiddenSidebar: true,
+      target: 'pos',
     },
     children: [
       {
@@ -30,6 +37,7 @@ const adminRoutes: RouteRecordRaw[] = [
       pageHeader: false,
       hiddenSidebar: true,
       hiddenTopHeader: true,
+      target: 'pos',
     },
     children: [
       {
@@ -50,6 +58,7 @@ const adminRoutes: RouteRecordRaw[] = [
       icon: 'tabler-chef-hat',
       pageHeader: false,
       hiddenSidebar: true,
+      target: 'pos',
     },
     children: [
       {
