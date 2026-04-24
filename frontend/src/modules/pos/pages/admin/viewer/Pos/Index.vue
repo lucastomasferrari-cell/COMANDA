@@ -447,16 +447,13 @@
 </template>
 
 <style lang="scss" scoped>
-/* Sprint 3.A.bis post-validación 5 — altura del viewer layout.
-   Antes: calc(100vh - 72px) asumiendo el navbar AdminLayout viejo (72px).
-   Con PosLayout el header es 56px, y el chain de parents (main flex:1,
-   PageStateWrapper div, slot div) puede ser 0 si no resolvemos la
-   altura explícitamente. Usamos calc(100vh - 56px) matcheando
-   PosHeader exacto — el overflow:hidden del parent .pos-layout__main
-   clipea cualquier sobra. Con esto el grid auto/1fr/auto del
-   check-panel respeta el viewport y el footer sticky queda visible. */
+/* Sprint 4 commit 9 — height:100% en lugar de calc(100vh - X).
+   viewer/Index.vue ahora arma un flex column que propaga altura via
+   :deep(PageStateWrapper) hasta acá. Inheriting evita doble cálculo
+   con el TopHeader (que ya no usa teleport orphan y aporta su propia
+   altura natural al column flow). */
 .pos-viewer-layout {
-  height: calc(100vh - 56px);
+  height: 100%;
   overflow: hidden;
   min-height: 0;
 }
