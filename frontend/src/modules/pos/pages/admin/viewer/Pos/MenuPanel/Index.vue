@@ -144,8 +144,16 @@
 </template>
 
 <style lang="scss" scoped>
+/* Sprint 3.A.bis post-validación 5 — height:100% + min-height:0 para
+   heredar la altura del parent (pos-panel--main > v-card-text) en vez
+   del cálculo heredado 83.6vh - 72px que no tenía base racional y
+   dejaba gaps inconsistentes con los otros paneles (orders/cart). */
 .menu-items-container {
-  height: calc(83.6vh - var(--v-layout-navbar-height, 72px));
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .menu-items-container-center {
