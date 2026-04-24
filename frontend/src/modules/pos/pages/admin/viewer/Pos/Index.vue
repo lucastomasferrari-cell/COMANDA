@@ -199,8 +199,10 @@
       <aside v-if="!isNarrow" class="pos-panel pos-panel--orders">
         <VCard class="pos-col-card">
           <ActiveOrdersPanel
+            :active-order-id="meta.order?.id ?? null"
             :branch-id="form.branchId"
             :cart-id="cart.cartId"
+            :collapsed="hasActiveOrder"
             @init-order="(response:Record<string, any>) => $emit('init-order', response)"
             @new-order="onNewOrder"
           />

@@ -8,6 +8,11 @@
   const props = defineProps<{
     branchId: number | null
     cartId: string
+    // Sprint 2 A.2: cuando hay comanda activa, el panel pasa a modo compacto
+    // (22% de width en vez de 30%). Cards reducidas a mesa/contexto + total.
+    // El ring coral identifica la orden actualmente abierta.
+    collapsed?: boolean
+    activeOrderId?: number | null
   }>()
 
   const emit = defineEmits<{
@@ -141,13 +146,25 @@
 </script>
 
 <template>
-  <div class="active-orders-panel d-flex flex-column h-100">
+  <div
+    class="active-orders-panel d-flex flex-column h-100"
+    :class="{ 'active-orders-panel--collapsed': collapsed }"
+  >
     <div class="panel-header d-flex align-center px-3 py-2">
       <h3 class="text-subtitle-1 font-weight-medium flex-grow-1">
-        {{ t('pos::pos_viewer.active_orders.title') }}
-        <span v-if="totalCount > 0" class="text-medium-emphasis text-body-2">({{ totalCount }})</span>
+        <template v-if="collapsed">
+          <VIcon class="me-1" icon="tabler-list-details" size="18" />
+          <span v-if="totalCount > 0">{{ totalCount }}</span>
+        </template>
+        <template v-else>
+          {{ t('pos::pos_viewer.active_orders.title') }}
+          <span v-if="totalCount > 0" class="text-medium-emphasis text-body-2">({{ totalCount }})</span>
+        </template>
       </h3>
+      <!-- "+ Nueva" del header ESCONDIDO en modo collapsed — el botón
+           "+ Orden rápida" del TopHeader (parte B del Sprint 2) lo reemplaza. -->
       <VBtn
+        v-if="!collapsed"
         color="primary"
         density="compact"
         prepend-icon="tabler-plus"
@@ -183,7 +200,10 @@
         v-for="order in orders"
         :key="order.id"
         class="order-card mb-2 pa-3"
-        :class="{ loading: loadingOrderId === order.id }"
+        :class="{
+          loading: loadingOrderId === order.id,
+          'order-card--active': activeOrderId === order.id,
+        }"
         @click="openOrder(order)"
       >
         <div class="d-flex align-start mb-1">
@@ -205,24 +225,30 @@
           <div class="flex-grow-1">
             <div class="d-flex align-center gap-2">
               <span class="order-number text-body-2 font-weight-bold">#{{ order.order_number }}</span>
-              <span class="text-caption text-medium-emphasis">{{ statusLabel(order.status) }}</span>
+              <span v-if="!collapsed" class="text-caption text-medium-emphasis">{{ statusLabel(order.status) }}</span>
             </div>
             <div class="context-label text-body-2 font-weight-medium mt-1">
               {{ contextLabel(order) }}
             </div>
           </div>
-          <span class="text-caption text-medium-emphasis">{{ elapsedLabel(order.created_at) }}</span>
+          <span v-if="!collapsed" class="text-caption text-medium-emphasis">{{ elapsedLabel(order.created_at) }}</span>
         </div>
         <div class="d-flex align-center mt-2">
           <span class="text-body-2 font-weight-bold">{{ order.total?.formatted ?? '—' }}</span>
           <VSpacer />
-          <span v-if="order.waiter?.name" class="text-caption text-medium-emphasis">
+          <span v-if="!collapsed && order.waiter?.name" class="text-caption text-medium-emphasis">
             {{ order.waiter.name }}
+          </span>
+          <span v-else-if="collapsed" class="text-caption text-medium-emphasis">
+            {{ elapsedLabel(order.created_at) }}
           </span>
         </div>
       </div>
     </div>
 
+    <!-- Footer con leyenda + nota de refresh. En modo collapsed se esconde
+         la nota de refresh (es ruido) pero mantenemos el tooltip con los
+         dots semánticos porque el cajero sigue necesitando el legend. -->
     <div class="panel-footer px-3 py-2 d-flex align-center gap-2">
       <VTooltip location="top">
         <template #activator="{ props: activator }">
@@ -234,7 +260,7 @@
           <div><span class="legend-dot legend-dot--ready" /> {{ t('pos::pos_viewer.active_orders.legend.ready_to_serve') }}</div>
         </div>
       </VTooltip>
-      <span class="text-caption text-medium-emphasis">{{ t('pos::pos_viewer.active_orders.refresh_note') }}</span>
+      <span v-if="!collapsed" class="text-caption text-medium-emphasis">{{ t('pos::pos_viewer.active_orders.refresh_note') }}</span>
     </div>
   </div>
 </template>
@@ -270,6 +296,32 @@
 .order-card.loading {
   opacity: 0.5;
   pointer-events: none;
+}
+/* Orden activa (actualmente abierta en el OrderPanel derecho): ring coral
+   + bg ligeramente saturado para que el cajero vea a qué orden corresponde
+   el panel derecho. Especialmente útil en modo collapsed donde las cards
+   de distintas comandas lucen parecidas. */
+.order-card--active {
+  background: rgba(var(--v-theme-primary), 0.08);
+  border-color: rgb(var(--v-theme-primary));
+}
+.order-card--active:hover {
+  background: rgba(var(--v-theme-primary), 0.12);
+}
+
+/* Modo collapsed (sprint 2 A.2) — panel a 22%, cards más densas.
+   Esconde status-label, waiter name, refresh note. Mantiene:
+   order-number + contexto + total + timer. */
+.active-orders-panel--collapsed .order-card {
+  padding: 8px 10px !important;
+}
+.active-orders-panel--collapsed .panel-header {
+  padding: 6px 10px;
+}
+.active-orders-panel--collapsed .context-label {
+  font-size: 0.875rem;
+  line-height: 1.2;
+  margin-top: 2px;
 }
 .status-dot {
   display: inline-block;
