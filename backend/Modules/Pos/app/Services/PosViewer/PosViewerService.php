@@ -43,7 +43,20 @@ class PosViewerService implements PosViewerServiceInterface
             "session_id" => null,
             "currency" => setting("default_currency"),
             "directions" => [],
-            "reasons" => []
+            "reasons" => [],
+            // Sprint 3.A — feature flags de modos del POS. Controlan qué
+            // íconos aparecen en el switcher vertical del POS viewer. Si
+            // pos.takeout y pos.delivery están off, el modo "Pedidos" no
+            // aparece. Si solo 1 modo está on, el switcher se oculta y la
+            // app arranca directo en ese modo.
+            "feature_flags" => [
+                "pos" => [
+                    "dine_in" => (bool) setting("pos.dine_in", true),
+                    "counter" => (bool) setting("pos.counter", true),
+                    "takeout" => (bool) setting("pos.takeout", true),
+                    "delivery" => (bool) setting("pos.delivery", false),
+                ],
+            ],
         ];
 
         if (is_null($data['branch_id'])) {

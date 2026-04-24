@@ -90,7 +90,29 @@ class DemoArSeeder extends Seeder
         $this->command->info('→ Paleta coral marca (theme settings)');
         $this->seedThemeColors();
 
+        $this->command->info('→ Feature flags modos del POS');
+        $this->seedPosFeatureFlags();
+
         $this->command->info('✓ Demo AR listo.');
+    }
+
+    private function seedPosFeatureFlags(): void
+    {
+        // Sprint 3.A — MVP para mercado AR: dine_in (salón) + counter
+        // (mostrador / barra) + takeout (retiro) activos. delivery off
+        // hasta que tengamos integración con Rappi/PedidosYa y flujo de
+        // motoquero propio. El switcher del POS viewer lee estos flags
+        // del endpoint /pos/configuration.feature_flags.pos.
+        $flags = [
+            'pos.dine_in' => true,
+            'pos.counter' => true,
+            'pos.takeout' => true,
+            'pos.delivery' => false,
+        ];
+
+        foreach ($flags as $key => $value) {
+            Setting::set($key, $value ? '1' : '0');
+        }
     }
 
     private function seedUsers(): void
