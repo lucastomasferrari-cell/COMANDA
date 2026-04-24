@@ -225,8 +225,9 @@ return [
             "duplicate" => "Duplicate item: coming soon",
         ],
     ],
-    "active_orders" => "Active Orders",
+    // active_orders legacy string removed — collided with array below (commit c89b4f1).
     "upcoming_orders" => "Upcoming Orders",
+    "back_to_map" => "View map",
     "no_cart_items" => [
         "title" => "Start a new order",
         "description" => "Select dishes from the menu to start your order",

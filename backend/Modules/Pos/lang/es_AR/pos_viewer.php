@@ -231,6 +231,7 @@ return [
     // un array → vue-i18n mostraba la key cruda. Tabs.vue ahora usa
     // active_orders.title.
     "upcoming_orders" => "Pedidos próximos",
+    "back_to_map" => "Ver plano",
     "no_cart_items" => [
         "title" => "Arrancá una comanda",
         "description" => "Seleccioná platos del menú para comenzar el pedido",

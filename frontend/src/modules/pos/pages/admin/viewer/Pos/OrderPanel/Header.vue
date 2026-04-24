@@ -16,6 +16,15 @@
     cart: UseCart
   }>()
 
+  // Sprint 2 A.3 — "Volver al plano" NO cierra ni cancela la orden.
+  // Propaga hacia el OrderPanel → Pos/Index.vue → parent reset, que
+  // recrea un cart local vacío preservando la orden en DB (el panel izq
+  // la sigue listando). Clickeando la misma comanda desde allí vuelve al
+  // estado working.
+  const emit = defineEmits<{
+    (e: 'back-to-map'): void
+  }>()
+
   const { t } = useI18n()
   const { can, hasRole } = useAuth()
 
@@ -64,7 +73,20 @@
 </script>
 
 <template>
-  <div class="mt-2 d-flex align-center ga-2">
+  <!-- Botón "Ver plano" arriba del header: deselect de la comanda activa
+       sin cerrarla. El ActiveOrdersPanel izquierdo la mantiene visible. -->
+  <div class="d-flex align-center mb-2">
+    <VBtn
+      class="back-to-map-btn"
+      prepend-icon="tabler-arrow-left"
+      size="small"
+      variant="text"
+      @click="emit('back-to-map')"
+    >
+      {{ t('pos::pos_viewer.back_to_map') }}
+    </VBtn>
+  </div>
+  <div class="d-flex align-center ga-2">
     <!-- El vendor original forzaba width=100px a los autocompletes y
          el placeholder "Seleccioná el mozo/cliente" se truncaba a "Sel".
          flex-grow-1 + basis:0 les da reparto equitativo del ancho

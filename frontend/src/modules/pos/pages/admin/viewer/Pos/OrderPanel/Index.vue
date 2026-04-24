@@ -317,7 +317,7 @@
     <!-- Header: info de orden (mozo/cliente) + canal.
          Las acciones globales (visor mesas, cash movement, comandas) viven
          ahora en TopActionsBar a nivel del viewer, no dentro del OrderPanel. -->
-    <Header :cart="cart" :form="form" :meta="meta" />
+    <Header :cart="cart" :form="form" :meta="meta" @back-to-map="$emit('reset')" />
     <OrderTypes
       :cart="cart"
       :form="form"
