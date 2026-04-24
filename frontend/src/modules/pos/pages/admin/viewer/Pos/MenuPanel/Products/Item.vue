@@ -82,7 +82,7 @@
         {{ t('pos::pos_viewer.new').toUpperCase() }}
       </div>
     </div>
-    <VCardText class="pa-3">
+    <VCardText class="pa-2">
       <div class="product-name">{{ product.name }}</div>
       <div class="product-price mt-1">
         <span v-if="hasDiscount" class="selling-price">
@@ -120,28 +120,30 @@
     border-top-color: hsl(var(--category-hue) 55% 50%);
   }
 
-  /* Tipografía del tile — Sprint 1.B BENCHMARK_POS #5.
-     Nombres 1.25rem (20px) y precios 1.125rem (18px) — el cajero lee el
-     tile a distancia con el ojo moviéndose rápido entre tiles del grid.
-     2 líneas de nombre con ellipsis antes, ahora permitimos 2 líneas con
-     -webkit-line-clamp para no cortar "Hamburguesa Clásica" a la mitad. */
+  /* Sprint 3.A.bis — tipografía comprimida tablet-first.
+     Antes: nombre 1.25rem (20px), precio 1.125rem (18px). Con tiles de
+     160px de ancho + 2 líneas de nombre, el espacio vertical pedía 180+
+     de alto total. Ahora 0.875rem (14px) weight 500 en nombre, 0.875rem
+     weight 700 en precio — los tiles entran en 140-160px alto con aire
+     para el thumbnail 60%. El cajero sigue leyendo fácil a distancia
+     normal de tablet; la jerarquía ahora la da el weight, no el size. */
   .product-name {
-    font-weight: 600;
-    font-size: 1.25rem;
-    line-height: 1.2;
-    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.25;
+    margin-bottom: 4px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: 3em; /* reserva 2 líneas aunque el nombre sea corto → grid parejo */
+    min-height: 2.5em;
   }
 
   .product-price {
     display: flex;
     gap: 0.5rem;
     align-items: baseline;
-    font-size: 1.125rem;
+    font-size: 0.875rem;
     font-weight: 600;
 
     .original-price {

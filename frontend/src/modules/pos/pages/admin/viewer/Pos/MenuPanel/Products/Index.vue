@@ -167,13 +167,13 @@
   padding: 8px 8px 12px 8px;
 }
 
-/* Auto-fill con minmax(180,1fr): en 1280px de panel útil quedan 5-6 tiles
-   por fila; en 900px quedan 4; en 600px (mobile) 3. Naturalmente responsive
-   sin tener que observar el viewport. */
+/* Sprint 3.A.bis — minmax 160px (antes 180) para encajar 5-6 tiles en
+   el 48% del split-screen working (≈615px a 1280px viewport). Gap 10
+   (antes 12) consistente con la escala compacta. */
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
   align-content: start;
 }
 </style>
