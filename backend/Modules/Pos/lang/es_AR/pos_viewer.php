@@ -246,6 +246,23 @@ return [
         "caja" => "Caja",
     ],
 
+    // Sprint 3.A.bis bug 2 — placeholders de modos no implementados
+    // todavía. Sprint 3.C reemplaza "mostrador" por el panel de tabs
+    // abiertos + keypad rápido, y "pedidos" por el Orders Hub completo.
+    "modes_placeholders" => [
+        "cta_new" => "Nueva orden",
+        "mostrador" => [
+            "side_title" => "Tabs abiertos",
+            "side_empty" => "No hay tabs abiertos. Próximamente vas a poder dejar una consumición corriendo en el mostrador.",
+            "title" => "Modo Mostrador",
+            "description" => "Próximamente (Sprint 3.C) — tabs corriendo en el mostrador + keypad rápido. Mientras tanto podés abrir una orden directa con el botón de abajo.",
+        ],
+        "pedidos" => [
+            "title" => "Modo Pedidos",
+            "description" => "Próximamente (Sprint 3.C) — Orders Hub con grid de takeout/delivery, filtros por canal (propio/teléfono/WhatsApp) y acciones del flujo. Mientras tanto podés crear un pedido con el botón de abajo.",
+        ],
+    ],
+
     // Sprint 3.A.9 — Toast-style CheckHeader. "context" top-level es
     // distinto del "context" nested dentro de active_orders (que usa el
     // ActiveOrdersPanel para labels de takeaway/drive_thru/no_table).

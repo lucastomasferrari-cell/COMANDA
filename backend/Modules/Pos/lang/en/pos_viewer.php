@@ -239,6 +239,20 @@ return [
         "caja" => "Cash",
     ],
 
+    "modes_placeholders" => [
+        "cta_new" => "New order",
+        "mostrador" => [
+            "side_title" => "Open tabs",
+            "side_empty" => "No open tabs yet. Soon you'll be able to keep a running counter tab.",
+            "title" => "Counter mode",
+            "description" => "Coming soon (Sprint 3.C) — running tabs at the counter + quick keypad. Meanwhile you can open a direct order with the button below.",
+        ],
+        "pedidos" => [
+            "title" => "Orders mode",
+            "description" => "Coming soon (Sprint 3.C) — Orders Hub with takeout/delivery grid, channel filters (own/phone/WhatsApp) and flow actions. Meanwhile you can create an order with the button below.",
+        ],
+    ],
+
     "check_header" => [
         "context" => [
             "counter" => "Counter",

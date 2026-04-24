@@ -29,7 +29,9 @@
   import TableViewerDrawer from './Drawers/TableViewer/Index.vue'
   import MenuPanel from './MenuPanel/Index.vue'
   import ModeSwitcher from './ModeSwitcher.vue'
+  import MostradorModeView from './MostradorModeView.vue'
   import OrderPanel from './OrderPanel/Index.vue'
+  import PedidosModeView from './PedidosModeView.vue'
   // TopActionsBar eliminado Sprint 3.A.bis — "+ Orden rápida" se reubica
   // en el modo Mostrador; "Caja" es modo propio en el switcher.
   import { usePosMode } from '@/modules/pos/composables/posMode.ts'
@@ -197,8 +199,18 @@
         :available-modes="availableModes"
       />
 
-      <!-- Modo Caja: pantalla completa propia, toma el espacio a la
-           derecha del switcher. Sprint 3.A.bis — reemplaza el CajaDrawer. -->
+      <!-- Sprint 3.A.bis bug 2 — render según modo + hasActiveOrder.
+           Reglas:
+             1) posMode='caja' → CajaMode pantalla completa.
+             2) hasActiveOrder=true → split-screen productos+check
+                (ortogonal al modo: si entraste a una comanda, se atiende
+                igual en Salón/Mostrador/Pedidos).
+             3) Home (!hasActiveOrder):
+                - salon   → ActiveOrdersPanel + plano (flujo "abrir mesa").
+                - counter → MostradorModeView (placeholder hasta 3.C).
+                - orders  → PedidosModeView (placeholder hasta 3.C). -->
+
+      <!-- (1) Modo Caja: pantalla completa. -->
       <CajaMode
         v-if="posMode === 'caja' && can('admin.pos_cash_movements.create')"
         class="flex-grow-1"
@@ -208,64 +220,111 @@
         @session-closed="$emit('reset')"
       />
 
-    <!-- Modos salón/counter/orders — split-screen con CSS Grid.
-         Vista "home" (!hasActiveOrder): 2 columnas 30/70 — ActiveOrders
-         + plano de mesas ocupando todo el espacio.
-         Vista "working" (hasActiveOrder): 3 columnas 22/48/30 —
-         ActiveOrders colapsado + grid productos + detalle comanda. -->
-    <div
-      v-else
-      class="pos-layout flex-grow-1"
-      :class="{ 'pos-layout--working': hasActiveOrder, 'pos-layout--narrow': isNarrow }"
-    >
-
-      <aside v-if="!isNarrow" class="pos-panel pos-panel--orders">
-        <VCard class="pos-col-card">
-          <ActiveOrdersPanel
-            :active-order-id="meta.order?.id ?? null"
-            :branch-id="form.branchId"
-            :cart-id="cart.cartId"
-            :collapsed="hasActiveOrder"
-            @init-order="(response:Record<string, any>) => $emit('init-order', response)"
-            @new-order="onNewOrder"
-          />
-        </VCard>
-      </aside>
-      <main class="pos-panel pos-panel--main">
-        <VCard class="pos-col-card">
-          <VCardText class="pa-3">
-            <MenuPanel
-              ref="menuPanelRef"
-              :cart="cart"
-              :form="form"
-              :has-active-order="hasActiveOrder"
-              :meta="meta"
+      <!-- (2) Vista "working" — split-screen 3 cols: ActiveOrders
+           colapsado + grid productos + detalle comanda. -->
+      <div
+        v-else-if="hasActiveOrder"
+        class="pos-layout flex-grow-1 pos-layout--working"
+        :class="{ 'pos-layout--narrow': isNarrow }"
+      >
+        <aside v-if="!isNarrow" class="pos-panel pos-panel--orders">
+          <VCard class="pos-col-card">
+            <ActiveOrdersPanel
+              :active-order-id="meta.order?.id ?? null"
+              :branch-id="form.branchId"
+              :cart-id="cart.cartId"
+              :collapsed="hasActiveOrder"
               @init-order="(response:Record<string, any>) => $emit('init-order', response)"
-              @pick-table-free="onPlanoPickFree"
-              @pick-table-occupied="onPlanoPickOccupied"
-              @tables-count="(count:number) => tablesCount = count"
+              @new-order="onNewOrder"
             />
-          </VCardText>
-        </VCard>
-      </main>
-      <aside v-if="hasActiveOrder" class="pos-panel pos-panel--cart">
-        <VCard class="pos-col-card">
-          <VCardText class="pa-3">
-            <OrderPanel
-              :cart="cart"
-              :form="form"
-              :has-active-order="hasActiveOrder"
-              :meta="meta"
-              :qintrix="qintrix"
-              @focus-menu-search="onFocusMenuSearch"
-              @on-click-action="onClickAction"
-              @reset="(cartData?:Cart)=>$emit('reset',cartData)"
-              @store-payment="storePayment"
+          </VCard>
+        </aside>
+        <main class="pos-panel pos-panel--main">
+          <VCard class="pos-col-card">
+            <VCardText class="pa-3">
+              <MenuPanel
+                ref="menuPanelRef"
+                :cart="cart"
+                :form="form"
+                :has-active-order="hasActiveOrder"
+                :meta="meta"
+                @init-order="(response:Record<string, any>) => $emit('init-order', response)"
+                @pick-table-free="onPlanoPickFree"
+                @pick-table-occupied="onPlanoPickOccupied"
+                @tables-count="(count:number) => tablesCount = count"
+              />
+            </VCardText>
+          </VCard>
+        </main>
+        <aside class="pos-panel pos-panel--cart">
+          <VCard class="pos-col-card">
+            <VCardText class="pa-3">
+              <OrderPanel
+                :cart="cart"
+                :form="form"
+                :has-active-order="hasActiveOrder"
+                :meta="meta"
+                :qintrix="qintrix"
+                @focus-menu-search="onFocusMenuSearch"
+                @on-click-action="onClickAction"
+                @reset="(cartData?:Cart)=>$emit('reset',cartData)"
+                @store-payment="storePayment"
+              />
+            </VCardText>
+          </VCard>
+        </aside>
+      </div>
+
+      <!-- (3a) Home Salón: ActiveOrders + plano. -->
+      <div
+        v-else-if="posMode === 'salon'"
+        class="pos-layout flex-grow-1"
+        :class="{ 'pos-layout--narrow': isNarrow }"
+      >
+        <aside v-if="!isNarrow" class="pos-panel pos-panel--orders">
+          <VCard class="pos-col-card">
+            <ActiveOrdersPanel
+              :active-order-id="meta.order?.id ?? null"
+              :branch-id="form.branchId"
+              :cart-id="cart.cartId"
+              :collapsed="false"
+              @init-order="(response:Record<string, any>) => $emit('init-order', response)"
+              @new-order="onNewOrder"
             />
-          </VCardText>
-        </VCard>
-      </aside>
-    </div>
+          </VCard>
+        </aside>
+        <main class="pos-panel pos-panel--main">
+          <VCard class="pos-col-card">
+            <VCardText class="pa-3">
+              <MenuPanel
+                ref="menuPanelRef"
+                :cart="cart"
+                :form="form"
+                :has-active-order="false"
+                :meta="meta"
+                @init-order="(response:Record<string, any>) => $emit('init-order', response)"
+                @pick-table-free="onPlanoPickFree"
+                @pick-table-occupied="onPlanoPickOccupied"
+                @tables-count="(count:number) => tablesCount = count"
+              />
+            </VCardText>
+          </VCard>
+        </main>
+      </div>
+
+      <!-- (3b) Home Mostrador: placeholder hasta Sprint 3.C. -->
+      <MostradorModeView
+        v-else-if="posMode === 'counter'"
+        class="flex-grow-1"
+        @new-order="onNewOrder"
+      />
+
+      <!-- (3c) Home Pedidos: placeholder hasta Sprint 3.C. -->
+      <PedidosModeView
+        v-else-if="posMode === 'orders'"
+        class="flex-grow-1"
+        @new-order="onNewOrder"
+      />
     </div>
   </div>
   <!-- En pantallas md-and-down, ActiveOrdersPanel pasa a drawer lateral.
