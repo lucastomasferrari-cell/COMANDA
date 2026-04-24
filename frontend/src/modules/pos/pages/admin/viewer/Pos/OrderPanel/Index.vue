@@ -7,14 +7,11 @@
   import { useToast } from 'vue-toastification'
   import { useAuth } from '@/modules/auth/composables/auth.ts'
   import { useOrder } from '@/modules/sale/composables/order.ts'
-  import AdditionalInformation from './AdditionalInformation.vue'
   import CartItems from './CartItems/Index.vue'
+  import CheckHeader from './CheckHeader.vue'
   import Discount from './Discount.vue'
-  import Header from './Header.vue'
   import Invoice from './Invoice.vue'
-  import OrderTypes from './OrderTypes.vue'
   import RefundPaymentMethod from './RefundPaymentMethod.vue'
-  import TableInfo from './TableInfo.vue'
 
   const props = defineProps<{
     form: PosForm
@@ -297,6 +294,34 @@
 
   onMounted(() => { window.addEventListener('keydown', onGlobalKeydown) })
   onBeforeUnmount(() => { window.removeEventListener('keydown', onGlobalKeydown) })
+
+  // Sprint 3.A.9 — handler del overflow del CheckHeader. Mapea los emits
+  // a las funciones que ya existían en el OrderPanel. more_discount /
+  // more_voucher se dejan pasar up al Pos/Index.vue parent (hoy no-op;
+  // en 3.A.10 se conectan al DiscountDialog refactorizado).
+  const onHeaderAction = (key: string): void => {
+    switch (key) {
+      case 'hold_order':
+        submit('hold_order')
+        return
+      case 'more_print':
+        if (isEditMode.value && props.meta.order?.id) {
+          requestBillForOrder()
+        }
+        return
+      case 'cancel_order':
+        cancelOrder()
+        return
+      case 'more_discount':
+      case 'more_voucher':
+      case 'more_split_bill':
+      case 'more_change_table':
+        // Se propaga al Pos/Index.vue por si alguien lo engancha. En 3.A.10
+        // los 2 primeros se conectan al DiscountDialog. El resto queda
+        // coming-soon.
+        emit('on-click-action', key)
+    }
+  }
 </script>
 
 <template>
@@ -327,19 +352,19 @@
        min-height: 0 en row 2 es crítico para que el flex child pueda shrink
        sin colapsar todo el grid (bug de regresión recurrente). -->
   <div v-else class="check-panel">
-    <!-- Header contextual — en 3.A sigue siendo el Header vendor con Volver
-         al plano. En 3.A commit 7 se rediseña Toast-style con chips de
-         contexto según dining_option. -->
+    <!-- Header contextual Toast-style (Sprint 3.A.9). Reemplaza los 4
+         componentes vendor (Header, OrderTypes, TableInfo,
+         AdditionalInformation). Todas las acciones secundarias pasan al
+         overflow menu ⋮. El stepper de comensales vive ahora en el
+         chip 👥 editable inline. -->
     <header class="check-panel__header">
-      <Header :cart="cart" :form="form" :meta="meta" @back-to-map="$emit('reset')" />
-      <OrderTypes
+      <CheckHeader
         :cart="cart"
         :form="form"
         :meta="meta"
-        @on-click-action="(action:string)=>$emit('on-click-action',action)"
+        @action="onHeaderAction"
+        @back-to-map="$emit('reset')"
       />
-      <TableInfo v-if="form.table != null" :cart="cart" :form="form" :meta="meta" />
-      <AdditionalInformation :cart="cart" :form="form" />
     </header>
 
     <!-- Fila scrolleable — único overflow del panel. -->

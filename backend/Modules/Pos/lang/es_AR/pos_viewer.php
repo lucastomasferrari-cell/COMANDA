@@ -241,6 +241,36 @@ return [
         "counter" => "Mostrador",
         "orders" => "Pedidos",
     ],
+
+    // Sprint 3.A.9 — Toast-style CheckHeader. "context" top-level es
+    // distinto del "context" nested dentro de active_orders (que usa el
+    // ActiveOrdersPanel para labels de takeaway/drive_thru/no_table).
+    "check_header" => [
+        "context" => [
+            "counter" => "Mostrador",
+            "takeout" => "Retiro",
+            "drive_thru" => "Drive-thru",
+            "pre_order" => "Pedido anticipado",
+            "catering" => "Catering",
+            "table_fallback" => "Mesa",
+        ],
+        "overflow" => [
+            "change_type" => "Cambiar tipo de orden",
+            "assign_waiter" => "Asignar mozo",
+            "assign_customer" => "Asignar cliente",
+            "additional_fields" => "Datos adicionales",
+            "apply_discount" => "Aplicar descuento",
+            "apply_voucher" => "Aplicar cupón",
+            "split_bill" => "Dividir cuenta",
+            "transfer_table" => "Transferir mesa",
+            "hold_order" => "Pausar comanda",
+            "print_prebill" => "Imprimir pre-cuenta",
+            "cancel_order" => "Anular comanda",
+        ],
+        "new_customer" => "Nuevo cliente",
+        "remove_customer" => "Quitar cliente",
+    ],
+
     "no_cart_items" => [
         "title" => "Arrancá una comanda",
         "description" => "Seleccioná platos del menú para comenzar el pedido",

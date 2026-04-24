@@ -236,6 +236,33 @@ return [
         "counter" => "Counter",
         "orders" => "Orders",
     ],
+
+    "check_header" => [
+        "context" => [
+            "counter" => "Counter",
+            "takeout" => "Takeout",
+            "drive_thru" => "Drive-thru",
+            "pre_order" => "Pre-order",
+            "catering" => "Catering",
+            "table_fallback" => "Table",
+        ],
+        "overflow" => [
+            "change_type" => "Change order type",
+            "assign_waiter" => "Assign waiter",
+            "assign_customer" => "Assign customer",
+            "additional_fields" => "Additional fields",
+            "apply_discount" => "Apply discount",
+            "apply_voucher" => "Apply voucher",
+            "split_bill" => "Split bill",
+            "transfer_table" => "Transfer table",
+            "hold_order" => "Hold order",
+            "print_prebill" => "Print pre-bill",
+            "cancel_order" => "Cancel order",
+        ],
+        "new_customer" => "New customer",
+        "remove_customer" => "Remove customer",
+    ],
+
     "no_cart_items" => [
         "title" => "Start a new order",
         "description" => "Select dishes from the menu to start your order",
