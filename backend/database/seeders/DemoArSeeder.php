@@ -93,7 +93,86 @@ class DemoArSeeder extends Seeder
         $this->command->info('→ Feature flags modos del POS');
         $this->seedPosFeatureFlags();
 
+        $this->command->info('→ Reservas demo (PASE fase 2)');
+        $this->seedReservations();
+
         $this->command->info('✓ Demo AR listo.');
+    }
+
+    private function seedReservations(): void
+    {
+        // Sprint 3.A.bis — demo de reservas para que el badge del plano
+        // tenga data que mostrar. PASE (Fase 2) las creará de verdad; hoy
+        // son fixtures.
+        //
+        // Criterio: 3 reservas para HOY en las próximas 2hs (badge visible
+        // en el plano) + 1 reserva sin mesa para mañana (no muestra en
+        // el plano pero queda para que PASE la procese).
+        $tableSalon3 = DB::table('tables')
+            ->whereRaw("JSON_EXTRACT(name, '$.es_AR') = 'Mesa 3'")
+            ->value('id');
+        $tableSalon7 = DB::table('tables')
+            ->whereRaw("JSON_EXTRACT(name, '$.es_AR') = 'Mesa 7'")
+            ->value('id');
+        $tableTerraza10 = DB::table('tables')
+            ->whereRaw("JSON_EXTRACT(name, '$.es_AR') = 'Mesa 10'")
+            ->value('id');
+
+        // Idempotente: si ya hay reservas sembradas hoy, no duplicar.
+        $hasToday = DB::table('reservations')
+            ->whereDate('reserved_for', now()->toDateString())
+            ->exists();
+        if ($hasToday) {
+            return;
+        }
+
+        $demo = [
+            [
+                'table_id' => $tableSalon3,
+                'guest_name' => 'Familia Pérez',
+                'guest_phone' => '1155551234',
+                'party_size' => 4,
+                'reserved_for' => now()->addMinutes(90),
+                'status' => 'confirmed',
+                'notes' => 'Preferencia mesa junto a la ventana',
+            ],
+            [
+                'table_id' => $tableSalon7,
+                'guest_name' => 'Juan García',
+                'guest_phone' => '1144445555',
+                'party_size' => 2,
+                'reserved_for' => now()->addHours(2)->addMinutes(30),
+                'status' => 'pending',
+                'notes' => null,
+            ],
+            [
+                'table_id' => $tableTerraza10,
+                'guest_name' => 'Cumpleaños Rodríguez',
+                'guest_phone' => '1133332222',
+                'party_size' => 6,
+                'reserved_for' => now()->addHours(1)->addMinutes(15),
+                'status' => 'confirmed',
+                'notes' => 'Traen torta, avisar al salón',
+            ],
+            [
+                'table_id' => null,
+                'guest_name' => 'Ana Martínez',
+                'guest_phone' => '1122221111',
+                'party_size' => 8,
+                'reserved_for' => now()->addDay()->setTime(20, 0),
+                'status' => 'pending',
+                'notes' => 'Waitlist — asignar mesa al arrival',
+            ],
+        ];
+
+        foreach ($demo as $r) {
+            DB::table('reservations')->insert(array_merge($r, [
+                'branch_id' => $this->branchId,
+                'created_by' => $this->adminId,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]));
+        }
     }
 
     private function seedPosFeatureFlags(): void
