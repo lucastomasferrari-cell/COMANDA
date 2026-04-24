@@ -258,6 +258,14 @@ return [
         "items" => "items",
         "continue" => "Continue",
         "discard" => "Discard",
+
+        "new_conflict" => [
+            "title" => "There's a paused order in this mode",
+            "message" => "Before creating a new one you can continue the paused (loaded back into the cart) or discard it and start fresh.",
+            "continue_paused" => "Continue paused",
+            "discard_and_create" => "Create new, discard paused",
+            "cancel" => "Cancel",
+        ],
     ],
 
     "check_header" => [

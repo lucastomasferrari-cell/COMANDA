@@ -271,6 +271,16 @@ return [
         "items" => "ítems",
         "continue" => "Continuar",
         "discard" => "Descartar",
+
+        // Sprint 4 commit 7 — diálogo cuando se toca "+ Nueva" estando
+        // ya pausada otra orden en el mismo modo.
+        "new_conflict" => [
+            "title" => "Hay una orden pausada en este modo",
+            "message" => "Antes de crear una nueva podés continuar la pausada (recargada en el cart) o descartarla y arrancar limpio.",
+            "continue_paused" => "Continuar pausada",
+            "discard_and_create" => "Crear nueva, descartar pausada",
+            "cancel" => "Cancelar",
+        ],
     ],
 
     // Sprint 3.A.9 — Toast-style CheckHeader. "context" top-level es

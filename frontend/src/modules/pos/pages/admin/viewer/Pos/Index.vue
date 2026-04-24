@@ -144,7 +144,40 @@
   // resuelve por la topología del layout: el plano para abrir mesa, el
   // botón + para orden rápida. OrderTypes.watch elige el primer canal
   // non-dine_in disponible como default.
-  const onNewOrder = () => props.startNewOrder()
+  //
+  // Sprint 4 commit 7 — si el modo actual tiene una orden pausada,
+  // tocar "+ Nueva" abre el diálogo de conflicto antes de crear,
+  // dándole al cajero 3 opciones: continuar la pausada, descartar y
+  // crear nueva, o cancelar.
+  const newOrderConflictDialog = ref(false)
+  const newOrderConflictResuming = ref(false)
+  const onNewOrder = (): void => {
+    if (posModeStore.hasPausedOrder()) {
+      newOrderConflictDialog.value = true
+      return
+    }
+    props.startNewOrder()
+  }
+  const resolveContinuePaused = async (): Promise<void> => {
+    const id = posModeStore.modeStates[posModeStore.currentMode].pausedOrderId
+    if (!id || newOrderConflictResuming.value) return
+    newOrderConflictResuming.value = true
+    try {
+      const response = (await editOrder(props.cart.cartId, id)).data.body
+      posModeStore.discardPausedOrder()
+      newOrderConflictDialog.value = false
+      emit('init-order', response)
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message ?? t('core::errors.an_unexpected_error_occurred'))
+    } finally {
+      newOrderConflictResuming.value = false
+    }
+  }
+  const resolveDiscardAndCreate = (): void => {
+    posModeStore.discardPausedOrder()
+    newOrderConflictDialog.value = false
+    props.startNewOrder()
+  }
 
   // Sprint 2 B.3 — Mesa libre clickeada desde el plano: apertura directa
   // con guestCount=1 default. Antes pasaba por GuestCountDialog (modal con
@@ -373,6 +406,44 @@
     :order-id="showOrderPrintDialog.orderId"
     :register-id="form.registerId"
   />
+  <!-- Sprint 4 commit 7 — diálogo de conflicto al "+ Nueva" estando
+       ya pausada otra orden en el mismo modo. -->
+  <VDialog v-model="newOrderConflictDialog" max-width="460">
+    <VCard>
+      <VCardTitle>
+        {{ t('pos::pos_viewer.paused_order.new_conflict.title') }}
+      </VCardTitle>
+      <VCardText class="text-body-2">
+        {{ t('pos::pos_viewer.paused_order.new_conflict.message') }}
+      </VCardText>
+      <VCardActions class="px-5 pb-5 ga-2 flex-wrap">
+        <VBtn
+          :disabled="newOrderConflictResuming"
+          variant="text"
+          @click="newOrderConflictDialog = false"
+        >
+          {{ t('pos::pos_viewer.paused_order.new_conflict.cancel') }}
+        </VBtn>
+        <VSpacer />
+        <VBtn
+          color="default"
+          :disabled="newOrderConflictResuming"
+          variant="tonal"
+          @click="resolveDiscardAndCreate"
+        >
+          {{ t('pos::pos_viewer.paused_order.new_conflict.discard_and_create') }}
+        </VBtn>
+        <VBtn
+          color="primary"
+          :loading="newOrderConflictResuming"
+          variant="flat"
+          @click="resolveContinuePaused"
+        >
+          {{ t('pos::pos_viewer.paused_order.new_conflict.continue_paused') }}
+        </VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
 </template>
 
 <style lang="scss" scoped>
