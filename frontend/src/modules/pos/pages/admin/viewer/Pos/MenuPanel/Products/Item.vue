@@ -70,10 +70,17 @@
 </script>
 
 <template>
+  <!-- Sprint 1.B: borde izquierdo 4px con hsl(hue 55% 50%) cuando la
+       categoría tiene color_hue. Si no, mantener el top border con hex
+       color como fallback. Ambas vars conviven. -->
   <VCard
     class="product-item mb-3 me-2"
+    :class="{ 'has-hue': categoryHue !== null }"
     :ripple="false"
-    :style="{ '--category-color': categoryColor }"
+    :style="{
+      '--category-color': categoryColor,
+      '--category-hue': categoryHue ?? 12,
+    }"
     @click="addProductToCart"
   >
     <!-- ProductTileImage reemplaza el VImg + VIcon tabler-soup genérico
@@ -106,10 +113,27 @@
 <style lang="scss" scoped>
 .product-item {
   cursor: pointer;
-  border: 2px dashed #ededed;
-  border-radius: 0.2rem;
-  /* Borde superior 4px con el color de la categoria primaria. */
-  border-top: 4px solid var(--category-color, #B0B0B0);
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.12);
+  border-radius: 8px;
+  overflow: hidden;
+  /* Borde superior 4px con el color de la categoria primaria (hex legacy,
+     fallback cuando no hay hue). */
+  border-top: 4px solid var(--category-color, rgb(var(--v-theme-border)));
+  transition: border-color 150ms ease, transform 80ms ease;
+
+  &:hover {
+    border-color: rgba(var(--v-theme-on-surface), 0.24);
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
+
+  /* Si la categoría tiene color_hue seteado, sobreescribir el top border
+     con el hue al 55% sat / 50% light (saturado, legible en ambos modos). */
+  &.has-hue {
+    border-top-color: hsl(var(--category-hue) 55% 50%);
+  }
 
   /* Tipografía del tile — Sprint 1.B BENCHMARK_POS #5.
      Nombres 1.25rem (20px) y precios 1.125rem (18px) — el cajero lee el

@@ -33,6 +33,25 @@
     return map
   })
 
+  // Mapa id -> color_hue (0-360) Sprint 1.B. Se usa en el placeholder
+  // del tile (ProductTileImage) y en el borde izquierdo con hsl(hue 55% 50%).
+  // Paralelo a categoryColorMap — independientes porque color_hue puede
+  // estar seteado sin color hex y viceversa.
+  const categoryHueMap = computed(() => {
+    const map = new Map<number | string, number>()
+    const walk = (cats: Category[]) => {
+      for (const c of cats) {
+        const hue = (c as any).color_hue
+        if (typeof hue === 'number' && hue >= 0 && hue <= 360) {
+          map.set(c.id, hue)
+        }
+        if (c.items?.length) walk(c.items)
+      }
+    }
+    walk(props.categories)
+    return map
+  })
+
   const { searchQuery } = toRefs(props)
   const debouncedSearchQuery = refDebounced(searchQuery, 200)
   const productOptionDialog = ref<Record<string, any>>({
@@ -141,6 +160,7 @@
         :key="product.id"
         :cart="cart"
         :category-color-map="categoryColorMap"
+        :category-hue-map="categoryHueMap"
         :product="product"
         @open-options-dialog="openProductOptionDialog"
       />
