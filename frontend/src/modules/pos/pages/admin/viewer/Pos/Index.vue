@@ -26,8 +26,10 @@
   import CajaDrawer from './Drawers/Caja/Index.vue'
   import TableViewerDrawer from './Drawers/TableViewer/Index.vue'
   import MenuPanel from './MenuPanel/Index.vue'
+  import ModeSwitcher from './ModeSwitcher.vue'
   import OrderPanel from './OrderPanel/Index.vue'
   import TopActionsBar from './TopActionsBar.vue'
+  import { usePosMode } from '@/modules/pos/composables/posMode.ts'
 
   const props = defineProps<{
     form: PosForm
@@ -58,6 +60,18 @@
   const display = useDisplay()
   const isNarrow = computed(() => !display.lgAndUp.value)
   const showActiveOrdersDrawer = ref(false)
+
+  // Sprint 3.A — switcher vertical de modos. Lee feature_flags del meta
+  // (inyectado desde /pos/configuration). Si solo 1 modo está activo,
+  // showSwitcher=false y el componente no se monta; el layout toma todo
+  // el ancho útil sin la columna de 80px. El modo activo se persiste
+  // en localStorage vía usePosMode. El render específico de cada modo
+  // (Salón ≠ Mostrador ≠ Pedidos) se implementa en Sprint 3.B/3.C.
+  const {
+    mode: posMode,
+    availableModes,
+    showSwitcher,
+  } = usePosMode(() => (props.meta as any)?.feature_flags?.pos ?? null)
 
   const paymentDialog = ref<Record<string, any>>({ orderId: null, open: false })
   const refundCancelDialog = ref<Record<string, any>>({ orderId: null, open: false })
@@ -173,6 +187,18 @@
       @open-active-orders="showActiveOrdersDrawer = true"
       @quick-order="onNewOrder"
     />
+    <!-- Sprint 3.A — wrapper del layout con el switcher vertical a la
+         izquierda (si hay más de 1 modo activo). El comportamiento
+         específico de cada modo (Salón ≠ Mostrador ≠ Pedidos) se
+         introduce en 3.B y 3.C; por ahora el switcher se monta y
+         recuerda el modo en localStorage. El Salón sigue siendo el
+         renderizado default del layout en los 3 modos hasta 3.B. -->
+    <div class="pos-layout-wrapper flex-grow-1 d-flex">
+      <ModeSwitcher
+        v-if="showSwitcher"
+        v-model="posMode"
+        :available-modes="availableModes"
+      />
     <!-- Sprint 2 parte A: layout split-screen con CSS Grid.
          Vista "home" (!hasActiveOrder): 2 columnas 30/70 — ActiveOrders
          + plano de mesas ocupando todo el espacio.
@@ -184,6 +210,7 @@
       class="pos-layout flex-grow-1"
       :class="{ 'pos-layout--working': hasActiveOrder, 'pos-layout--narrow': isNarrow }"
     >
+
       <aside v-if="!isNarrow" class="pos-panel pos-panel--orders">
         <VCard class="pos-col-card">
           <ActiveOrdersPanel
@@ -230,6 +257,7 @@
           </VCardText>
         </VCard>
       </aside>
+    </div>
     </div>
   </div>
   <!-- En pantallas md-and-down, ActiveOrdersPanel pasa a drawer lateral.
@@ -321,7 +349,14 @@
 /* Sprint 2 A.1 — layout split-screen con CSS Grid. 2 vistas:
    - home (sin comanda activa): 30/70 — ActiveOrders + plano.
    - working (con comanda): 22/48/30 — ActiveOrders colapsado + productos + comanda. */
+/* Sprint 3.A — wrapper horizontal: ModeSwitcher (80px) + .pos-layout. */
+.pos-layout-wrapper {
+  overflow: hidden;
+  min-height: 0;
+}
+
 .pos-layout {
+  flex: 1 1 auto;
   display: grid;
   grid-template-columns: 30% 70%;
   gap: 8px;

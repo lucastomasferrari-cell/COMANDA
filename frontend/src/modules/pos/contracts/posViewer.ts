@@ -23,6 +23,15 @@ export interface Product {
   selling_price?: MoneyValue
 }
 
+export interface PosFeatureFlags {
+  pos: {
+    dine_in: boolean
+    counter: boolean
+    takeout: boolean
+    delivery: boolean
+  }
+}
+
 export interface PosMeta {
   branches: any[]
   menus: any[]
@@ -41,6 +50,7 @@ export interface PosMeta {
   floors?: any[]
   zones?: any[]
   table_statuses?: any[]
+  feature_flags?: PosFeatureFlags
 }
 
 export interface PosFormMeta {

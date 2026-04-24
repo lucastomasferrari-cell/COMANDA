@@ -126,6 +126,10 @@ export function usePosViewer (cartId: string) {
       meta.value.currency = response.currency
       meta.value.categories = response.menu_items?.categories || []
       meta.value.products = response.menu_items?.products || []
+      // Sprint 3.A — feature_flags para el switcher de modos.
+      if (response.feature_flags) {
+        (meta.value as any).feature_flags = response.feature_flags
+      }
       cart.resetCart(response.cart)
       skipNextMenuLoad.value = true
       form.value.branchId = response.branch_id

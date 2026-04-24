@@ -234,6 +234,13 @@ return [
     "back_to_map" => "Ver plano",
     "quick_order" => "Orden rápida",
     "guest_count_required" => "Indicá la cantidad de comensales antes de enviar a cocina.",
+
+    // Sprint 3.A — modos del POS (switcher vertical).
+    "modes" => [
+        "salon" => "Salón",
+        "counter" => "Mostrador",
+        "orders" => "Pedidos",
+    ],
     "no_cart_items" => [
         "title" => "Arrancá una comanda",
         "description" => "Seleccioná platos del menú para comenzar el pedido",
