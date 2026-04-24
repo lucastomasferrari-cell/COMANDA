@@ -17,6 +17,8 @@ import { defineStore } from 'pinia'
 interface ModeState {
   /** ID de la orden que quedó pausada al salir de este modo, null si no hay. */
   pausedOrderId: number | string | null
+  /** Items de la orden pausada (para el badge del switcher). null si no se conoce. */
+  pausedItemsCount: number | null
   /** Timestamp último ingreso al modo (debug + futuro stale-detection). */
   lastActiveAt: number
 }
@@ -28,6 +30,7 @@ interface PosModeStoreState {
 
 const emptyModeState = (): ModeState => ({
   pausedOrderId: null,
+  pausedItemsCount: null,
   lastActiveAt: 0,
 })
 
@@ -66,8 +69,10 @@ export const usePosModeStore = defineStore('posMode', {
      * ID en el cart (Phase B: vía edit endpoint sobre la draft persistida).
      */
     resumePausedOrder(): number | string | null {
-      const id = this.modeStates[this.currentMode].pausedOrderId
-      this.modeStates[this.currentMode].pausedOrderId = null
+      const state = this.modeStates[this.currentMode]
+      const id = state.pausedOrderId
+      state.pausedOrderId = null
+      state.pausedItemsCount = null
       return id
     },
 
@@ -87,7 +92,9 @@ export const usePosModeStore = defineStore('posMode', {
      * la draft persistida.
      */
     discardPausedOrder(): void {
-      this.modeStates[this.currentMode].pausedOrderId = null
+      const state = this.modeStates[this.currentMode]
+      state.pausedOrderId = null
+      state.pausedItemsCount = null
     },
 
     /**
@@ -96,6 +103,17 @@ export const usePosModeStore = defineStore('posMode', {
      */
     setPausedOrder(mode: PosMode, orderId: number | string | null): void {
       this.modeStates[mode].pausedOrderId = orderId
+      if (orderId === null) {
+        this.modeStates[mode].pausedItemsCount = null
+      }
+    },
+
+    /**
+     * Cache del item count para el badge del switcher. Lo escribe
+     * PausedOrderBanner cuando carga la summary de la orden.
+     */
+    setPausedItemsCount(mode: PosMode, count: number | null): void {
+      this.modeStates[mode].pausedItemsCount = count
     },
   },
 })

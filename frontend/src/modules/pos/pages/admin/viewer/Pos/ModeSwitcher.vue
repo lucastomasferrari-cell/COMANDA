@@ -2,6 +2,7 @@
   import type { PosMode } from '@/modules/pos/composables/posMode.ts'
   import { computed } from 'vue'
   import { useI18n } from 'vue-i18n'
+  import { usePosModeStore } from '@/modules/pos/stores/posModeStore.ts'
 
   const props = defineProps<{
     modelValue: PosMode
@@ -13,6 +14,11 @@
   }>()
 
   const { t } = useI18n()
+  // Sprint 4 commit 8 — el store expone modeStates por modo; cada
+  // ícono renderiza un badge si el modo correspondiente tiene una
+  // orden pausada. Si conocemos el item count (cacheado por el banner
+  // al fetchear el summary), lo mostramos. Sino mostramos un dot.
+  const store = usePosModeStore()
 
   // Sprint 3.A — Switcher vertical siempre visible al extremo izq del POS.
   // Sprint 3.A.bis — comprimido a 64px por botón (antes 72) + ícono 24px
@@ -48,6 +54,12 @@
   const selectMode = (mode: PosMode): void => {
     emit('update:modelValue', mode)
   }
+
+  const hasPaused = (mode: PosMode): boolean =>
+    store.modeStates[mode].pausedOrderId !== null
+
+  const pausedCount = (mode: PosMode): number | null =>
+    store.modeStates[mode].pausedItemsCount
 </script>
 
 <template>
@@ -62,7 +74,14 @@
       :aria-label="m.label"
       @click="selectMode(m.key)"
     >
-      <VIcon class="mode-switcher__icon" :icon="m.icon" size="24" />
+      <span class="mode-switcher__icon-wrap">
+        <VIcon class="mode-switcher__icon" :icon="m.icon" size="24" />
+        <span
+          v-if="hasPaused(m.key)"
+          class="mode-switcher__badge"
+          :class="{ 'mode-switcher__badge--dot': pausedCount(m.key) === null }"
+        >{{ pausedCount(m.key) ?? '' }}</span>
+      </span>
       <span class="mode-switcher__label">{{ m.label }}</span>
     </button>
   </nav>
@@ -142,8 +161,46 @@
   }
 }
 
+.mode-switcher__icon-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .mode-switcher__icon {
   flex-shrink: 0;
+}
+
+/* Badge "orden pausada" — top-right del ícono. Con count se ve como
+   chip rojo pequeño con número; sin count (--dot) se reduce a un
+   punto coral discreto. Se mantiene legible en dark mode porque
+   usa rgb(var(--v-theme-error)) y on-error como tokens. */
+.mode-switcher__badge {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: rgb(var(--v-theme-error));
+  color: rgb(var(--v-theme-on-error));
+  font-size: 0.625rem; /* 10px */
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  box-shadow: 0 0 0 2px rgb(var(--v-theme-surface));
+}
+
+.mode-switcher__badge--dot {
+  min-width: 8px;
+  height: 8px;
+  padding: 0;
+  top: -2px;
+  right: -2px;
 }
 
 .mode-switcher__label {

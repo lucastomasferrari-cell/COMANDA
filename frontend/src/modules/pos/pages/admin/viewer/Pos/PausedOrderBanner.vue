@@ -58,6 +58,11 @@
       if (!isAlive) return
       if (res.status === 200 && res.data) {
         orderSummary.value = res.data
+        // Sprint 4 commit 8 — cache el item count en el store para el
+        // badge del switcher. Si la orden no tenía items o no se pudo
+        // resolver, queda null y el badge mostrará un dot.
+        const items = Array.isArray(res.data.items) ? res.data.items.length : null
+        store.setPausedItemsCount(store.currentMode, items)
       } else {
         // 404 / desaparecida — limpiar la referencia stale del store
         // así no queda colgado el banner sin data.
