@@ -32,9 +32,13 @@ export function useUpcomingReservations () {
       const res = await http.get('/v1/reservations/upcoming')
       const body = res.data?.body ?? res.data ?? []
       reservations.value = Array.isArray(body) ? body : []
-    } catch {
-      // Silencioso: si el endpoint falla, simplemente no mostramos badges.
-      // No bloqueamos el plano por una reserva que no cargó.
+    } catch (err) {
+      // El plano no se puede caer por una reserva que no cargó. Dejamos
+      // lista vacía y seguimos; si el endpoint fallaba por 500 (ej: la
+      // tabla reservations todavía no migró) no queremos bloquear el POS.
+      // Warn visible en devtools para que un dev lo note sin que el user
+      // vea nada roto.
+      console.warn('[useUpcomingReservations] endpoint no disponible, usando lista vacía', err)
       reservations.value = []
     } finally {
       loading.value = false
