@@ -10,6 +10,7 @@
   import CartItems from './CartItems/Index.vue'
   import CheckHeader from './CheckHeader.vue'
   import DiscountDialog from './Discount.vue'
+  import InlineNote from './InlineNote.vue'
   import Invoice from './Invoice.vue'
   import RefundPaymentMethod from './RefundPaymentMethod.vue'
 
@@ -373,9 +374,12 @@
       />
     </header>
 
-    <!-- Fila scrolleable — único overflow del panel. -->
+    <!-- Fila scrolleable — único overflow del panel. CartItems arriba y
+         al final la nota inline (Sprint 3.A.11) — reemplaza el textarea
+         "Notas" separado del AdditionalInformation eliminado. -->
     <section class="check-panel__items">
       <CartItems :cart="cart" :form="form" />
+      <InlineNote :form="form" />
     </section>
 
     <!-- Footer sticky — totales + CTAs. Sin scroll acá.

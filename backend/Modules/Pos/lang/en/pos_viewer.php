@@ -261,6 +261,7 @@ return [
         ],
         "new_customer" => "New customer",
         "remove_customer" => "Remove customer",
+        "add_note" => "Add order note",
     ],
 
     "no_cart_items" => [

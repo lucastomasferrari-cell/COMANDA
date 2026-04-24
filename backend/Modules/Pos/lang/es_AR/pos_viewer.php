@@ -269,6 +269,7 @@ return [
         ],
         "new_customer" => "Nuevo cliente",
         "remove_customer" => "Quitar cliente",
+        "add_note" => "Agregar nota a la comanda",
     ],
 
     "no_cart_items" => [
