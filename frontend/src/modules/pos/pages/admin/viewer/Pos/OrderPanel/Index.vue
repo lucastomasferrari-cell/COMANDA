@@ -322,32 +322,33 @@
       {{ t('pos::pos_viewer.no_active_order.description') }}
     </p>
   </div>
-  <!-- order-panel-stack con height:100% para que los children flex calculen
-       espacio real. El items-container (flex-grow + overflow-y:auto) se come
-       el espacio disponible y el footer queda sticky al pie. -->
-  <div v-else class="order-panel-stack d-flex flex-column" style="gap: 0.5rem; height: 100%;">
-    <!-- Header: info de orden (mozo/cliente) + canal.
-         Las acciones globales (visor mesas, cash movement, comandas) viven
-         ahora en TopActionsBar a nivel del viewer, no dentro del OrderPanel. -->
-    <Header :cart="cart" :form="form" :meta="meta" @back-to-map="$emit('reset')" />
-    <OrderTypes
-      :cart="cart"
-      :form="form"
-      :meta="meta"
-      @on-click-action="(action:string)=>$emit('on-click-action',action)"
-    />
-    <TableInfo v-if="form.table != null" :cart="cart" :form="form" :meta="meta" />
-    <AdditionalInformation :cart="cart" :form="form" />
+  <!-- Sprint 3.A — check panel Toast-style con CSS Grid auto/1fr/auto:
+       fila 1 header 64px sticky / fila 2 scroll único / fila 3 footer sticky.
+       min-height: 0 en row 2 es crítico para que el flex child pueda shrink
+       sin colapsar todo el grid (bug de regresión recurrente). -->
+  <div v-else class="check-panel">
+    <!-- Header contextual — en 3.A sigue siendo el Header vendor con Volver
+         al plano. En 3.A commit 7 se rediseña Toast-style con chips de
+         contexto según dining_option. -->
+    <header class="check-panel__header">
+      <Header :cart="cart" :form="form" :meta="meta" @back-to-map="$emit('reset')" />
+      <OrderTypes
+        :cart="cart"
+        :form="form"
+        :meta="meta"
+        @on-click-action="(action:string)=>$emit('on-click-action',action)"
+      />
+      <TableInfo v-if="form.table != null" :cart="cart" :form="form" :meta="meta" />
+      <AdditionalInformation :cart="cart" :form="form" />
+    </header>
 
-    <!-- Items del carrito — único scroll vertical del panel. flex-grow + min-height:0
-         para que shrink sin colapsar, y overflow-y:auto para el scroll cuando la
-         comanda crece. -->
-    <div class="order-items-scroll flex-grow-1" style="overflow-y: auto; min-height: 0;">
+    <!-- Fila scrolleable — único overflow del panel. -->
+    <section class="check-panel__items">
       <CartItems :cart="cart" :form="form" />
-    </div>
+    </section>
 
-    <!-- Footer sticky: descuento + totales + botones grandes -->
-    <div class="order-panel-footer">
+    <!-- Footer sticky — totales + CTAs. Sin scroll acá. -->
+    <footer class="check-panel__footer">
       <Discount :cart="cart" :meta="meta" />
       <Invoice :amount-due="amountDue" :cart="cart" :is-edit-mode="isEditMode" />
       <VRow v-if="hasRefundAmount" class="mt-2" dense>
@@ -486,12 +487,37 @@
           </VList>
         </VMenu>
       </div>
-    </div>
+    </footer>
   </div>
 </template>
 
 <style scoped>
-.order-panel-footer {
+/* Sprint 3.A — Toast-style check panel. CSS Grid con 3 filas:
+   header auto / items 1fr / footer auto. min-height: 0 en .check-panel__items
+   es obligatorio para que el overflow-y:auto funcione con flex parent —
+   sin eso el scroll se rompe y los CTAs del footer salen del viewport. */
+.check-panel {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: 100%;
+  min-height: 0;
+  gap: 0.5rem;
+}
+
+.check-panel__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.check-panel__items {
+  overflow-y: auto;
+  min-height: 0; /* crítico: sin esto el grid no deja shrink al child */
+  padding: 4px 0;
+}
+
+.check-panel__footer {
   flex-shrink: 0;
   border-top: thin solid rgba(var(--v-theme-on-surface), 0.08);
   padding-top: 0.5rem;
