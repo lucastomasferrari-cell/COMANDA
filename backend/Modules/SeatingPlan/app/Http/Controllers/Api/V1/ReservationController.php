@@ -2,11 +2,11 @@
 
 namespace Modules\SeatingPlan\Http\Controllers\Api\V1;
 
-use App\Http\Responses\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Modules\Core\Http\Controllers\Controller;
+use Modules\Support\ApiResponse;
 
 /**
  * Sprint 3.A.bis — endpoint read-only para que el POS viewer muestre badges
