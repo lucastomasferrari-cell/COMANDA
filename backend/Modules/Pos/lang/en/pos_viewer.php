@@ -229,6 +229,7 @@ return [
     "upcoming_orders" => "Upcoming Orders",
     "back_to_map" => "View map",
     "quick_order" => "Quick order",
+    "guest_count_required" => "Set the number of guests before sending to kitchen.",
     "no_cart_items" => [
         "title" => "Start a new order",
         "description" => "Select dishes from the menu to start your order",

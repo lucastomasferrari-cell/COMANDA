@@ -83,6 +83,18 @@
       return
     }
 
+    // Sprint 2 B.5 — validación de guest_count al ENVIAR A COCINA (no al abrir).
+    // Aplica solo a dine_in (orden con mesa). Takeaway / drive-thru / pre-order
+    // no cuentan comensales. hold_order (pausa) tampoco valida — es un save
+    // intermedio. pay_and_fire sí valida porque también fire la comanda.
+    if (action !== 'hold_order' && props.form.table?.id) {
+      const gc = Number(props.form.meta.guestCount ?? 0)
+      if (!Number.isFinite(gc) || gc < 1) {
+        toast.warning(t('pos::pos_viewer.guest_count_required'))
+        return
+      }
+    }
+
     submitState.value = { action, isLoading: true }
     if (await placeOrder(action)) {
       emit('order-placed')
