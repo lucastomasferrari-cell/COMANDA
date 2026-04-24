@@ -34,6 +34,11 @@
       icon: 'tabler-package',
       label: t('pos::pos_viewer.modes.orders'),
     },
+    {
+      key: 'caja' as PosMode,
+      icon: 'tabler-cash-register',
+      label: t('pos::pos_viewer.modes.caja'),
+    },
   ].filter(m => props.availableModes.includes(m.key))))
 
   const selectMode = (mode: PosMode): void => {

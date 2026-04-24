@@ -236,6 +236,7 @@ return [
         "salon" => "Dining",
         "counter" => "Counter",
         "orders" => "Orders",
+        "caja" => "Cash",
     ],
 
     "check_header" => [

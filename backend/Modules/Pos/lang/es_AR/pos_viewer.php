@@ -243,6 +243,7 @@ return [
         "salon" => "Salón",
         "counter" => "Mostrador",
         "orders" => "Pedidos",
+        "caja" => "Caja",
     ],
 
     // Sprint 3.A.9 — Toast-style CheckHeader. "context" top-level es

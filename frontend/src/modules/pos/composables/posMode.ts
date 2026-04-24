@@ -9,7 +9,7 @@ import { computed, ref, watch } from 'vue'
  *   counter → counter
  *   orders  → takeout o delivery (según acción dentro del hub)
  */
-export type PosMode = 'salon' | 'counter' | 'orders'
+export type PosMode = 'salon' | 'counter' | 'orders' | 'caja'
 
 export interface PosFeatureFlags {
   dine_in: boolean
@@ -48,11 +48,16 @@ function persist (mode: PosMode): void {
 export function usePosMode (flags: () => PosFeatureFlags | null | undefined) {
   const availableModes = computed<PosMode[]>(() => {
     const f = flags()
-    if (!f) return ['salon', 'counter', 'orders']
+    // 'caja' siempre disponible mientras haya un register — el POS asume
+    // sesión de caja activa (si no, el viewer falla antes). No tiene
+    // feature flag porque cerrar el acceso a caja desde UI rompería el
+    // flujo operativo sin camino alternativo.
+    if (!f) return ['salon', 'counter', 'orders', 'caja']
     const list: PosMode[] = []
     if (f.dine_in) list.push('salon')
     if (f.counter) list.push('counter')
     if (f.takeout || f.delivery) list.push('orders')
+    list.push('caja')
     return list
   })
 

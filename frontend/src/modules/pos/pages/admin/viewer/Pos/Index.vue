@@ -23,7 +23,9 @@
   // bifurcador quedó redundante con el nuevo split-screen (plano = abrir
   // mesa, botón + = orden rápida). Archivo vive huérfano.
   import ActiveOrdersPanel from './ActiveOrdersPanel/Index.vue'
-  import CajaDrawer from './Drawers/Caja/Index.vue'
+  import CajaMode from './CajaMode.vue'
+  // Drawers/Caja eliminado Sprint 3.A.bis — el contenido migró a CajaMode
+  // como modo propio del switcher vertical. Ver commit hash del sprint.
   import TableViewerDrawer from './Drawers/TableViewer/Index.vue'
   import MenuPanel from './MenuPanel/Index.vue'
   import ModeSwitcher from './ModeSwitcher.vue'
@@ -49,7 +51,7 @@
   const toast = useToast()
   const { edit: editOrder } = useOrder()
 
-  const showCajaDrawer = ref(false)
+  // showCajaDrawer eliminado Sprint 3.A.bis — Caja es modo propio.
   const showTableViewerDrawer = ref(false)
   // Count emitido por TablePlano tras fetch. Lo usa el StartOrderDialog
   // para disabiliar "Abrir mesa" con tooltip cuando no hay mesas cargadas.
@@ -84,7 +86,8 @@
 
   const onClickAction = (action: string) => {
     if (action == 'manage_cash_movement' && can('admin.pos_cash_movements.create')) {
-      showCajaDrawer.value = true
+      // Manage cash movement pasa al modo Caja del switcher.
+      posMode.value = 'caja'
     } else if (action == 'table_viewer' && can('admin.tables.viewer')) {
       showTableViewerDrawer.value = true
     } else if (action == 'more_print' && can('admin.orders.print')) {
@@ -199,14 +202,25 @@
         v-model="posMode"
         :available-modes="availableModes"
       />
-    <!-- Sprint 2 parte A: layout split-screen con CSS Grid.
+
+      <!-- Modo Caja: pantalla completa propia, toma el espacio a la
+           derecha del switcher. Sprint 3.A.bis — reemplaza el CajaDrawer. -->
+      <CajaMode
+        v-if="posMode === 'caja' && can('admin.pos_cash_movements.create')"
+        class="flex-grow-1"
+        :meta="meta"
+        :register-id="form.registerId"
+        :session-id="form.sessionId"
+        @session-closed="$emit('reset')"
+      />
+
+    <!-- Modos salón/counter/orders — split-screen con CSS Grid.
          Vista "home" (!hasActiveOrder): 2 columnas 30/70 — ActiveOrders
          + plano de mesas ocupando todo el espacio.
          Vista "working" (hasActiveOrder): 3 columnas 22/48/30 —
-         ActiveOrders colapsado + grid productos + detalle comanda.
-         El MenuPanel ya alterna internamente entre plano y productos
-         según hasActiveOrder; acá solo controlamos columnas + OrderPanel. -->
+         ActiveOrders colapsado + grid productos + detalle comanda. -->
     <div
+      v-else
       class="pos-layout flex-grow-1"
       :class="{ 'pos-layout--working': hasActiveOrder, 'pos-layout--narrow': isNarrow }"
     >
@@ -284,14 +298,8 @@
     v-model="viewOrderDetailsDialog.open"
     :order-id="viewOrderDetailsDialog.orderId"
   />
-  <CajaDrawer
-    v-if="can('admin.pos_cash_movements.create')"
-    v-model="showCajaDrawer"
-    :meta="meta"
-    :register-id="form.registerId"
-    :session-id="form.sessionId"
-    @session-closed="$emit('reset')"
-  />
+  <!-- CajaDrawer eliminado — caja es modo propio (CajaMode) invocado
+       desde el switcher vertical. Ver commit del Sprint 3.A.bis. -->
   <TableViewerDrawer
     v-if="can('admin.tables.viewer')"
     ref="tableViewerDrawerRef"
