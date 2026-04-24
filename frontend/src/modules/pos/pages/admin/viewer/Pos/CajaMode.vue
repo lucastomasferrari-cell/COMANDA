@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   import type { PosMeta } from '@/modules/pos/contracts/posViewer.ts'
-  import { computed, onMounted, ref, watch } from 'vue'
+  import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { useToast } from 'vue-toastification'
   import { useForm } from '@/modules/core/composables/form.ts'
@@ -40,27 +40,35 @@
   const movements = ref<Record<string, any>[]>([])
   const loading = ref(false)
   const closeCajaDialog = ref(false)
+  // Sprint 3.A.bis post-validación 3 — guard contra mutaciones
+  // post-unmount. Si el user cambia de modo (caja → salón, etc.)
+  // mientras refresh() está esperando la API, la response llega al
+  // ref de un componente ya desmontado → Vue crash __vnode null.
+  let isAlive = true
 
   async function refresh (): Promise<void> {
-    if (!props.sessionId) return
+    if (!isAlive || !props.sessionId) return
     loading.value = true
     try {
       const [sRes, mRes] = await Promise.all([
         showSession(props.sessionId),
         listMovements({ pos_session_id: props.sessionId, per_page: 50 }),
       ])
+      if (!isAlive) return
       session.value = sRes.data ?? null
       const body = mRes.data?.body
       const items = body?.data ?? body?.items ?? (Array.isArray(body) ? body : [])
       movements.value = Array.isArray(items) ? items : []
     } catch {
+      if (!isAlive) return
       toast.error(t('core::errors.an_unexpected_error_occurred'))
     } finally {
-      loading.value = false
+      if (isAlive) loading.value = false
     }
   }
 
   onMounted(() => { refresh() })
+  onBeforeUnmount(() => { isAlive = false })
   watch(() => props.sessionId, () => { refresh() })
 
   const movementList = computed(() => Array.isArray(movements.value) ? movements.value : [])

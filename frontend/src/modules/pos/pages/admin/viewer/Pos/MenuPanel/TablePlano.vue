@@ -28,12 +28,19 @@
   const tables = ref<PlanoTable[]>([])
   const loading = ref(false)
   let pollTimer: number | null = null
+  // Sprint 3.A.bis post-validación 3 — guard contra mutaciones y emits
+  // post-unmount. El plano se desmonta al cambiar de Salón a
+  // Mostrador/Pedidos/Caja, y el poll de 30s puede haber disparado un
+  // fetch que llega DESPUÉS. Mutar tables.value o emit('tables-count')
+  // sobre un componente desmontado causa __vnode null en el parent.
+  let isAlive = true
 
   async function fetchTables () {
-    if (props.branchId == null) return
+    if (!isAlive || props.branchId == null) return
     loading.value = true
     try {
       const res = await getTableViewer(props.branchId, {})
+      if (!isAlive) return
       tables.value = (res.data.body.tables ?? []).map((t: any) => {
         const activeOrder = t.active_order ?? null
         // Override sintético de status: bill_requested y paused pisan el
@@ -62,7 +69,7 @@
     } catch {
       // silencioso: el polling no interrumpe al usuario
     } finally {
-      loading.value = false
+      if (isAlive) loading.value = false
     }
   }
 
@@ -72,6 +79,7 @@
   })
 
   onBeforeUnmount(() => {
+    isAlive = false
     if (pollTimer !== null) window.clearInterval(pollTimer)
   })
 

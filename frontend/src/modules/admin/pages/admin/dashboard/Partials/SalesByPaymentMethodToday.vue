@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-  import { onMounted, ref } from 'vue'
+  import { onBeforeUnmount, onMounted, ref } from 'vue'
   import { useI18n } from 'vue-i18n'
   import { usePaymentMethod } from '@/modules/payment/composables/paymentMethod.ts'
 
@@ -9,20 +9,30 @@
   const loading = ref(false)
   const rows = ref<Array<Record<string, any>>>([])
   const totalAmount = ref(0)
+  // Sprint 3.A.bis post-validación 3 — guard contra mutaciones
+  // post-unmount. Si el user navega fuera del dashboard mientras
+  // load() está esperando la API, la response llega a un componente
+  // ya desmontado → Vue crash __vnode null.
+  let isAlive = true
 
   async function load () {
+    if (!isAlive) return
     loading.value = true
     try {
       const today = new Date().toISOString().slice(0, 10)
       const res = await getReport(today, today)
+      if (!isAlive) return
       rows.value = res.data.body ?? []
       totalAmount.value = rows.value.reduce((sum, r) => sum + Number(r.total_amount ?? 0), 0)
     } catch {
+      if (!isAlive) return
       rows.value = []
     } finally {
-      loading.value = false
+      if (isAlive) loading.value = false
     }
   }
+
+  onBeforeUnmount(() => { isAlive = false })
 
   function pct (amount: number): number {
     return totalAmount.value > 0 ? (amount / totalAmount.value) * 100 : 0

@@ -1,4 +1,5 @@
-import { computed, onMounted, onBeforeUnmount, ref } from 'vue'
+import axios from 'axios'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { http } from '@/modules/core/api/http.ts'
 
 export interface UpcomingReservation {
@@ -25,23 +26,43 @@ export function useUpcomingReservations () {
   const reservations = ref<UpcomingReservation[]>([])
   const loading = ref(false)
   let pollTimer: number | null = null
+  // Sprint 3.A.bis post-validación 3 — abortController + isAlive guard
+  // contra mutaciones post-unmount. En el POS, el plano (consumidor de
+  // este composable) vive dentro de Salón; al cambiar a Mostrador/
+  // Pedidos/Caja el TablePlano se desmonta mientras puede haber un
+  // fetch en vuelo. Si la response llegaba después, mutabamos refs de
+  // un tree ya desmontado y Vue crasheaba con __vnode null.
+  let abortController: AbortController | null = null
+  let isAlive = true
 
   const fetch = async (): Promise<void> => {
+    if (!isAlive) return
+    // Cancelar cualquier fetch anterior en vuelo — si el poll se dispara
+    // dos veces solapadas (manualmente + intervalo), solo vale la última.
+    abortController?.abort()
+    abortController = new AbortController()
     loading.value = true
     try {
-      const res = await http.get('/v1/reservations/upcoming')
+      const res = await http.get('/v1/reservations/upcoming', {
+        signal: abortController.signal,
+      })
+      if (!isAlive) return
       const body = res.data?.body ?? res.data ?? []
       reservations.value = Array.isArray(body) ? body : []
     } catch (err) {
+      // Cancelación silenciosa: no es un error del endpoint, es que
+      // nos desmontaron o llegó un fetch más nuevo. No warn, no reset.
+      if (axios.isCancel(err) || (err as any)?.name === 'CanceledError') {
+        return
+      }
+      if (!isAlive) return
       // El plano no se puede caer por una reserva que no cargó. Dejamos
-      // lista vacía y seguimos; si el endpoint fallaba por 500 (ej: la
-      // tabla reservations todavía no migró) no queremos bloquear el POS.
-      // Warn visible en devtools para que un dev lo note sin que el user
-      // vea nada roto.
+      // lista vacía y seguimos; si el endpoint fallaba por 500 no
+      // queremos bloquear el POS. Warn visible en devtools.
       console.warn('[useUpcomingReservations] endpoint no disponible, usando lista vacía', err)
       reservations.value = []
     } finally {
-      loading.value = false
+      if (isAlive) loading.value = false
     }
   }
 
@@ -64,9 +85,11 @@ export function useUpcomingReservations () {
   })
 
   onBeforeUnmount(() => {
+    isAlive = false
     if (pollTimer !== null) {
       window.clearInterval(pollTimer)
     }
+    abortController?.abort()
   })
 
   return { reservations, byTable, loading, refresh: fetch }
