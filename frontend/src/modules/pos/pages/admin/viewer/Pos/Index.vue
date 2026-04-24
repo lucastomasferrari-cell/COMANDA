@@ -9,7 +9,9 @@
   import { useI18n } from 'vue-i18n'
   import { useAuth } from '@/modules/auth/composables/auth.ts'
   import { useOrder } from '@/modules/sale/composables/order.ts'
-  import GuestCountDialog from './Dialogs/GuestCountDialog.vue'
+  // GuestCountDialog mount eliminado Sprint 2 B.3 — tap en mesa abre
+  // directo con guestCount=1 default, edición inline en panel derecho.
+  // Archivo vive huérfano por si se revierte.
   import OrderDetailsDialog from '@/modules/pos/pages/admin/viewer/Pos/Dialogs/OrderDetails/Index.vue'
   import PaymentDialog from '@/modules/pos/pages/admin/viewer/Pos/Dialogs/Payment/Index.vue'
   // OrdersDrawer removido del mount (Sprint 1.A): ActiveOrdersPanel
@@ -47,8 +49,6 @@
 
   const showCajaDrawer = ref(false)
   const showTableViewerDrawer = ref(false)
-  const showPlanoGuestCountDialog = ref(false)
-  const pendingPlanoTable = ref<PlanoTable | null>(null)
   // Count emitido por TablePlano tras fetch. Lo usa el StartOrderDialog
   // para disabiliar "Abrir mesa" con tooltip cuando no hay mesas cargadas.
   const tablesCount = ref(0)
@@ -96,23 +96,16 @@
   // non-dine_in disponible como default.
   const onNewOrder = () => props.startNewOrder()
 
-  // Mesa libre clickeada desde el plano: pedimos comensales antes de abrir.
-  const onPlanoPickFree = (table: PlanoTable) => {
-    pendingPlanoTable.value = table
-    showPlanoGuestCountDialog.value = true
-  }
-
-  const onPlanoGuestCountConfirm = async (guestCount: number) => {
-    const tbl = pendingPlanoTable.value
-    if (!tbl) return
+  // Sprint 2 B.3 — Mesa libre clickeada desde el plano: apertura directa
+  // con guestCount=1 default. Antes pasaba por GuestCountDialog (modal con
+  // +/- antes de abrir) → 2 taps extras por mesa. El mozo edita el
+  // guestCount inline en el panel derecho después (commit B.2); si se
+  // olvida, la validación al enviar a cocina (B.5) lo ataja.
+  const onPlanoPickFree = async (table: PlanoTable) => {
     await props.startNewOrder({
-      table: {
-        id: tbl.id,
-        name: tbl.name,
-      },
-      guestCount,
+      table: { id: table.id, name: table.name },
+      guestCount: 1,
     })
-    pendingPlanoTable.value = null
   }
 
   // Mesa ocupada: cargamos la orden activa y la abrimos en el panel derecho.
@@ -254,13 +247,9 @@
       @new-order="() => { showActiveOrdersDrawer = false; onNewOrder() }"
     />
   </VNavigationDrawer>
-  <!-- StartOrderDialog mount eliminado Sprint 2 B.1 — bifurcación resuelta
-       por topología del layout (plano vs botón +). -->
-  <GuestCountDialog
-    v-model="showPlanoGuestCountDialog"
-    :initial="1"
-    @confirm="onPlanoGuestCountConfirm"
-  />
+  <!-- StartOrderDialog + GuestCountDialog mounts eliminados Sprint 2 B.1/B.3.
+       Bifurcación (mesa vs orden rápida) resuelta por topología del layout;
+       comensales se edita inline en AdditionalInformation con stepper +/-. -->
   <OrderDetailsDialog
     v-if="can('admin.orders.show') && viewOrderDetailsDialog.open"
     v-model="viewOrderDetailsDialog.open"
