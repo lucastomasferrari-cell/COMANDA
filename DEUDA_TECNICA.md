@@ -36,6 +36,10 @@ para que el POS no caiga en el empty state "no hay sucursales".
 ## Housekeeping POS
 
 - ~~**StartOrderDialog.vue** huérfano~~ — RESUELTO Sprint 3.A.
+- ~~**Drawers/Caja/Index.vue**~~ — RESUELTO Sprint 3.A.bis (migrado a
+  `CajaMode.vue` como pantalla propia del modo Caja).
+- ~~**TopActionsBar.vue**~~ — RESUELTO Sprint 3.A.bis (redundante
+  tras la introducción del `PosHeader` compacto).
 - **GuestCountDialog.vue** sigue en uso por
   `Drawers/TableViewer/DetailsDialog/Index.vue` (el relevamiento del
   Sprint 2 lo había marcado como huérfano pero no lo era). Si el flujo
@@ -43,6 +47,10 @@ para que el POS no caiga en el empty state "no hay sucursales".
 - **Huérfanos de sprints anteriores**: `ConfiguracionHub.vue`,
   `CobrosHub.vue`, `CocinaHub.vue`, `PersonalHub.vue`, `MarketingHub.vue`,
   `SalonHub.vue`, `Drawers/Orders/Index.vue`. Barrer en housekeeping.
+- **`popover` complejo en el badge de reserva** (SalonPlanoVisual): hoy
+  usa `<title>` nativo de SVG (tooltip del browser, delay ~500ms). Un
+  popover Vuetify con nombre del cliente grande + botón "Marcar arrived"
+  queda para PASE Fase 2, cuando exista el flujo completo.
 
 ## Sprint 3 pendiente (3.B y 3.C)
 
@@ -58,6 +66,46 @@ para que el POS no caiga en el empty state "no hay sucursales".
 - **Header contextual del check según `dining_option`**: skipeado en
   3.A porque requiere que el frontend consuma la nueva columna
   `dining_option` de la orden. Parte de 3.B.
+
+---
+
+## PASE — Fase 2 separada (post-3.C)
+
+PASE es un **proyecto aparte** del POS de COMANDA. Su scope natural
+es la gestión de reservas + waitlist desde el punto de vista del
+host/maître. El POS de COMANDA solo RECIBE contexto (qué mesa tiene
+reserva próxima) y convierte reservas en órdenes `dine_in` cuando el
+host marca "arrived".
+
+El Sprint 3.A.bis dejó cableado el esqueleto para que PASE solo tenga
+que agregar el UI admin (form de crear/editar, vista del día, pasos de
+confirmar/arrived/no-show):
+
+- **Schema `reservations`** (migration `2026_04_24_001000_create_reservations_table`)
+  con states `pending | confirmed | arrived | no_show | cancelled`,
+  FK a `tables`, `users` (customer), `branches`, `created_by`.
+  Índices en `reserved_for` y `(table_id, reserved_for, status)`.
+- **Endpoint read-only** `GET /v1/reservations/upcoming` (2hs
+  próximas) consumido por el composable
+  `useUpcomingReservations` del POS. El CRUD completo queda para PASE.
+- **Seeder demo** `DemoArSeeder::seedReservations()` con 4 reservas
+  ejemplo (3 en las próximas 2hs sobre mesas 3/7/10, 1 para mañana).
+- **Badge en el plano del POS** (`SalonPlanoVisual.vue` con prop
+  `reservationsByTable`) que pinta borde púrpura + badge 🕐 HH:mm.
+
+Cuando se arranque PASE:
+1. Construir módulo admin de Reservas en `frontend/src/modules/seatingPlan/`
+   (CRUD + vista timeline del día + acciones de estado).
+2. Implementar transición `arrived` → crear orden dine_in con
+   customer + guest_count + notes precargados desde la reserva.
+3. Notificaciones push al waiter asignado cuando hay reserva próxima.
+4. Integración con PASE externo (Supabase) vía webhook si termina
+   siendo un proyecto multi-tenant separado.
+
+Hoy el flujo end-to-end no existe: no hay UI para crear reservas, el
+badge solo aparece si se corre el seeder. Es **intencional** — no
+queremos construir medio PASE como parte de un sprint de polish del
+POS.
 
 ---
 
