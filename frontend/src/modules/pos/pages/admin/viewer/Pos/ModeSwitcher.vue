@@ -30,8 +30,12 @@
       label: t('pos::pos_viewer.modes.counter'),
     },
     {
+      // Sprint 3.A.bis bug 4 — tabler-package renderizaba como cubo 3D
+      // (visualmente distinto del resto de íconos outline del switcher).
+      // tabler-clipboard-list es consistente con Salón/Mostrador/Caja:
+      // línea fina, estilo Toast-like, hereda el color del parent.
       key: 'orders' as PosMode,
-      icon: 'tabler-package',
+      icon: 'tabler-clipboard-list',
       label: t('pos::pos_viewer.modes.orders'),
     },
     {
