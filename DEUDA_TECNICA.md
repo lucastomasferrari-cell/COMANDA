@@ -33,16 +33,31 @@ para que el POS no caiga en el empty state "no hay sucursales".
 
 ---
 
-## Housekeeping POS (Sprint 2.5 propuesto)
+## Housekeeping POS
 
-- **Archivos Dialog huérfanos** del Sprint 2 sin imports activos:
-  - `frontend/src/modules/pos/pages/admin/viewer/Pos/Dialogs/StartOrderDialog.vue`
-  - `frontend/src/modules/pos/pages/admin/viewer/Pos/Dialogs/GuestCountDialog.vue`
-  Preservados por si se revierte el Sprint 2. Eliminar después de 2-3
-  sprints si no hubo regresión.
+- ~~**StartOrderDialog.vue** huérfano~~ — RESUELTO Sprint 3.A.
+- **GuestCountDialog.vue** sigue en uso por
+  `Drawers/TableViewer/DetailsDialog/Index.vue` (el relevamiento del
+  Sprint 2 lo había marcado como huérfano pero no lo era). Si el flujo
+  de guest count inline se consolida en toda la UI, se puede eliminar.
 - **Huérfanos de sprints anteriores**: `ConfiguracionHub.vue`,
   `CobrosHub.vue`, `CocinaHub.vue`, `PersonalHub.vue`, `MarketingHub.vue`,
   `SalonHub.vue`, `Drawers/Orders/Index.vue`. Barrer en housekeeping.
+
+## Sprint 3 pendiente (3.B y 3.C)
+
+- **Sprint 3.B — modo Salón mejorado**: tabs de zonas, colores Toast
+  por estado de mesa, panel mesas activas Toast-style, long-press con
+  menú flotante, escalado del plano auto-fit. El `useLongPress` de 3.A
+  ya está listo para consumir.
+- **Sprint 3.C — modo Pedidos (Orders Hub) + modo Mostrador**: los 2
+  modos nuevos completos. Backend endpoints (approve / mark-ready /
+  assign-driver / mark-delivered / reopen). Seeder de órdenes demo
+  takeout con `channel` mezclado (propio/telefono/whatsapp). El
+  composable `useOrderHubStatus` de 3.A ya está listo.
+- **Header contextual del check según `dining_option`**: skipeado en
+  3.A porque requiere que el frontend consuma la nueva columna
+  `dining_option` de la orden. Parte de 3.B.
 
 ---
 
@@ -60,6 +75,16 @@ para que el POS no caiga en el empty state "no hay sucursales".
 - **Transición `grid-template-columns` 250ms** en `.pos-layout` para
   suavizar la transición home ↔ working (hoy es instantánea). Requiere
   verificación cross-browser porque no todos animan grid-template.
+- **`@vueuse/core` para utilities**: en Sprint 3.A se implementó
+  `useLongPress` custom (`modules/core/composables/longPress.ts`) con
+  firma drop-in compatible. Cuando haya 2-3 casos de uso más de
+  utilities (useClipboard, useFetch, etc.) agregar `@vueuse` al
+  `package.json` y migrar.
+- **`color` hex legacy en Category**: sigue expuesto en
+  `CategoryResource` (admin) porque el form admin muestra swatch
+  picker. El POS ya migró a `color_hue` como fuente de verdad. Si
+  algún día se retira el swatch hex del form admin, eliminar también
+  la columna.
 - **Drawers (TableViewer / CashMovement / Orders / Caja)**: migrar
   colores hardcoded (`#8e44ad`, `#16a085`, `#2980b9`, `#e0e0e0`, etc.) a
   tokens Vuetify. El Sprint 1.A tocó el POS viewer principal pero los
