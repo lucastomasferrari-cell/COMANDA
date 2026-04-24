@@ -47,7 +47,7 @@ class ModuleService {
         }
         return acc
       },
-      { admin: [], public: [], blank: [] },
+      { admin: [], pos: [], public: [], blank: [] },
     )
   }
 

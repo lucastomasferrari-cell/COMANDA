@@ -1,1 +1,1 @@
-export type TargetName = 'admin' | 'public' | 'blank'
+export type TargetName = 'admin' | 'pos' | 'public' | 'blank'
