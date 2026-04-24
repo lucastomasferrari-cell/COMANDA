@@ -75,8 +75,31 @@
   const {
     mode: posMode,
     availableModes,
+    setMode,
     showSwitcher,
   } = usePosMode(() => (props.meta as any)?.feature_flags?.pos ?? null)
+
+  // Sprint 3.A.bis post-validación 4 — cambiar de modo DESELECCIONA la
+  // orden activa. Arquitectura correcta: cada modo tiene su "home",
+  // la orden abierta pertenece conceptualmente al modo donde se abrió.
+  //
+  // Sin este reset, si tenías una orden takeout abierta y cambiabas a
+  // Mostrador, la orden seguía montada (hasActiveOrder=true) en el
+  // split-screen. Al enviar a cocina, placeOrder() mandaba params con
+  // table_id=null, pero el cart mantenía orderType='dine_in' (heredado
+  // de startNewOrder o del cart reset interno del backend), y el backend
+  // validaba "Mesa es obligatoria cuando Tipo sea dine_in" → 422.
+  //
+  // Solución: emit('reset') antes de cambiar el modo — resetea form +
+  // newOrderStarted en usePosViewer, el split-screen se desmonta y el
+  // nuevo modo arranca limpio.
+  const onModeChange = (next: typeof posMode.value): void => {
+    if (next === posMode.value) return
+    if (props.hasActiveOrder) {
+      emit('reset')
+    }
+    setMode(next)
+  }
 
   const paymentDialog = ref<Record<string, any>>({ orderId: null, open: false })
   const refundCancelDialog = ref<Record<string, any>>({ orderId: null, open: false })
@@ -89,8 +112,10 @@
 
   const onClickAction = (action: string) => {
     if (action == 'manage_cash_movement' && can('admin.pos_cash_movements.create')) {
-      // Manage cash movement pasa al modo Caja del switcher.
-      posMode.value = 'caja'
+      // Manage cash movement pasa al modo Caja del switcher. Reutilizamos
+      // onModeChange para que también resetee la orden si había una abierta
+      // (mismo contrato que el switcher vertical).
+      onModeChange('caja')
     } else if (action == 'table_viewer' && can('admin.tables.viewer')) {
       showTableViewerDrawer.value = true
     } else if (action == 'more_print' && can('admin.orders.print')) {
@@ -195,8 +220,9 @@
     <div class="pos-layout-wrapper flex-grow-1 d-flex">
       <ModeSwitcher
         v-if="showSwitcher"
-        v-model="posMode"
         :available-modes="availableModes"
+        :model-value="posMode"
+        @update:model-value="onModeChange"
       />
 
       <!-- Sprint 3.A.bis bug 2 — render según modo + hasActiveOrder.
