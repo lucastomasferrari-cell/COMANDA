@@ -46,17 +46,26 @@
   const currentTime = ref(Date.now())
   let pollingTimer: number | null = null
   let clockTimer: number | null = null
+  // Sprint 3.A.bis post-validación 6 — guard contra mutaciones post-
+  // unmount. Este panel monta DOS veces distintas en Pos/Index.vue (una
+  // en la home de Salón, otra colapsada en el split-screen working),
+  // pero son branches v-else-if distintas: al pasar de home a working
+  // el primero se desmonta y el segundo se monta. Con el polling cada
+  // 30s + openOrder que cambia hasActiveOrder (dispara el swap), las
+  // ventanas de race son frecuentes → Vue __vnode null crasheaba x8.
+  let isAlive = true
 
   async function fetchActiveOrders (showLoader = true) {
-    if (props.branchId === null) return
+    if (!isAlive || props.branchId === null) return
     if (showLoader) loading.value = true
     try {
       const response = await activeOrders(props.branchId, {})
+      if (!isAlive) return
       orders.value = response.data.body.orders || []
     } catch {
       // silencio: polling no interrumpe al usuario. El empty-state cubre visual.
     } finally {
-      loading.value = false
+      if (isAlive) loading.value = false
     }
   }
 
@@ -119,13 +128,22 @@
       // vuelve a occupied automáticamente via listener RestoreTableOnResume.
       if (order.paused_at) {
         await resume(order.id)
+        if (!isAlive) return
       }
       const response = (await edit(props.cartId, order.id)).data.body
+      // El emit dispara hasActiveOrder=true en el parent → este panel
+      // (en su instancia de "home salón") se desmonta inmediatamente.
+      // Chequeamos isAlive para no emitir sobre un padre que ya cambió
+      // de rama (el panel collapsed del working branch ya está montado
+      // como OTRA instancia que va a recibir init-order vía la misma
+      // vía del padre).
+      if (!isAlive) return
       emit('init-order', response)
     } catch (error) {
+      if (!isAlive) return
       toast.error((error as AxiosError<{ message?: string }>).response?.data?.message ?? t('pos::pos_viewer.active_orders.error_opening'))
     } finally {
-      loadingOrderId.value = null
+      if (isAlive) loadingOrderId.value = null
     }
   }
 
@@ -140,6 +158,7 @@
   })
 
   onBeforeUnmount(() => {
+    isAlive = false
     if (pollingTimer !== null) window.clearInterval(pollingTimer)
     if (clockTimer !== null) window.clearInterval(clockTimer)
   })
