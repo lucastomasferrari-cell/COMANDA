@@ -1,4 +1,6 @@
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
+import { storeToRefs } from 'pinia'
+import { usePosModeStore } from '@/modules/pos/stores/posModeStore.ts'
 
 /**
  * Modos UI del POS. Distintos de dining_option (columna de orders) —
@@ -18,20 +20,22 @@ export interface PosFeatureFlags {
   delivery: boolean
 }
 
+// Sprint 4 commit 5 — el "mode activo" es ahora el currentMode del
+// store usePosModeStore. Este composable se quedó delegando al store
+// + manteniendo la persistencia a localStorage + lógica de
+// availableModes según feature flags. Es un thin wrapper sobre el
+// store; los callers existentes no se dieron cuenta del cambio.
 const STORAGE_KEY = 'comanda.pos.mode'
-const activeMode = ref<PosMode>('salon')
 
-/**
- * Restaura el modo del último load si el usuario ya lo eligió. Si no
- * hay nada en localStorage o el modo guardado no está disponible, cae
- * al primer modo disponible en el orden salon > counter > orders.
- */
-function restore (available: PosMode[]): PosMode {
-  const stored = typeof window !== 'undefined'
-    ? window.localStorage.getItem(STORAGE_KEY) as PosMode | null
-    : null
-  if (stored && available.includes(stored)) return stored
-  return available[0] ?? 'salon'
+let restored = false
+
+function getStoredMode (): PosMode | null {
+  if (typeof window === 'undefined') return null
+  const value = window.localStorage.getItem(STORAGE_KEY)
+  if (value === 'salon' || value === 'counter' || value === 'orders' || value === 'caja') {
+    return value
+  }
+  return null
 }
 
 function persist (mode: PosMode): void {
@@ -40,12 +44,35 @@ function persist (mode: PosMode): void {
 }
 
 /**
- * Composable de acceso al modo activo.
+ * Composable de acceso al modo activo. Internamente todo va contra el
+ * Pinia store posModeStore — este composable mantiene la API histórica
+ * (mode/availableModes/setMode/showSwitcher) + persistencia
+ * localStorage + sanity check contra feature flags.
  *
  * Uso:
  *   const { mode, availableModes, setMode, showSwitcher } = usePosMode(flagsRef)
+ *
+ * Para tracking de pausedOrderId al cambiar modo, llamar
+ * directamente al store: usePosModeStore().switchMode(next, orderId).
  */
 export function usePosMode (flags: () => PosFeatureFlags | null | undefined) {
+  const store = usePosModeStore()
+  const { currentMode } = storeToRefs(store)
+
+  // Restore del localStorage solo en la primera invocación de la
+  // sesión. Después del restore, el watch de abajo persiste cualquier
+  // cambio. El singleton flag evita doble-restore si se llama
+  // usePosMode desde varios componentes.
+  if (!restored) {
+    const stored = getStoredMode()
+    if (stored) store.currentMode = stored
+    restored = true
+  }
+
+  // Persistir cualquier cambio de modo al localStorage. Sin esto, los
+  // cambios via store.switchMode no sobreviven al refresh.
+  watch(currentMode, next => persist(next))
+
   const availableModes = computed<PosMode[]>(() => {
     const f = flags()
     // 'caja' siempre disponible mientras haya un register — el POS asume
@@ -61,26 +88,28 @@ export function usePosMode (flags: () => PosFeatureFlags | null | undefined) {
     return list
   })
 
-  // Si el modo guardado ya no está disponible (flag cambió), reasignar.
+  // Si el modo activo deja de estar disponible (feature flag cambió),
+  // reasignar a otro disponible. switchMode (vía store) sin
+  // pausedOrderId — esto es un fallback automático, no un cambio
+  // intencional del usuario.
   watch(availableModes, list => {
     if (list.length === 0) return
-    if (!list.includes(activeMode.value)) {
-      activeMode.value = restore(list)
-      persist(activeMode.value)
+    if (!list.includes(currentMode.value)) {
+      const stored = getStoredMode()
+      const fallback = list[0] ?? 'salon'
+      store.currentMode = stored && list.includes(stored) ? stored : fallback
     }
   }, { immediate: true })
 
   const setMode = (next: PosMode): void => {
     if (!availableModes.value.includes(next)) return
-    activeMode.value = next
-    persist(next)
+    store.switchMode(next)
   }
 
-  // Si solo hay 1 modo disponible, no tiene sentido el switcher.
   const showSwitcher = computed(() => availableModes.value.length > 1)
 
   return {
-    mode: activeMode,
+    mode: currentMode,
     availableModes,
     setMode,
     showSwitcher,

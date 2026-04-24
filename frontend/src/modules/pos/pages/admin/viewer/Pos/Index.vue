@@ -37,6 +37,7 @@
   // TopActionsBar eliminado Sprint 3.A.bis — "+ Orden rápida" se reubica
   // en el modo Mostrador; "Caja" es modo propio en el switcher.
   import { usePosMode } from '@/modules/pos/composables/posMode.ts'
+  import { usePosModeStore } from '@/modules/pos/stores/posModeStore.ts'
 
   const props = defineProps<{
     form: PosForm
@@ -77,30 +78,32 @@
   const {
     mode: posMode,
     availableModes,
-    setMode,
     showSwitcher,
   } = usePosMode(() => (props.meta as any)?.feature_flags?.pos ?? null)
 
-  // Sprint 3.A.bis post-validación 4 — cambiar de modo DESELECCIONA la
-  // orden activa. Arquitectura correcta: cada modo tiene su "home",
-  // la orden abierta pertenece conceptualmente al modo donde se abrió.
+  // Sprint 4 commit 5 — el cambio de modo pasa por el store. Si había
+  // una orden persistida en backend (edit mode → meta.order.id), su ID
+  // queda registrado en modeStates[modoActual].pausedOrderId. Al volver
+  // al modo, el banner del commit 6 va a ofrecer "Continuar" (que
+  // recargará la orden por su ID) o "Descartar".
   //
-  // Sin este reset, si tenías una orden takeout abierta y cambiabas a
-  // Mostrador, la orden seguía montada (hasActiveOrder=true) en el
-  // split-screen. Al enviar a cocina, placeOrder() mandaba params con
-  // table_id=null, pero el cart mantenía orderType='dine_in' (heredado
-  // de startNewOrder o del cart reset interno del backend), y el backend
-  // validaba "Mesa es obligatoria cuando Tipo sea dine_in" → 422.
+  // Para create mode (orden nueva sin persistir todavía) no hay ID que
+  // capturar — la orden vive sólo en el cart compartido y se pierde al
+  // hacer reset. Phase B (drafts en backend) va a cubrir ese gap
+  // creando la orden draft desde el primer item.
   //
-  // Solución: emit('reset') antes de cambiar el modo — resetea form +
-  // newOrderStarted en usePosViewer, el split-screen se desmonta y el
-  // nuevo modo arranca limpio.
+  // Mantenemos el emit('reset') del Sprint 3.A.bis bug 1: sin reset el
+  // cart compartido leakea orderType/items al modo siguiente y el
+  // backend rebota con 422 al enviar a cocina. La memoria del modo
+  // anterior vive en el store, no en el cart.
+  const posModeStore = usePosModeStore()
   const onModeChange = (next: typeof posMode.value): void => {
     if (next === posMode.value) return
+    const pausedId = props.meta.order?.id ?? null
     if (props.hasActiveOrder) {
       emit('reset')
     }
-    setMode(next)
+    posModeStore.switchMode(next, pausedId)
   }
 
   const paymentDialog = ref<Record<string, any>>({ orderId: null, open: false })
