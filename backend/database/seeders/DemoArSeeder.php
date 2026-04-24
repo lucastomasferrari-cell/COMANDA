@@ -178,24 +178,27 @@ class DemoArSeeder extends Seeder
         // normaliza vía Str::slug que convierte _ → -. Si acá usáramos
         // underscore, firstOrCreate no encontraría la fila existente (que
         // quedó con -) y choca con el unique (menu_id, slug) en re-run.
+        //
+        // Color hues Sprint 1.B: valores típicos gastronómicos AR.
+        // [slug => [label, hue]].
         $defs = [
-            'entradas' => 'Entradas',
-            'principales' => 'Principales',
-            'pastas' => 'Pastas',
-            'pizzas' => 'Pizzas',
-            'hamburguesas' => 'Hamburguesas',
-            'ensaladas' => 'Ensaladas',
-            'postres' => 'Postres',
-            'bebidas-sin-alcohol' => 'Bebidas sin alcohol',
-            'cervezas' => 'Cervezas',
-            'vinos' => 'Vinos',
-            'cocktails' => 'Cocktails',
-            'cafe' => 'Café',
+            'entradas' => ['Entradas', 30],               // mostaza cálida
+            'principales' => ['Principales', 15],         // terracota (cerca del primary)
+            'pastas' => ['Pastas', 40],                   // amarillo pasta
+            'pizzas' => ['Pizzas', 10],                   // rojo tomate
+            'hamburguesas' => ['Hamburguesas', 20],       // naranja tostado
+            'ensaladas' => ['Ensaladas', 130],            // verde lechuga
+            'postres' => ['Postres', 330],                // rosado dulce
+            'bebidas-sin-alcohol' => ['Bebidas sin alcohol', 200], // azul fresco
+            'cervezas' => ['Cervezas', 45],               // ámbar dorado
+            'vinos' => ['Vinos', 350],                    // vino tinto
+            'cocktails' => ['Cocktails', 300],            // magenta/aperol
+            'cafe' => ['Café', 25],                       // marrón cálido
         ];
 
         $ids = [];
         $order = 1;
-        foreach ($defs as $slug => $label) {
+        foreach ($defs as $slug => [$label, $hue]) {
             // withOutGlobalBranchPermission evita que el scope de HasMenu
             // oculte categorías existentes en re-runs (sin auth el scope
             // devuelve vacío → firstOrCreate intenta insert → duplicate).
@@ -204,11 +207,17 @@ class DemoArSeeder extends Seeder
                     ['slug' => $slug, 'menu_id' => $this->menuId],
                     [
                         'name' => ['es_AR' => $label, 'en' => $label],
+                        'color_hue' => $hue,
                         'created_by' => $this->adminId,
                         'is_active' => true,
                         'order' => $order++,
                     ]
                 );
+            // Si la categoría ya existía pero sin hue (pre-sprint 1.B),
+            // actualizamos para que el placeholder funcione.
+            if ($cat->color_hue === null) {
+                $cat->update(['color_hue' => $hue]);
+            }
             $ids[$slug] = $cat->id;
         }
 

@@ -61,6 +61,7 @@ class Category extends Model
         'parent_id',
         'slug',
         'color',
+        'color_hue',
         'sku',
         'sku_locked',
         self::MENU_COLUMN_NAME,

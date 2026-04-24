@@ -24,6 +24,8 @@ class CategoryResource extends JsonResource
             "is_active" => $this->is_active,
             "parent_id" => $this->parent_id,
             "slug" => $this->slug,
+            "color" => $this->color,
+            "color_hue" => $this->color_hue,
             "updated_at" => dateTimeFormat($this->updated_at),
             "created_at" => dateTimeFormat($this->created_at),
         ];

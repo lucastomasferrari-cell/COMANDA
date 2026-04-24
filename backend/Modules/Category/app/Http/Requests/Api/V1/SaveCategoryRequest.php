@@ -45,6 +45,10 @@ class SaveCategoryRequest extends Request
             // Color hex #RRGGBB. Nullable — si viene vacio, el trait
             // HasCategoryColor auto-asigna desde la paleta Toast al save.
             "color" => ['nullable', 'string', 'regex:/^#[0-9a-fA-F]{6}$/'],
+            // color_hue (0-360): Sprint 1.B — se usa para generar placeholders
+            // de producto sin foto. El admin elige un hue con slider simple
+            // y saturación/luminosidad las fija el frontend para consistencia.
+            "color_hue" => ['nullable', 'integer', 'min:0', 'max:360'],
         ];
     }
 

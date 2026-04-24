@@ -18,6 +18,11 @@ class PosCategoryResource extends JsonResource
             "id" => $this->id,
             "name" => $this->name,
             "logo" => $this->logo?->preview_image_url,
+            // Color y color_hue: el frontend del POS los usa para pintar el
+            // chip activo (color hex existente) y el placeholder de
+            // productos sin foto (hue del Sprint 1.B).
+            "color" => $this->color,
+            "color_hue" => $this->color_hue,
             'items' => PosCategoryResource::collection($this->whenLoaded('childrenRecursive')),
         ];
     }
