@@ -39,4 +39,6 @@ return [
     "quantity_sold" => "Quantity Sold",
     "low_stock_alerts" => "Low Stock Alerts",
     "alert_quantity" => "Alert Quantity",
+
+    "open_pos_subtitle" => "Serve tables, counter and delivery",
 ];

@@ -39,4 +39,6 @@ return [
     "quantity_sold" => "Cantidad vendida",
     "low_stock_alerts" => "Alertas de stock bajo",
     "alert_quantity" => "Cantidad de alerta",
+
+    "open_pos_subtitle" => "Atendé mesas, mostrador y envíos",
 ];

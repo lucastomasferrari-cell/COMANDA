@@ -39,4 +39,6 @@ return [
     "quantity_sold" => "الكمية المباعة",
     "low_stock_alerts" => "تنبيهات المخزون المنخفض",
     "alert_quantity" => "كمية التنبيه",
+
+    "open_pos_subtitle" => "خدمة الطاولات والكاونتر والتوصيل",
 ];
